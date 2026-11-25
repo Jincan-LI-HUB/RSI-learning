@@ -1,0 +1,1487 @@
+stored_ordinal,message_id,branch,reading_role,block,message_file,line,depth,heading
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,1,1,X Program #161 — Research Preparation
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,9,2,1. 我的背景
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,18,2,2. 我们的目标
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,29,2,3. 请按照以下顺序组织学习
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,31,3,Part I — 理解研究问题
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,43,3,Part II — 必要的统计学习理论
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,59,3,Part III — Agentic AI 与 Recursive Self-Improvement
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,73,3,Part IV — 金融场景中的特殊挑战
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,86,3,Part V — 相关论文与研究进展
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,105,3,Part VI — 本科生如何参与研究？
+1,[archival ID withheld],active,reading path,1,01-[archival ID withheld].md,117,2,4. 教学方式
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1,1,X Program #161 — Research Preparation
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,21,1,0. Research Roadmap
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,23,2,0.1 学习路线的整体结构
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,79,2,0.2 学习优先级与时间投入
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,101,2,0.3 最终学习成果
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,119,1,Part I — Understanding the Research Problem
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,121,1,1. Research Motivation：我们究竟在研究什么？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,204,1,2. Recursive Self-Improvement (RSI)
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,206,2,2.1 从普通 AI 系统到 Self-Improving AI
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,233,2,2.2 AI Agent 与 LLM 的区别
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,293,2,2.3 什么是 Self-Improvement？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,350,2,2.4 Self-Improvement 中的 Recursive 究竟是什么意思？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,401,1,3. Self-Improvement 与传统 Machine Learning 的区别
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,403,2,3.1 Ordinary Machine Learning Training
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,441,2,3.2 Hyperparameter Tuning
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,488,2,3.3 Agentic Self-Improvement
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,519,1,4. Mathematical Principles：为什么越改进，反而可能越差？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,523,2,4.1 True Performance 与 Observed Performance
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,578,2,4.2 一个简单却非常重要的 Model Selection 问题
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,672,2,4.3 Search Budget 如何影响 Selection Bias？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,787,2,4.4 Recursive Self-Improvement 为什么可能更加严重？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,878,2,4.5 一个关键区别：Generalization Gap 增大不等于 OOS Performance 下降
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,965,1,5. Example：一个自主研究金融策略的 AI Agent
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1063,1,6. 为什么这个问题在 Finance 中尤其重要？
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1067,2,6.1 Low Signal-to-Noise Ratio
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1114,2,6.2 Non-stationarity
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1176,2,6.3 Time-Series Dependence
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1215,2,6.4 Backtesting Overfitting
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1242,1,7. 将现象转化为 Research Questions
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1246,2,7.1 一个重要的数学分解
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1295,2,7.2 初步研究假设（Research Hypotheses）
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1316,1,8. 初步 Experimental Design
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1386,1,9. Preliminary Reading List
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1473,1,10. Part I — Research Takeaways
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1485,2,10.1 与博士生交流时可以提出的问题
+3,[archival ID withheld],active,reading path,1,03-[archival ID withheld].md,1513,1,Next — Part II: Statistical Learning Theory
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1,1,2. Recursive Self-Improvement (RSI)
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,3,2,2.1 从普通 AI 系统到 Self-Improving AI
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,30,2,2.2 AI Agent 与 LLM 的区别
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,90,2,2.3 什么是 Self-Improvement？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,147,2,2.4 Self-Improvement 中的 Recursive 究竟是什么意思？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,198,1,3. Self-Improvement 与传统 Machine Learning 的区别
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,200,2,3.1 Ordinary Machine Learning Training
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,238,2,3.2 Hyperparameter Tuning
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,285,2,3.3 Agentic Self-Improvement
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,316,1,4. Mathematical Principles：为什么越改进，反而可能越差？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,320,2,4.1 True Performance 与 Observed Performance
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,375,2,4.2 一个简单却非常重要的 Model Selection 问题
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,469,2,4.3 Search Budget 如何影响 Selection Bias？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,584,2,4.4 Recursive Self-Improvement 为什么可能更加严重？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,675,2,4.5 一个关键区别：Generalization Gap 增大不等于 OOS Performance 下降
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,762,1,5. Example：一个自主研究金融策略的 AI Agent
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,860,1,6. 为什么这个问题在 Finance 中尤其重要？
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,864,2,6.1 Low Signal-to-Noise Ratio
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,911,2,6.2 Non-stationarity
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,973,2,6.3 Time-Series Dependence
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1012,2,6.4 Backtesting Overfitting
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1039,1,7. 将现象转化为 Research Questions
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1043,2,7.1 一个重要的数学分解
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1092,2,7.2 初步研究假设（Research Hypotheses）
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1113,1,8. 初步 Experimental Design
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1183,1,9. Preliminary Reading List
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1270,1,10. Part I — Research Takeaways
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1282,2,10.1 与博士生交流时可以提出的问题
+4,[archival ID withheld],hidden,,1,04-[archival ID withheld].md,1310,1,Next — Part II: Statistical Learning Theory
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,1,1,X Program #161 — Research Preparation
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,12,2,1. 我的背景
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,21,2,2. 我们的目标
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,32,2,3. 请按照以下顺序组织学习
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,34,3,Part I — 理解研究问题
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,46,3,Part II — 必要的统计学习理论
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,62,3,Part III — Agentic AI 与 Recursive Self-Improvement
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,76,3,Part IV — 金融场景中的特殊挑战
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,89,3,Part V — 相关论文与研究进展
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,108,3,Part VI — 本科生如何参与研究？
+5,[archival ID withheld],active,reading path,1,05-[archival ID withheld].md,120,2,4. 教学方式
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1,1,X Program #161 — Research Preparation
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,13,1,Part 0 — Research Roadmap
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,15,2,0.1 从项目原文提取研究任务
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,68,2,0.2 完整学习路线
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,96,3,各部分的知识结构与预期成果
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,109,2,0.3 建议的学习节奏
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,125,1,Part I — Understanding the Research Problem
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,127,2,1. Research Motivation
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,129,3,1.1 从 Automated Research 到 Recursive Self-Improvement
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,215,2,2. Definitions — 什么是 Recursive Self-Improvement？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,217,3,2.1 AI Agent 的基本数学抽象
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,265,3,2.2 RSI 的形式化定义
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,319,3,2.3 一个现实中的 RSI 研究案例
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,333,2,3. AI Agent 如何进行迭代改进？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,335,3,3.1 Generate–Evaluate–Select Loop
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,426,3,3.2 Linear Trajectory 与 Tree-structured Trajectory
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,485,2,4. RSI 与传统 Machine Learning 的关系
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,489,3,4.1 Parameter Optimization
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,512,3,4.2 Hyperparameter Optimization
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,541,3,4.3 Agent-level Optimization
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,581,3,4.4 三者之间的本质区别
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,602,1,5. Mathematical Principles — 为什么改进会导致退化？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,608,2,5.1 Population Performance 与 Empirical Performance
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,678,2,5.2 Selection Bias：虚假的性能提升如何产生？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,826,2,5.3 从虚假提升到真正的性能退化
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,871,2,5.4 一个严格的 Regression Example
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,899,3,Version 0 — 正确模型
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,918,3,Version 1 — 加入额外特征
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1035,3,为什么这个例子尤其值得理解？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1055,1,6. Adaptive Overfitting — RSI 为什么可能放大这个问题？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1134,1,7. 为什么 Financial AI 是一个特殊的研究环境？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1142,2,7.1 Low Signal-to-Noise Ratio
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1224,2,7.2 Non-stationarity 与 Distribution Shift
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1279,2,7.3 金融场景中的其他困难
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1298,1,8. 回到 X Program #161：如何真正研究这条退化曲线？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1302,2,8.1 Recording the Self-Improvement Trajectory
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1366,2,8.2 Decay Detection — 从哪一轮开始退化？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1492,2,8.3 Revision Classification — 究竟是哪类修改导致了退化？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1530,3,如何量化每项修改的影响？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1603,2,8.4 Mitigation — 如何防止 RSI 过度适应评估数据？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1649,1,9. Research Connections — 现有研究已经做到哪里？
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1653,2,9.1 2026 年的 AIDE²
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1673,2,9.2 第一批核心阅读材料
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1766,2,9.3 与褚晓文教授及 HKUST(GZ) 的研究联系
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1789,1,10. 本科生 Research Entry Point
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1839,1,11. Part I — Summary
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1865,2,11.1 值得带着进入下一阶段的问题
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1877,2,11.2 可以向课题组提出的实质性问题
+7,[archival ID withheld],active,reading path,1,07-[archival ID withheld].md,1895,1,Next — Part II: Statistical Learning Theory
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1,1,Part I — Understanding the Research Problem
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,3,2,1. Research Motivation
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,5,3,1.1 从 Automated Research 到 Recursive Self-Improvement
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,91,2,2. Definitions — 什么是 Recursive Self-Improvement？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,93,3,2.1 AI Agent 的基本数学抽象
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,141,3,2.2 RSI 的形式化定义
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,195,3,2.3 一个现实中的 RSI 研究案例
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,209,2,3. AI Agent 如何进行迭代改进？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,211,3,3.1 Generate–Evaluate–Select Loop
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,302,3,3.2 Linear Trajectory 与 Tree-structured Trajectory
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,361,2,4. RSI 与传统 Machine Learning 的关系
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,365,3,4.1 Parameter Optimization
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,388,3,4.2 Hyperparameter Optimization
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,417,3,4.3 Agent-level Optimization
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,457,3,4.4 三者之间的本质区别
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,478,1,5. Mathematical Principles — 为什么改进会导致退化？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,484,2,5.1 Population Performance 与 Empirical Performance
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,554,2,5.2 Selection Bias：虚假的性能提升如何产生？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,702,2,5.3 从虚假提升到真正的性能退化
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,747,2,5.4 一个严格的 Regression Example
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,775,3,Version 0 — 正确模型
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,794,3,Version 1 — 加入额外特征
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,911,3,为什么这个例子尤其值得理解？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,931,1,6. Adaptive Overfitting — RSI 为什么可能放大这个问题？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1010,1,7. 为什么 Financial AI 是一个特殊的研究环境？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1018,2,7.1 Low Signal-to-Noise Ratio
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1100,2,7.2 Non-stationarity 与 Distribution Shift
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1155,2,7.3 金融场景中的其他困难
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1174,1,8. 回到 X Program #161：如何真正研究这条退化曲线？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1178,2,8.1 Recording the Self-Improvement Trajectory
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1242,2,8.2 Decay Detection — 从哪一轮开始退化？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1368,2,8.3 Revision Classification — 究竟是哪类修改导致了退化？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1406,3,如何量化每项修改的影响？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1479,2,8.4 Mitigation — 如何防止 RSI 过度适应评估数据？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1525,1,9. Research Connections — 现有研究已经做到哪里？
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1529,2,9.1 2026 年的 AIDE²
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1549,2,9.2 第一批核心阅读材料
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1642,2,9.3 与褚晓文教授及 HKUST(GZ) 的研究联系
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1665,1,10. 本科生 Research Entry Point
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1715,1,11. Part I — Summary
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1741,2,11.1 值得带着进入下一阶段的问题
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1753,2,11.2 可以向课题组提出的实质性问题
+8,[archival ID withheld],hidden,,1,08-[archival ID withheld].md,1771,1,Next — Part II: Statistical Learning Theory
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,5,1,Part I — Conclusion & Concept Index
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,7,2,1. Recursive Self-Improvement (RSI)
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,9,3,1.1 核心概念
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,34,3,1.2 RSI 与其他优化方法的关系
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,50,1,2. 核心数学结论
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,52,2,Conclusion 1 — In-Sample Improvement does not imply Out-of-Sample Improvement
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,82,2,Conclusion 2 — Unbiased Evaluation does not imply Unbiased Model Selection
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,114,2,Conclusion 3 — Model Selection introduces Optimistic Bias
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,155,2,Conclusion 4 — Selection Bias increases with Search Budget and Evaluation Noise
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,222,2,Conclusion 5 — Score Inflation 与 Performance Decay 是不同现象
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,283,2,Conclusion 6 — Adding Noise Features can strictly damage Generalization
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,331,2,Conclusion 7 — Repeated Adaptive Evaluation compromises Holdout Independence
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,375,2,Conclusion 8 — Statistical Overfitting 与 Distribution Shift 必须区分
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,409,1,3. 为什么 Finance 尤其容易出现这些问题？
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,443,1,4. X Program #161 — Research Methodology
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,447,2,4.1 Trajectory Analysis
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,470,2,4.2 Decay Detection
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,501,2,4.3 Revision Classification
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,561,2,4.4 Overfitting Mitigation
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,598,1,5. Literature Index
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,616,1,6. Part I — Knowledge Checklist
+10,[archival ID withheld],active,reading path,1,10-[archival ID withheld].md,643,1,7. 最终的 Conceptual Framework
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,1,1,Part II — Statistical Learning Theory
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,16,1,II-A — Risk and Generalization
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,18,2,1. Research Motivation
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,33,2,2. Mathematical Framework
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,35,3,2.1 Data Generating Distribution
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,70,3,2.2 Loss Function
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,97,1,3. Population Risk and Empirical Risk
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,101,2,3.1 Population Risk（总体风险）
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,137,2,3.2 Empirical Risk（经验风险）
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,206,2,3.3 Empirical Risk Minimization (ERM)
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,250,1,4. Generalization and Generalization Gap
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,252,2,4.1 Generalization Gap
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,320,2,4.2 Generalization 与 Model Complexity
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,379,1,5. Pointwise Convergence vs. Uniform Convergence
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,383,2,5.1 Pointwise Convergence
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,425,2,5.2 Uniform Convergence
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,494,3,为什么这对于 RSI 特别重要？
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,517,1,6. Excess Risk — 如何评价模型选择的质量？
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,545,2,6.1 Excess Risk Bound
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,560,3,Proof
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,611,2,6.2 Extension — Approximate Optimization
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,702,1,7. In-Sample and Out-of-Sample Evaluation
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,704,2,7.1 数据集的功能划分
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,759,2,7.2 RSI 中的 OOS Evaluation
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,813,1,8. II-A — Conclusion Index
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,830,2,8.1 Core Formula Sheet
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,866,2,8.2 Knowledge Checklist
+12,[archival ID withheld],active,reading path,1,12-[archival ID withheld].md,886,1,Next — II-B: Concentration Inequalities and Uniform Convergence
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,1,1,II-B — Concentration Inequalities and Uniform Convergence
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,20,2,1. Knowledge Roadmap
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,41,1,2. From LLN to Concentration Inequalities
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,43,2,2.1 LLN 的局限性
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,89,2,2.2 常见 Concentration Inequalities
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,159,1,3. Hoeffding's Inequality
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,161,2,3.1 Theorem
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,215,2,3.2 Proof Index — Mathematical Principle
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,237,1,4. Applying Hoeffding to Statistical Learning
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,239,2,4.1 Single-model Generalization Bound
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,284,2,4.2 Confidence Form
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,332,1,5. Union Bound and Uniform Generalization
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,336,2,5.1 Research Motivation
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,367,2,5.2 Theorem — Finite Hypothesis Space Generalization Bound
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,391,2,5.3 Proof
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,442,2,5.4 Confidence Form
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,562,1,6. Sample Complexity
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,632,1,7. Combining Uniform Convergence with Excess Risk
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,684,2,7.1 Optimization–Generalization Trade-off
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,720,1,8. Limitations — 为什么这些定理不能直接套用到 RSI？
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,724,2,8.1 Fixed Hypothesis Space vs. Adaptive Hypothesis Space
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,797,2,8.2 一个反例：为什么候选模型数量少也可能严重过拟合？
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,862,2,8.3 金融场景中的其他条件限制
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,878,1,9. Research Connections — X Program #161
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,913,1,10. II-B — Conclusion Index
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,930,2,10.1 Core Formula Sheet
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,988,2,10.2 Knowledge Checklist
+14,[archival ID withheld],active,reading path,1,14-[archival ID withheld].md,1008,1,Next — II-C: Model Selection Bias and Multiple Testing
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1,1,II-C — Model Selection Bias and Multiple Testing
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,29,1,1. Research Motivation
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,70,1,2. Model Selection Bias
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,72,2,2.1 基本数学框架
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,120,2,2.2 Theorem — Optimistic Selection Bias
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,149,3,Proof（可跳过）
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,187,3,Research Implication
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,197,1,3. Winner's Curse and Order Statistics
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,199,2,3.1 Winner's Curse（赢家诅咒）
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,256,2,3.2 Order Statistics（次序统计量）
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,363,1,4. Selection Regret — 选择错误模型的概率
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,367,2,4.1 Two-model Selection Problem
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,400,2,4.2 Key Result
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,474,2,4.3 Research Implications
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,520,1,5. Multiple Hypothesis Testing
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,524,2,5.1 Single Hypothesis Testing
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,568,2,5.2 Multiple Testing Problem
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,655,1,6. Multiple Testing Corrections
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,659,2,6.1 FWER and FDR
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,720,2,6.2 Bonferroni Correction
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,768,2,6.3 Benjamini–Hochberg Procedure (BH)
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,837,2,6.4 对 RSI 的意义
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,853,1,7. Data Snooping in Financial Research
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,855,2,7.1 什么是 Data Snooping？
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,882,2,7.2 White's Reality Check
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,922,1,8. Research Connections — 如何应用于 X Program #161？
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,924,2,8.1 从 Iteration Count 转向 Search History
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,969,2,8.2 一个候选实验：隔离 Search Budget 的影响
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1008,1,9. Literature Index
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1031,1,10. II-C — Conclusion Index
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1033,2,10.1 核心结论
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1048,2,10.2 Core Formula Sheet
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1108,2,10.3 Knowledge Checklist
+16,[archival ID withheld],active,reading path,1,16-[archival ID withheld].md,1128,1,Next — II-D: Adaptive Overfitting and Holdout Reuse
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,3,1,2. Model Selection Bias
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,5,2,2.1 基本数学框架
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,53,2,2.2 Theorem — Optimistic Selection Bias
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,82,3,Proof（可跳过）
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,120,3,Research Implication
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,130,1,3. Winner's Curse and Order Statistics
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,132,2,3.1 Winner's Curse（赢家诅咒）
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,189,2,3.2 Order Statistics（次序统计量）
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,296,1,4. Selection Regret — 选择错误模型的概率
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,300,2,4.1 Two-model Selection Problem
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,333,2,4.2 Key Result
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,407,2,4.3 Research Implications
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,453,1,5. Multiple Hypothesis Testing
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,457,2,5.1 Single Hypothesis Testing
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,501,2,5.2 Multiple Testing Problem
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,588,1,6. Multiple Testing Corrections
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,592,2,6.1 FWER and FDR
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,653,2,6.2 Bonferroni Correction
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,701,2,6.3 Benjamini–Hochberg Procedure (BH)
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,770,2,6.4 对 RSI 的意义
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,786,1,7. Data Snooping in Financial Research
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,788,2,7.1 什么是 Data Snooping？
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,815,2,7.2 White's Reality Check
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,855,1,8. Research Connections — 如何应用于 X Program #161？
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,857,2,8.1 从 Iteration Count 转向 Search History
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,902,2,8.2 一个候选实验：隔离 Search Budget 的影响
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,941,1,9. Literature Index
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,964,1,10. II-C — Conclusion Index
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,966,2,10.1 核心结论
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,981,2,10.2 Core Formula Sheet
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,1041,2,10.3 Knowledge Checklist
+17,[archival ID withheld],hidden,,1,17-[archival ID withheld].md,1061,1,Next — II-D: Adaptive Overfitting and Holdout Reuse
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1,1,II-D — Adaptive Overfitting and Holdout Reuse
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,26,2,1. From Model Selection to Adaptive Data Analysis
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,28,3,1.1 Non-adaptive vs. Adaptive Analysis
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,91,3,1.2 Statistical Query（统计查询）
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,140,3,1.3 Adaptive Query
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,178,2,2. 为什么看不到原始数据也会过拟合？
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,182,3,2.1 一个思想实验：Black-box Evaluator
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,206,3,2.2 一个严格的数学反例
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,307,2,3. Information-Theoretic Interpretation
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,317,3,3.1 Evaluation Transcript
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,363,3,3.2 Feedback Precision 与 Information Budget
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,405,2,4. Generalization Bound under Adaptive Feedback
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,411,3,4.1 Description Length Bound
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,472,3,4.2 与此前结论的对比
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,530,3,4.3 Mutual Information Generalization Bound
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,573,2,5. 为什么 Multiple Testing Correction 不足以解决 Adaptive Overfitting？
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,598,3,5.1 一个具体例子
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,637,3,5.2 Sequential Testing 的基本思想
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,678,1,6. The Reusable Holdout
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,684,2,6.1 Traditional Holdout vs. Reusable Holdout
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,722,2,6.2 Thresholdout Algorithm
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,801,2,6.3 Differential Privacy 与 Generalization
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,844,1,7. Research Connections — X Program #161
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,846,2,7.1 Evaluator 应当成为独立的研究对象
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,889,2,7.2 Feedback Utility–Generalization Trade-off
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,915,2,7.3 Candidate Experiment — Adaptive Feedback Ablation
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,936,3,Evaluation Metrics
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,964,1,8. Literature Index
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1012,1,9. II-D — Conclusion Index
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1014,2,9.1 核心观点
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1029,2,9.2 Core Formula Sheet
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1092,1,10. Consolidation — II-A 至 II-D 的理论联系
+20,[archival ID withheld],active,reading path,1,20-[archival ID withheld].md,1128,1,Next — II-E: Data Leakage and Distribution Shift
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,3,2,3. Information-Theoretic Interpretation
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,13,3,3.1 Evaluation Transcript
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,59,3,3.2 Feedback Precision 与 Information Budget
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,101,2,4. Generalization Bound under Adaptive Feedback
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,107,3,4.1 Description Length Bound
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,168,3,4.2 与此前结论的对比
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,226,3,4.3 Mutual Information Generalization Bound
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,269,2,5. 为什么 Multiple Testing Correction 不足以解决 Adaptive Overfitting？
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,294,3,5.1 一个具体例子
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,333,3,5.2 Sequential Testing 的基本思想
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,374,1,6. The Reusable Holdout
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,380,2,6.1 Traditional Holdout vs. Reusable Holdout
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,418,2,6.2 Thresholdout Algorithm
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,497,2,6.3 Differential Privacy 与 Generalization
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,540,1,7. Research Connections — X Program #161
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,542,2,7.1 Evaluator 应当成为独立的研究对象
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,585,2,7.2 Feedback Utility–Generalization Trade-off
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,611,2,7.3 Candidate Experiment — Adaptive Feedback Ablation
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,632,3,Evaluation Metrics
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,660,1,8. Literature Index
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,708,1,9. II-D — Conclusion Index
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,710,2,9.1 核心观点
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,725,2,9.2 Core Formula Sheet
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,788,1,10. Consolidation — II-A 至 II-D 的理论联系
+21,[archival ID withheld],hidden,,1,21-[archival ID withheld].md,824,1,Next — II-E: Data Leakage and Distribution Shift
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,1,1,II-E — Data Leakage and Distribution Shift
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,21,2,1. Data Leakage（数据泄漏）
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,23,3,1.1 Definition
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,54,3,1.2 Data Leakage 的主要类型
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,69,3,1.3 一个具体的金融例子
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,129,2,2. Data Leakage 与 Adaptive Overfitting 的区别
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,153,2,3. Distribution Shift（分布偏移）
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,155,3,3.1 Definition
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,189,2,3.2 Covariate Shift（协变量偏移）
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,230,3,数学处理：Importance Weighting
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,282,2,3.3 Label Shift（标签偏移）
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,342,2,3.4 Concept Drift（概念漂移）
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,394,2,3.5 三种 Distribution Shift 的对比
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,408,1,4. Mathematical Example — 没有过拟合，为什么仍然会退化？
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,518,1,5. Decomposing the Generalization Gap
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,522,2,5.1 Population-level Decomposition
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,570,2,5.2 Empirical Evaluation 中的第三项
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,638,1,6. Distribution Shift 与 RSI Performance Decay
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,672,1,7. Experimental Design — 如何区分三种退化机制？
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,720,2,7.1 四种潜在实验结果
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,786,2,7.2 Diagnostic Toolbox
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,815,1,8. Revision Classification 的进一步完善
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,840,1,9. Literature Index
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,860,1,10. II-E — Conclusion Index
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,862,2,10.1 核心结论
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,877,2,10.2 Core Formula Sheet
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,928,1,11. Part II — Consolidated Diagnostic Framework
+23,[archival ID withheld],active,reading path,1,23-[archival ID withheld].md,963,1,Next — II-F: Time-Series Cross-Validation and Backtesting
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,3,2,3. Distribution Shift（分布偏移）
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,5,3,3.1 Definition
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,39,2,3.2 Covariate Shift（协变量偏移）
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,80,3,数学处理：Importance Weighting
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,132,2,3.3 Label Shift（标签偏移）
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,192,2,3.4 Concept Drift（概念漂移）
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,244,2,3.5 三种 Distribution Shift 的对比
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,258,1,4. Mathematical Example — 没有过拟合，为什么仍然会退化？
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,368,1,5. Decomposing the Generalization Gap
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,372,2,5.1 Population-level Decomposition
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,420,2,5.2 Empirical Evaluation 中的第三项
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,488,1,6. Distribution Shift 与 RSI Performance Decay
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,522,1,7. Experimental Design — 如何区分三种退化机制？
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,570,2,7.1 四种潜在实验结果
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,636,2,7.2 Diagnostic Toolbox
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,665,1,8. Revision Classification 的进一步完善
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,690,1,9. Literature Index
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,710,1,10. II-E — Conclusion Index
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,712,2,10.1 核心结论
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,727,2,10.2 Core Formula Sheet
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,778,1,11. Part II — Consolidated Diagnostic Framework
+24,[archival ID withheld],hidden,,1,24-[archival ID withheld].md,813,1,Next — II-F: Time-Series Cross-Validation and Backtesting
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1,1,II-F — Time-Series Cross-Validation and Backtesting
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,22,2,1. 为什么普通 Cross-Validation 可能不适合金融任务？
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,24,3,1.1 Ordinary K-fold Cross-Validation
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,84,3,1.2 三个根本问题
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,103,2,2. Time-Series Cross-Validation
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,105,3,2.1 Expanding Window（扩展窗口）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,157,3,2.2 Rolling Window（滚动窗口）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,210,3,2.3 Walk-forward Validation
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,293,2,3. Purged Cross-Validation and Embargo
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,299,3,3.1 Overlapping Labels（标签重叠）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,352,3,3.2 Purging（清除重叠样本）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,385,3,3.3 Embargo（隔离期）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,449,1,4. Backtesting（回测）
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,451,2,4.1 Definition
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,492,2,4.2 一个简化的 Backtesting Model
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,581,2,5. Backtest Overfitting
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,583,3,5.1 为什么正确的 Backtesting 仍然可能过拟合？
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,616,3,5.2 Probability of Backtest Overfitting (PBO)
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,659,1,6. Nested Validation — RSI 中最重要的实验结构
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,661,2,6.1 为什么需要 Nested Validation？
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,698,2,6.2 Four-stage Evaluation Protocol
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,740,3,6.3 一个典型的研究错误
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,770,1,7. Paired Evaluation and Statistical Uncertainty
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,774,2,7.1 为什么要对不同版本进行配对评价？
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,812,2,7.2 为什么不能直接使用普通 Bootstrap？
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,884,1,8. Research Connections — 推荐的 RSI Evaluation Pipeline
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,926,1,9. II-F — Literature Index
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,968,1,10. II-F — Conclusion Index
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,985,1,Part II — Consolidated Conclusion Index
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,991,2,11. Core Knowledge Map
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1008,2,12. Core Mathematical Results
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1012,3,Result 1 — Population Risk and Empirical Risk
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1026,3,Result 2 — Excess Risk Bound
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1041,3,Result 3 — Uniform Generalization Bound
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1060,3,Result 4 — Optimistic Selection Bias
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1076,3,Result 5 — Wrong Selection Probability
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1092,3,Result 6 — Multiple Testing
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1110,3,Result 7 — Adaptive Generalization Bound
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1128,3,Result 8 — Mutual Information Generalization Bound
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1144,3,Result 9 — Observed Gap Decomposition
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1167,3,Result 10 — Variance under Time-Series Dependence
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1190,1,13. X Program #161 — Consolidated Research Hypotheses
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1210,1,14. Diagnostic Framework — 如果真的观察到了 OOS Decay
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1237,1,15. Part II — Final Knowledge Checklist
+27,[archival ID withheld],active,reading path,1,27-[archival ID withheld].md,1261,1,Next — Part III: Agentic AI and Recursive Self-Improvement
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,1,2,3. Purged Cross-Validation and Embargo
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,7,3,3.1 Overlapping Labels（标签重叠）
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,60,3,3.2 Purging（清除重叠样本）
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,93,3,3.3 Embargo（隔离期）
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,157,1,4. Backtesting（回测）
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,159,2,4.1 Definition
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,200,2,4.2 一个简化的 Backtesting Model
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,289,2,5. Backtest Overfitting
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,291,3,5.1 为什么正确的 Backtesting 仍然可能过拟合？
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,324,3,5.2 Probability of Backtest Overfitting (PBO)
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,367,1,6. Nested Validation — RSI 中最重要的实验结构
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,369,2,6.1 为什么需要 Nested Validation？
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,406,2,6.2 Four-stage Evaluation Protocol
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,448,3,6.3 一个典型的研究错误
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,478,1,7. Paired Evaluation and Statistical Uncertainty
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,482,2,7.1 为什么要对不同版本进行配对评价？
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,520,2,7.2 为什么不能直接使用普通 Bootstrap？
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,592,1,8. Research Connections — 推荐的 RSI Evaluation Pipeline
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,634,1,9. II-F — Literature Index
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,676,1,10. II-F — Conclusion Index
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,693,1,Part II — Consolidated Conclusion Index
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,699,2,11. Core Knowledge Map
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,716,2,12. Core Mathematical Results
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,720,3,Result 1 — Population Risk and Empirical Risk
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,734,3,Result 2 — Excess Risk Bound
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,749,3,Result 3 — Uniform Generalization Bound
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,768,3,Result 4 — Optimistic Selection Bias
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,784,3,Result 5 — Wrong Selection Probability
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,800,3,Result 6 — Multiple Testing
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,818,3,Result 7 — Adaptive Generalization Bound
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,836,3,Result 8 — Mutual Information Generalization Bound
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,852,3,Result 9 — Observed Gap Decomposition
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,875,3,Result 10 — Variance under Time-Series Dependence
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,898,1,13. X Program #161 — Consolidated Research Hypotheses
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,918,1,14. Diagnostic Framework — 如果真的观察到了 OOS Decay
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,945,1,15. Part II — Final Knowledge Checklist
+28,[archival ID withheld],hidden,,1,28-[archival ID withheld].md,969,1,Next — Part III: Agentic AI and Recursive Self-Improvement
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,1,1,Part III — Agentic AI and Recursive Self-Improvement
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,14,2,0. Part III — Learning Roadmap
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,31,1,III-A — LLM Agent Architecture & Agent Harness
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,33,2,1. Research Motivation
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,84,2,2. 从 LLM 到 AI Agent
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,86,3,2.1 Large Language Model
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,115,3,2.2 Augmented LLM、Workflow 与 Agent
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,192,1,3. Agent Architecture — 系统的组成
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,194,2,3.1 Formal Representation
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,267,2,3.2 Agent as a State Transition System
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,328,1,4. Agent Harness
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,330,2,4.1 什么是 Harness？
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,353,2,4.2 最小 Agent Harness 的伪代码
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,396,1,5. Running an Agent 与 Improving an Agent
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,404,2,5.1 Inner Loop vs. Outer Loop
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,480,2,5.2 Concrete Example — Financial Research Agent
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,532,1,6. Agent Architecture 如何影响 Generalization？
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,614,1,7. A Minimal RSI Research Architecture
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,669,2,7.1 哪些组件允许被修改？
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,691,1,8. 一个值得关注的研究视角：内生评估与外生评估
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,740,1,9. Preliminary Literature
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,774,1,10. III-A — Conclusion Index
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,791,2,10.1 Core Formula Sheet
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,822,2,10.2 最重要的 Research Takeaway
+31,[archival ID withheld],active,reading path,1,31-[archival ID withheld].md,834,1,"Next — III-B: Tools, Memory, Planning & Reflection"
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,3,1,3. Agent Architecture — 系统的组成
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,5,2,3.1 Formal Representation
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,78,2,3.2 Agent as a State Transition System
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,139,1,4. Agent Harness
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,141,2,4.1 什么是 Harness？
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,164,2,4.2 最小 Agent Harness 的伪代码
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,207,1,5. Running an Agent 与 Improving an Agent
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,215,2,5.1 Inner Loop vs. Outer Loop
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,291,2,5.2 Concrete Example — Financial Research Agent
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,343,1,6. Agent Architecture 如何影响 Generalization？
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,425,1,7. A Minimal RSI Research Architecture
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,480,2,7.1 哪些组件允许被修改？
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,502,1,8. 一个值得关注的研究视角：内生评估与外生评估
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,551,1,9. Preliminary Literature
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,585,1,10. III-A — Conclusion Index
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,602,2,10.1 Core Formula Sheet
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,633,2,10.2 最重要的 Research Takeaway
+32,[archival ID withheld],hidden,,1,32-[archival ID withheld].md,645,1,"Next — III-B: Tools, Memory, Planning & Reflection"
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,1,1,"III-B — Tools, Memory, Planning & Reflection"
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,24,2,1. Agent 的基本认知与执行循环
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,66,2,2. Tools — Agent 如何与外部世界交互？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,68,3,2.1 Tool Calling 的基本原理
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,111,3,2.2 Research Agent 的典型工具
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,123,3,2.3 Tools 与 Statistical Complexity
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,163,1,3. Memory — Agent 如何积累经验？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,167,2,3.1 Memory 不等于 Context Window
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,202,2,3.2 Four Types of Agent Memory
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,257,2,3.3 Mathematical Representation of Memory Updating
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,300,2,3.4 Memory 的双重作用
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,347,2,3.5 Memory Compression 是否可以减少过拟合？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,394,1,4. Planning — Agent 如何决定下一步行动？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,396,2,4.1 Planning 的基本含义
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,419,2,4.2 Representative Planning Strategies
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,429,3,ReAct
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,462,2,4.3 Planning 与 Exploration–Exploitation Trade-off
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,501,1,5. Reflection — Agent 如何根据反馈学习？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,505,2,5.1 Self-Reflection 的定义
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,534,2,5.2 Three Sources of Feedback
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,552,2,5.3 Self-Refine
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,580,2,5.4 Reflexion
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,625,2,5.5 Self-Reflection 真的能够保证改善吗？
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,647,1,6. Self-Correction、Self-Reflection 与 Self-Modification
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,687,1,7. 一个完整的 Financial RSI Failure Example
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,693,2,7.1 Agent 的演化过程
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,739,2,7.2 对应的统计机制
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,759,1,8. Research Practice — Memory & Reflection Ablation
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,763,2,8.1 Experimental Groups
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,802,2,8.2 Main Effect 与 Interaction Effect
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,937,1,9. Literature Index
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,979,1,10. III-B — Conclusion Index
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,994,2,Core Formula Sheet
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,1020,2,Research Takeaway
+34,[archival ID withheld],active,reading path,1,34-[archival ID withheld].md,1059,1,Next — III-C: Self-Modification & Recursive Optimization
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,3,2,2. Tools — Agent 如何与外部世界交互？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,5,3,2.1 Tool Calling 的基本原理
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,48,3,2.2 Research Agent 的典型工具
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,60,3,2.3 Tools 与 Statistical Complexity
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,100,1,3. Memory — Agent 如何积累经验？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,104,2,3.1 Memory 不等于 Context Window
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,139,2,3.2 Four Types of Agent Memory
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,194,2,3.3 Mathematical Representation of Memory Updating
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,237,2,3.4 Memory 的双重作用
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,284,2,3.5 Memory Compression 是否可以减少过拟合？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,331,1,4. Planning — Agent 如何决定下一步行动？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,333,2,4.1 Planning 的基本含义
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,356,2,4.2 Representative Planning Strategies
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,366,3,ReAct
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,399,2,4.3 Planning 与 Exploration–Exploitation Trade-off
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,438,1,5. Reflection — Agent 如何根据反馈学习？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,442,2,5.1 Self-Reflection 的定义
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,471,2,5.2 Three Sources of Feedback
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,489,2,5.3 Self-Refine
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,517,2,5.4 Reflexion
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,562,2,5.5 Self-Reflection 真的能够保证改善吗？
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,584,1,6. Self-Correction、Self-Reflection 与 Self-Modification
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,624,1,7. 一个完整的 Financial RSI Failure Example
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,630,2,7.1 Agent 的演化过程
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,676,2,7.2 对应的统计机制
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,696,1,8. Research Practice — Memory & Reflection Ablation
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,700,2,8.1 Experimental Groups
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,739,2,8.2 Main Effect 与 Interaction Effect
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,874,1,9. Literature Index
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,916,1,10. III-B — Conclusion Index
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,931,2,Core Formula Sheet
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,957,2,Research Takeaway
+35,[archival ID withheld],hidden,,1,35-[archival ID withheld].md,996,1,Next — III-C: Self-Modification & Recursive Optimization
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1,1,III-C — Self-Modification and Recursive Optimization
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,26,2,1. Three Levels of Optimization
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,28,3,1.1 Object-level Optimization（对象层优化）
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,55,3,1.2 Meta-level Optimization（元层优化）
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,86,3,1.3 Recursive Meta-level Optimization
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,145,2,2. What Does Self-Modification Actually Mean?
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,170,3,2.1 Fixed Improver vs. Self-modifying Improver
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,228,1,3. STOP — Self-Taught Optimizer
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,230,2,3.1 Research Background
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,247,2,3.2 The Seed Improver
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,314,2,3.3 The Nontrivial Step — Defining Meta-Utility
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,404,2,3.4 The Recursive Step
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,481,3,3.5 STOP 的简化实现
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,543,1,4. STOP 实际发现了什么？
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,599,1,5. Why RSI Does Not Guarantee Monotonic Improvement
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,603,2,5.1 三种不同的 Improvement
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,643,2,5.2 Myopic Optimization（短视优化）
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,695,1,6. Path Dependence（路径依赖）
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,697,2,6.1 为什么 RSI 需要研究完整的演化历史？
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,734,2,6.2 Markovian Representation
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,778,1,7. Positive Feedback Loops in RSI
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,782,2,7.1 Capability-enhancing Feedback Loop
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,805,2,7.2 Overfitting-amplifying Feedback Loop
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,830,2,"7.3 A Toy Model for Better, Then Worse"
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,975,1,8. Linear Evolution vs. Open-ended Evolution
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,983,2,8.1 Linear Evolution
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,999,2,8.2 Archive-based Evolution
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1036,1,9. Research Practice — 如何验证 RSI 本身的贡献？
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1096,1,10. Literature Reading Guide — STOP
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1123,1,11. III-C — Conclusion Index
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1142,2,11.1 Core Formula Sheet
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1198,1,12. The Most Important Insight
+37,[archival ID withheld],active,reading path,1,37-[archival ID withheld].md,1253,1,"Next — III-D: Agent Evaluation, Search & Selection"
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,3,2,2. What Does Self-Modification Actually Mean?
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,28,3,2.1 Fixed Improver vs. Self-modifying Improver
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,86,1,3. STOP — Self-Taught Optimizer
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,88,2,3.1 Research Background
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,105,2,3.2 The Seed Improver
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,172,2,3.3 The Nontrivial Step — Defining Meta-Utility
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,262,2,3.4 The Recursive Step
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,339,3,3.5 STOP 的简化实现
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,401,1,4. STOP 实际发现了什么？
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,457,1,5. Why RSI Does Not Guarantee Monotonic Improvement
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,461,2,5.1 三种不同的 Improvement
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,501,2,5.2 Myopic Optimization（短视优化）
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,553,1,6. Path Dependence（路径依赖）
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,555,2,6.1 为什么 RSI 需要研究完整的演化历史？
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,592,2,6.2 Markovian Representation
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,636,1,7. Positive Feedback Loops in RSI
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,640,2,7.1 Capability-enhancing Feedback Loop
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,663,2,7.2 Overfitting-amplifying Feedback Loop
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,688,2,"7.3 A Toy Model for Better, Then Worse"
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,833,1,8. Linear Evolution vs. Open-ended Evolution
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,841,2,8.1 Linear Evolution
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,857,2,8.2 Archive-based Evolution
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,894,1,9. Research Practice — 如何验证 RSI 本身的贡献？
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,954,1,10. Literature Reading Guide — STOP
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,981,1,11. III-C — Conclusion Index
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,1000,2,11.1 Core Formula Sheet
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,1056,1,12. The Most Important Insight
+38,[archival ID withheld],hidden,,1,38-[archival ID withheld].md,1111,1,"Next — III-D: Agent Evaluation, Search & Selection"
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1,1,"III-D — Agent Evaluation, Search & Selection"
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,37,2,1. RSI as a Search Problem
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,39,3,1.1 Search Space
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,63,3,1.2 Three Operators
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,123,1,2. Search Strategies（搜索策略）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,129,2,2.1 Greedy Search / Hill Climbing
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,154,3,Advantages and Limitations
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,167,2,2.2 Beam Search（束搜索）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,256,2,2.3 Evolutionary Algorithms（进化算法）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,324,2,2.4 Monte Carlo Tree Search (MCTS)
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,362,3,Upper Confidence Bound applied to Trees (UCT)
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,430,3,MCTS 对 RSI 的适用性
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,442,2,2.5 Search Strategy Comparison
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,459,1,3. Evaluator–Optimizer Architecture
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,461,2,3.1 Evaluator 不一定只有一个
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,518,1,4. Selection Pressure（选择压力）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,522,2,4.1 Definition
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,610,2,4.2 Selection Pressure 与 Generalization 的关系
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,627,1,5. Statistical Selection — 不要接受所有正向改进
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,629,2,5.1 Naive Acceptance Rule
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,667,2,5.2 Uncertainty-aware Acceptance
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,760,1,6. Multi-objective Optimization（多目标优化）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,781,2,6.1 Scalarization（标量化）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,827,2,6.2 Pareto Optimality（帕累托最优）
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,916,1,7. Goodhart's Law
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,920,2,7.1 Measurement vs. Objective
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,946,2,7.2 Four Types of Goodhart Effects
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,963,2,7.3 Mathematical Example — Regression to the Mean
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1083,3,Research Implication
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1109,1,8. Reward Hacking vs. Overfitting
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1164,1,9. Research Practice — Search and Selection Ablation
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1168,2,9.1 Experimental Groups
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1189,2,9.2 最重要的 Control Variable：Budget
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1218,2,9.3 一个更合理的 Performance Trajectory
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1288,1,10. Literature Index
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1320,1,11. III-D — Conclusion Index
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1322,2,11.1 核心结论
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1339,2,11.2 Core Formula Sheet
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1401,1,12. The Most Important Research Insight
+40,[archival ID withheld],active,reading path,1,40-[archival ID withheld].md,1444,1,Next — III-E: Automated Research Agents
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,3,1,2. Search Strategies（搜索策略）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,9,2,2.1 Greedy Search / Hill Climbing
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,34,3,Advantages and Limitations
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,47,2,2.2 Beam Search（束搜索）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,136,2,2.3 Evolutionary Algorithms（进化算法）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,204,2,2.4 Monte Carlo Tree Search (MCTS)
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,242,3,Upper Confidence Bound applied to Trees (UCT)
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,310,3,MCTS 对 RSI 的适用性
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,322,2,2.5 Search Strategy Comparison
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,339,1,3. Evaluator–Optimizer Architecture
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,341,2,3.1 Evaluator 不一定只有一个
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,398,1,4. Selection Pressure（选择压力）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,402,2,4.1 Definition
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,490,2,4.2 Selection Pressure 与 Generalization 的关系
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,507,1,5. Statistical Selection — 不要接受所有正向改进
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,509,2,5.1 Naive Acceptance Rule
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,547,2,5.2 Uncertainty-aware Acceptance
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,640,1,6. Multi-objective Optimization（多目标优化）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,661,2,6.1 Scalarization（标量化）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,707,2,6.2 Pareto Optimality（帕累托最优）
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,796,1,7. Goodhart's Law
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,800,2,7.1 Measurement vs. Objective
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,826,2,7.2 Four Types of Goodhart Effects
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,843,2,7.3 Mathematical Example — Regression to the Mean
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,963,3,Research Implication
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,989,1,8. Reward Hacking vs. Overfitting
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1044,1,9. Research Practice — Search and Selection Ablation
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1048,2,9.1 Experimental Groups
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1069,2,9.2 最重要的 Control Variable：Budget
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1098,2,9.3 一个更合理的 Performance Trajectory
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1168,1,10. Literature Index
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1200,1,11. III-D — Conclusion Index
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1202,2,11.1 核心结论
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1219,2,11.2 Core Formula Sheet
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1281,1,12. The Most Important Research Insight
+41,[archival ID withheld],hidden,,1,41-[archival ID withheld].md,1324,1,Next — III-E: Automated Research Agents
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,1,1,III-E — Automated Research Agents and Real-world RSI Systems
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,9,2,0. Literature Roadmap
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,36,2,1. 先建立一个重要的分类框架
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,72,2,2. STOP — Self-Taught Optimizer
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,108,2,3. AIDE — AI-Driven Exploration in the Space of Code
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,114,3,3.1 Research Motivation
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,130,3,3.2 Solution Space Tree Search
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,159,3,3.3 AIDE 是否属于 RSI？
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,181,2,4. ADAS — Automated Design of Agentic Systems
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,187,3,4.1 从 Solution Search 转向 Agent Search
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,220,3,4.2 Generalization Evidence
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,228,3,4.3 ADAS 与 RSI 的区别
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,244,1,5. Darwin Gödel Machine（DGM）
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,252,2,5.1 Research Motivation
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,263,2,5.2 Archive-based Self-Improvement
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,309,2,5.3 Empirical Results
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,356,2,5.4 与 X Program #161 的联系
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,370,1,6. R&D-Agent-Quant — Automated Financial Research
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,378,2,6.1 Factor–Model Joint Optimization
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,427,2,6.2 Experimental Protocol
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,458,2,6.3 Research Value
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,475,1,7. AIDE² — Recursive Self-Improvement of AI Research Agents
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,485,2,7.1 Inner-loop and Outer-loop Architecture
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,532,2,7.2 Actual Improvement Trajectory
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,570,2,7.3 最值得关注的结果：Non-monotonic Generalization
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,621,2,7.4 Ignition Test：严格 RSI 的进一步问题
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,652,1,8. RRSI — Regularized Recursive Self-Improvement of Agent Harnesses
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,660,2,8.1 Research Problem
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,676,2,8.2 Regularize the Evolution Process
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,712,2,8.3 一个值得研究的数学设计：Annealed Update Sparsity
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,780,2,8.4 Actual Ablation Results
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,813,1,9. Consolidated Comparison — 七种研究系统
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,815,2,9.1 Architecture Comparison
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,827,2,9.2 Research Evidence Matrix
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,843,1,10. Where Does X Program #161 Fit?
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,879,2,10.1 Endpoint Evaluation vs. Trajectory Evaluation
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,943,1,11. Recommended Reading Order
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,1010,1,12. III-E — Conclusion Index
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,1027,2,Research Takeaway
+44,[archival ID withheld],active,reading path,1,44-[archival ID withheld].md,1053,1,Next — III-F: RSI Failure Modes & Experimental Instrumentation
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,3,2,3. AIDE — AI-Driven Exploration in the Space of Code
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,9,3,3.1 Research Motivation
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,25,3,3.2 Solution Space Tree Search
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,54,3,3.3 AIDE 是否属于 RSI？
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,76,2,4. ADAS — Automated Design of Agentic Systems
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,82,3,4.1 从 Solution Search 转向 Agent Search
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,115,3,4.2 Generalization Evidence
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,123,3,4.3 ADAS 与 RSI 的区别
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,139,1,5. Darwin Gödel Machine（DGM）
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,147,2,5.1 Research Motivation
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,158,2,5.2 Archive-based Self-Improvement
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,204,2,5.3 Empirical Results
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,251,2,5.4 与 X Program #161 的联系
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,265,1,6. R&D-Agent-Quant — Automated Financial Research
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,273,2,6.1 Factor–Model Joint Optimization
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,322,2,6.2 Experimental Protocol
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,353,2,6.3 Research Value
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,370,1,7. AIDE² — Recursive Self-Improvement of AI Research Agents
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,380,2,7.1 Inner-loop and Outer-loop Architecture
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,427,2,7.2 Actual Improvement Trajectory
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,465,2,7.3 最值得关注的结果：Non-monotonic Generalization
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,516,2,7.4 Ignition Test：严格 RSI 的进一步问题
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,547,1,8. RRSI — Regularized Recursive Self-Improvement of Agent Harnesses
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,555,2,8.1 Research Problem
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,571,2,8.2 Regularize the Evolution Process
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,607,2,8.3 一个值得研究的数学设计：Annealed Update Sparsity
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,675,2,8.4 Actual Ablation Results
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,708,1,9. Consolidated Comparison — 七种研究系统
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,710,2,9.1 Architecture Comparison
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,722,2,9.2 Research Evidence Matrix
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,738,1,10. Where Does X Program #161 Fit?
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,774,2,10.1 Endpoint Evaluation vs. Trajectory Evaluation
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,838,1,11. Recommended Reading Order
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,905,1,12. III-E — Conclusion Index
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,922,2,Research Takeaway
+45,[archival ID withheld],hidden,,1,45-[archival ID withheld].md,948,1,Next — III-F: RSI Failure Modes & Experimental Instrumentation
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1,1,III-F — RSI Failure Modes & Experimental Instrumentation
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,51,2,1. RSI Failure Taxonomy（失败机制分类）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,109,2,2. Experimental Instrumentation（实验观测体系）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,111,3,2.1 什么是 Instrumentation？
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,145,3,2.2 Four Levels of Experiment Logging
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,162,3,2.3 Recommended Data Schema
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,205,2,3. Trajectory Analysis（演化轨迹分析）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,207,3,3.1 RSI 实际上存在三种不同的时间尺度
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,260,2,3.2 Core Trajectory Metrics
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,272,3,Metric 1 — Generalization Gap
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,282,3,Metric 2 — Incremental Improvement
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,297,3,Metric 3 — Peak Round
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,310,3,Metric 4 — Peak-to-Final Decay
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,324,3,Metric 5 — Endpoint Improvement
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,336,3,Metric 6 — Maximum Performance Drawdown
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,393,1,4. Change-point Detection（变点检测）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,403,2,4.1 Peak Detection 不等于 Change-point Detection
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,455,2,4.2 Segmented Regression（分段回归）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,591,2,4.3 如何估计未知的变点？
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,677,2,4.4 一个非常重要的统计陷阱
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,731,1,5. Revision Classification（修改分类）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,735,2,5.1 Revision 不应该只用单一类别表示
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,759,2,5.2 Proposed Revision Taxonomy
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,781,2,5.3 Revision Impact Quadrants
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,844,1,"6. Rollback, Counterfactual and Ablation Study"
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,848,2,6.1 Rollback（回滚实验）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,872,2,6.2 Counterfactual Revision Analysis（反事实修改分析）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,930,2,6.3 Single-component Ablation 的局限
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,949,2,6.4 Direct Effect vs. Evolutionary Effect
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,989,1,7. Statistical Analysis across Independent Runs
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,991,2,7.1 为什么一条漂亮的曲线远远不够？
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1007,2,7.2 Mean Trajectory 与 Uncertainty
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1066,2,7.3 Decay Onset 本身也是随机变量
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1097,1,8. Reproducibility（可复现性）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1109,2,8.1 Three Levels of Reproducibility
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1121,2,8.2 Reproducibility Checklist
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1144,1,9. Mitigation Mechanisms（缓解机制）
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1181,1,10. Research Practice — 一个完整的最小研究项目
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1234,1,11. Literature Index
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1260,1,12. III-F — Conclusion Index
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1281,1,Part III — Consolidated Conclusion Index
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1287,2,13. Core Knowledge Map
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1298,2,14. Core Mathematical Results
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1300,3,Result 1 — Agent Representation
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1310,3,Result 2 — Agent Execution
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1325,3,Result 3 — Memory-mediated Adaptation
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1335,3,Result 4 — Recursive Meta-optimization
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1350,3,Result 5 — Path-dependent Evolution
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1360,3,Result 6 — Candidate Decay Model
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1377,3,Result 7 — Greedy Selection
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1390,3,Result 8 — Regularized Agent Optimization
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1404,3,Result 9 — Performance Change-point Model
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1422,3,Result 10 — Evolutionary Revision Effect
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1442,1,15. Part II + Part III — Unified Research Framework
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1513,1,Next — Part IV: Financial AI and Quantitative Research
+48,[archival ID withheld],active,reading path,1,48-[archival ID withheld].md,1527,2,Part IV — Learning Roadmap
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,3,2,2. Experimental Instrumentation（实验观测体系）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,5,3,2.1 什么是 Instrumentation？
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,39,3,2.2 Four Levels of Experiment Logging
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,56,3,2.3 Recommended Data Schema
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,99,2,3. Trajectory Analysis（演化轨迹分析）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,101,3,3.1 RSI 实际上存在三种不同的时间尺度
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,154,2,3.2 Core Trajectory Metrics
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,166,3,Metric 1 — Generalization Gap
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,176,3,Metric 2 — Incremental Improvement
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,191,3,Metric 3 — Peak Round
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,204,3,Metric 4 — Peak-to-Final Decay
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,218,3,Metric 5 — Endpoint Improvement
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,230,3,Metric 6 — Maximum Performance Drawdown
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,287,1,4. Change-point Detection（变点检测）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,297,2,4.1 Peak Detection 不等于 Change-point Detection
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,349,2,4.2 Segmented Regression（分段回归）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,485,2,4.3 如何估计未知的变点？
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,571,2,4.4 一个非常重要的统计陷阱
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,625,1,5. Revision Classification（修改分类）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,629,2,5.1 Revision 不应该只用单一类别表示
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,653,2,5.2 Proposed Revision Taxonomy
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,675,2,5.3 Revision Impact Quadrants
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,738,1,"6. Rollback, Counterfactual and Ablation Study"
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,742,2,6.1 Rollback（回滚实验）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,766,2,6.2 Counterfactual Revision Analysis（反事实修改分析）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,824,2,6.3 Single-component Ablation 的局限
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,843,2,6.4 Direct Effect vs. Evolutionary Effect
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,883,1,7. Statistical Analysis across Independent Runs
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,885,2,7.1 为什么一条漂亮的曲线远远不够？
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,901,2,7.2 Mean Trajectory 与 Uncertainty
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,960,2,7.3 Decay Onset 本身也是随机变量
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,991,1,8. Reproducibility（可复现性）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1003,2,8.1 Three Levels of Reproducibility
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1015,2,8.2 Reproducibility Checklist
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1038,1,9. Mitigation Mechanisms（缓解机制）
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1075,1,10. Research Practice — 一个完整的最小研究项目
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1128,1,11. Literature Index
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1154,1,12. III-F — Conclusion Index
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1175,1,Part III — Consolidated Conclusion Index
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1181,2,13. Core Knowledge Map
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1192,2,14. Core Mathematical Results
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1194,3,Result 1 — Agent Representation
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1204,3,Result 2 — Agent Execution
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1219,3,Result 3 — Memory-mediated Adaptation
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1229,3,Result 4 — Recursive Meta-optimization
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1244,3,Result 5 — Path-dependent Evolution
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1254,3,Result 6 — Candidate Decay Model
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1271,3,Result 7 — Greedy Selection
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1284,3,Result 8 — Regularized Agent Optimization
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1298,3,Result 9 — Performance Change-point Model
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1316,3,Result 10 — Evolutionary Revision Effect
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1336,1,15. Part II + Part III — Unified Research Framework
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1407,1,Next — Part IV: Financial AI and Quantitative Research
+49,[archival ID withheld],hidden,,1,49-[archival ID withheld].md,1421,2,Part IV — Learning Roadmap
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1,1,Part IV — Financial AI & Quantitative Research
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,11,2,0. Part IV — Learning Roadmap
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,38,1,IV-A — Financial Time Series & Data Generating Process
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,42,1,1. Price and Return
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,44,2,1.1 为什么金融研究通常不直接研究 Price？
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,58,2,1.2 Simple Return（简单收益率）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,86,2,1.3 Log Return（对数收益率）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,196,1,2. Financial Time Series as a Stochastic Process
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,198,2,2.1 Random Variable vs. Stochastic Process
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,256,2,2.2 Filtration（信息流）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,313,1,3. Data Generating Process (DGP)
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,315,2,3.1 Definition
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,351,2,3.2 Conditional Mean vs. Conditional Variance
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,390,1,4. Stationarity（平稳性）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,394,2,4.1 Strict Stationarity
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,410,2,4.2 Weak Stationarity
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,455,2,4.3 Random Walk（随机游走）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,541,1,5. Autocorrelation（自相关）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,543,2,5.1 Definition
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,575,2,5.2 Autoregressive Model — AR(1)
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,644,1,6. Stylized Facts of Financial Returns
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,652,2,6.1 Weak Linear Autocorrelation
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,680,2,6.2 Volatility Clustering（波动率聚集）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,723,2,6.3 一个严格的概率反例
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,799,2,6.4 ARCH and GARCH
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,911,1,7. Heavy Tails（厚尾分布）
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,913,2,7.1 Gaussian Assumption 的局限
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,956,2,7.2 Moment Existence
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,992,1,8. Temporal Dependence 与 Effective Sample Size
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,994,2,"8.1 1,000 个观测值不一定对应 1,000 份独立信息"
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1039,2,8.2 AR(1) Example
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1124,1,9. 为什么金融环境特别容易产生 RSI Overfitting？
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1181,1,10. Research Practice — Initial Financial Data Audit
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1244,1,11. Literature Index
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1270,1,12. IV-A — Conclusion Index
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1272,2,12.1 Core Conclusions
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1289,2,12.2 Core Formula Sheet
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1341,1,13. Research Takeaway
+52,[archival ID withheld],active,reading path,1,52-[archival ID withheld].md,1369,1,Next — IV-B: Low Signal-to-Noise Ratio & Predictability
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,21,1,IV-A — Continuation
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,23,2,6.3 零自相关不等于独立：一个严格的概率反例
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,45,3,Proposition 1 — Returns are uncorrelated
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,59,3,Proposition 2 — Squared returns are correlated
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,99,2,6.4 ARCH & GARCH
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,161,3,Volatility Shock Persistence
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,183,1,7. Heavy Tails（厚尾分布）
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,205,2,7.1 Moment Existence
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,251,1,8. Temporal Dependence & Effective Sample Size
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,255,2,8.1 Effective Sample Size
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,295,2,8.2 AR(1) Example
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,361,3,Research Implication
+56,[archival ID withheld],alternate,,1,56-[archival ID withheld].md,375,1,9. Why Finance Amplifies RSI Overfitting
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,7,2,6.2 Volatility Clustering（波动率聚集）
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,70,2,6.3 一个严格的概率反例
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,95,3,Proposition 1 — Returns are uncorrelated
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,119,3,Proposition 2 — Squared returns are correlated
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,205,2,6.4 ARCH and GARCH
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,216,3,Model Definition
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,273,3,Proposition — Unconditional Variance
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,332,3,Volatility Persistence
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,402,1,7. Heavy Tails（厚尾分布）
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,404,2,7.1 Gaussian Assumption 的局限
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,465,2,7.2 Moment Existence（矩的存在性）
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,500,3,Proof Sketch
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,543,2,7.3 Heavy Tails 对统计学习的影响
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,591,1,8. Temporal Dependence and Effective Sample Size
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,595,2,"8.1 1,000 个观测值不一定对应 1,000 份独立信息"
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,636,3,Proof
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,669,2,8.2 Effective Sample Size
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,701,2,8.3 AR(1) Example
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,805,2,8.4 一个与 RSI 直接相关的 Nontrivial Example
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,921,1,9. 为什么金融环境特别容易产生 RSI Overfitting？
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,980,1,10. Research Practice — Initial Financial Data Audit
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,986,2,10.1 Diagnostic Framework
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,998,2,10.2 Python Implementation
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1054,1,11. Literature Index
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1080,1,12. IV-A — Conclusion Index
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1082,2,12.1 Core Conclusions
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1099,2,12.2 Core Formula Sheet
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1101,3,Result 1 — Return Transformation
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1111,3,Result 2 — Financial DGP
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1119,3,Result 3 — AR(1)
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1137,3,"Result 4 — GARCH(1,1)"
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1155,3,Result 5 — Moment Existence of Student's t
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1164,3,Result 6 — Effective Sample Size
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1184,3,Result 7 — Overlapping Return Labels
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1204,2,12.3 Proof Index
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1221,1,13. Research Takeaway
+58,[archival ID withheld],active,reading path,1,58-[archival ID withheld].md,1263,1,Next — IV-B: Low Signal-to-Noise Ratio & Predictability
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1,1,IV-B — Low Signal-to-Noise Ratio & Predictability
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,25,2,1. Signal and Noise（信号与噪声）
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,27,3,1.1 Financial Data Generating Process
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,86,2,1.2 Signal-to-Noise Ratio (SNR)
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,151,1,2. Law of Total Variance — 可预测性分解
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,153,2,2.1 Signal 与 Noise 为什么正交？
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,203,2,2.2 Variance Decomposition
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,266,1,3. Bayes Optimal Predictor（贝叶斯最优预测器）
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,288,2,3.1 Theorem — Optimal Prediction under Squared Loss
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,304,2,3.2 Proof
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,386,2,3.3 Reducible Error vs. Irreducible Error
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,442,1,4. Signal-to-Noise Ratio and Optimal \(R^2\)
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,446,2,4.1 Population \(R^2\)
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,477,2,4.2 Theorem — Maximum Achievable Population \(R^2\)
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,623,2,4.3 Research Implications
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,652,1,5. Can More Information Increase Predictability?
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,660,2,5.1 Information-set Expansion
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,695,2,5.2 Proof
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,734,2,5.3 Feature Engineering vs. Information Acquisition
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,791,1,6. Why Is Financial Predictability Usually Difficult?
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,793,2,6.1 Efficient Market Hypothesis (EMH)
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,820,2,6.2 EMH 不等于收益率完全不可预测
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,850,2,6.3 Real Empirical Evidence
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,891,1,7. Low SNR and Statistical Power
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,895,2,7.1 Low-SNR Linear Regression
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,960,2,7.2 How Much Data Do We Need?
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1031,2,7.3 Sample Complexity under Low SNR
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1081,1,8. Spurious Correlation（虚假相关）
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1085,2,8.1 A Null-feature Experiment
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1126,2,8.2 Maximum Spurious Correlation
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1232,1,9. From Score Inflation to Genuine Performance Decay
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1246,2,9.1 A Controlled Mathematical Example
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1345,2,"9.2 A Model for Better, Then Worse"
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1381,1,10. Two Different Signal-to-Noise Ratios
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1387,2,10.1 Task-level SNR
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1400,2,10.2 Revision-level SNR
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1464,2,10.3 A Potential Explanation for Decay Onset
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1510,1,11. Research Practice — Controlled SNR Experiment
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1514,2,11.1 Synthetic DGP
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1595,2,11.2 Exact Population Risk
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1671,2,11.3 Experimental Design
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1705,1,12. Literature Index
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1720,1,13. IV-B — Conclusion Index
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1738,2,13.1 Core Formula Sheet
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1807,2,13.2 Proof Index
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1825,1,14. The Most Important Research Insight
+60,[archival ID withheld],active,reading path,1,60-[archival ID withheld].md,1864,1,Next — IV-C: Financial Factors & Machine Learning Models
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,3,1,3. Bayes Optimal Predictor（贝叶斯最优预测器）
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,25,2,3.1 Theorem — Optimal Prediction under Squared Loss
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,41,2,3.2 Proof
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,123,2,3.3 Reducible Error vs. Irreducible Error
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,179,1,4. Signal-to-Noise Ratio and Optimal \(R^2\)
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,183,2,4.1 Population \(R^2\)
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,214,2,4.2 Theorem — Maximum Achievable Population \(R^2\)
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,360,2,4.3 Research Implications
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,389,1,5. Can More Information Increase Predictability?
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,397,2,5.1 Information-set Expansion
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,432,2,5.2 Proof
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,471,2,5.3 Feature Engineering vs. Information Acquisition
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,528,1,6. Why Is Financial Predictability Usually Difficult?
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,530,2,6.1 Efficient Market Hypothesis (EMH)
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,557,2,6.2 EMH 不等于收益率完全不可预测
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,587,2,6.3 Real Empirical Evidence
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,628,1,7. Low SNR and Statistical Power
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,632,2,7.1 Low-SNR Linear Regression
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,697,2,7.2 How Much Data Do We Need?
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,768,2,7.3 Sample Complexity under Low SNR
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,818,1,8. Spurious Correlation（虚假相关）
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,822,2,8.1 A Null-feature Experiment
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,863,2,8.2 Maximum Spurious Correlation
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,969,1,9. From Score Inflation to Genuine Performance Decay
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,983,2,9.1 A Controlled Mathematical Example
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1082,2,"9.2 A Model for Better, Then Worse"
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1118,1,10. Two Different Signal-to-Noise Ratios
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1124,2,10.1 Task-level SNR
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1137,2,10.2 Revision-level SNR
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1201,2,10.3 A Potential Explanation for Decay Onset
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1247,1,11. Research Practice — Controlled SNR Experiment
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1251,2,11.1 Synthetic DGP
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1332,2,11.2 Exact Population Risk
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1408,2,11.3 Experimental Design
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1442,1,12. Literature Index
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1457,1,13. IV-B — Conclusion Index
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1475,2,13.1 Core Formula Sheet
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1544,2,13.2 Proof Index
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1562,1,14. The Most Important Research Insight
+61,[archival ID withheld],hidden,,1,61-[archival ID withheld].md,1601,1,Next — IV-C: Financial Factors & Machine Learning Models
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1,1,IV-C — Financial Factors & Machine Learning Models
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,25,2,0. Learning Roadmap
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,40,2,1. Quantitative Research Pipeline
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,68,1,2. Alpha and Beta（金融研究中的两个核心概念）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,70,2,2.1 Market Model
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,95,3,Beta — Systematic Risk Exposure
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,150,3,Alpha — Risk-adjusted Excess Performance
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,183,2,2.2 Multi-factor Model（多因子模型）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,234,1,3. Financial Factors（金融因子）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,236,2,3.1 Factor 与 Feature 的区别
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,261,2,3.2 Mathematical Representation
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,301,2,3.3 Common Factor Categories
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,412,1,4. Cross-sectional Prediction（横截面预测）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,414,2,4.1 Time Series vs. Cross-section
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,450,2,4.2 为什么相对预测与绝对预测不同？
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,487,2,4.3 Cross-sectional Dependence
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,517,1,5. Information Coefficient (IC)
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,521,2,5.1 Pearson IC
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,555,2,5.2 Rank IC
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,627,2,5.3 Why Rank IC?
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,698,2,5.4 Mean IC and ICIR
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,753,1,6. The Mathematical Relationship between IC and \(R^2\)
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,757,2,6.1 Problem Setting
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,786,2,6.2 Theorem — Optimal Linear Calibration
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,854,2,6.3 Maximum Achievable Correlation
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,945,1,7. The Factor Zoo Problem
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,949,2,7.1 What Is Factor Zoo?
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,961,2,7.2 RSI 为什么可能加剧 Factor Zoo？
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1022,2,7.3 Factor Redundancy
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1050,1,8. Regularized Regression（正则化回归）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1054,2,8.1 Ordinary Least Squares
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1095,2,8.2 Ridge Regression — \(L_2\) Regularization
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1114,3,Closed-form Solution
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1160,2,8.3 Why Does Ridge Improve Numerical Stability?
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1266,2,8.4 Lasso — \(L_1\) Regularization
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1331,3,A Nontrivial Mathematical Result — Soft Thresholding
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1404,2,8.5 Elastic Net
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1433,1,9. Nonlinear Machine Learning Models
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1505,2,9.1 Common Models
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1518,2,9.2 Actual Financial Evidence
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1547,1,10. Automated Factor Mining（自动化因子挖掘）
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1553,2,10.1 Factor as a Program
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1590,2,10.2 Expression Tree Representation
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1621,2,10.3 Search-space Explosion
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1657,1,11. Research Practice — Factor and Model Co-optimization
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1659,2,11.1 Two Optimization Dimensions
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1688,2,11.2 Factor–Model Interaction Experiment
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1765,2,11.3 A Minimal Factor Evaluation in Python
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1843,1,12. Research Hypothesis — Factor Complexity and OOS Decay
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1901,1,13. Literature Index
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1943,1,14. IV-C — Conclusion Index
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1945,2,14.1 Core Conclusions
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,1966,2,14.2 Core Formula Sheet
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,2036,2,14.3 Proof Index
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,2051,1,15. The Most Important Research Insight
+63,[archival ID withheld],active,reading path,1,63-[archival ID withheld].md,2111,1,"Next — IV-D: Returns, Sharpe Ratio & Performance Evaluation"
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,3,1,2. Alpha and Beta（金融研究中的两个核心概念）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,5,2,2.1 Market Model
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,30,3,Beta — Systematic Risk Exposure
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,85,3,Alpha — Risk-adjusted Excess Performance
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,118,2,2.2 Multi-factor Model（多因子模型）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,169,1,3. Financial Factors（金融因子）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,171,2,3.1 Factor 与 Feature 的区别
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,196,2,3.2 Mathematical Representation
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,236,2,3.3 Common Factor Categories
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,347,1,4. Cross-sectional Prediction（横截面预测）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,349,2,4.1 Time Series vs. Cross-section
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,385,2,4.2 为什么相对预测与绝对预测不同？
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,422,2,4.3 Cross-sectional Dependence
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,452,1,5. Information Coefficient (IC)
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,456,2,5.1 Pearson IC
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,490,2,5.2 Rank IC
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,562,2,5.3 Why Rank IC?
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,633,2,5.4 Mean IC and ICIR
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,688,1,6. The Mathematical Relationship between IC and \(R^2\)
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,692,2,6.1 Problem Setting
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,721,2,6.2 Theorem — Optimal Linear Calibration
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,789,2,6.3 Maximum Achievable Correlation
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,880,1,7. The Factor Zoo Problem
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,884,2,7.1 What Is Factor Zoo?
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,896,2,7.2 RSI 为什么可能加剧 Factor Zoo？
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,957,2,7.3 Factor Redundancy
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,985,1,8. Regularized Regression（正则化回归）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,989,2,8.1 Ordinary Least Squares
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1030,2,8.2 Ridge Regression — \(L_2\) Regularization
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1049,3,Closed-form Solution
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1095,2,8.3 Why Does Ridge Improve Numerical Stability?
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1201,2,8.4 Lasso — \(L_1\) Regularization
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1266,3,A Nontrivial Mathematical Result — Soft Thresholding
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1339,2,8.5 Elastic Net
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1368,1,9. Nonlinear Machine Learning Models
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1440,2,9.1 Common Models
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1453,2,9.2 Actual Financial Evidence
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1482,1,10. Automated Factor Mining（自动化因子挖掘）
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1488,2,10.1 Factor as a Program
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1525,2,10.2 Expression Tree Representation
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1556,2,10.3 Search-space Explosion
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1592,1,11. Research Practice — Factor and Model Co-optimization
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1594,2,11.1 Two Optimization Dimensions
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1623,2,11.2 Factor–Model Interaction Experiment
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1700,2,11.3 A Minimal Factor Evaluation in Python
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1778,1,12. Research Hypothesis — Factor Complexity and OOS Decay
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1836,1,13. Literature Index
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1878,1,14. IV-C — Conclusion Index
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1880,2,14.1 Core Conclusions
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1901,2,14.2 Core Formula Sheet
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1971,2,14.3 Proof Index
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,1986,1,15. The Most Important Research Insight
+64,[archival ID withheld],hidden,,1,64-[archival ID withheld].md,2046,1,"Next — IV-D: Returns, Sharpe Ratio & Performance Evaluation"
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1,1,"IV-D — Returns, Sharpe Ratio & Performance Evaluation"
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,23,2,0. Learning Roadmap
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,38,1,1. From Prediction to Portfolio（从预测到投资组合）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,40,2,1.1 Prediction Is Not a Trading Decision
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,91,2,1.2 Portfolio Return
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,125,2,1.3 Expected Return and Portfolio Risk
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,207,1,"2. Return, Wealth and Transaction Costs"
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,209,2,2.1 Cumulative Return（累计收益率）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,267,2,2.2 Volatility Drag（波动损耗）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,326,2,2.3 Turnover（换手率）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,414,1,3. Sharpe Ratio（夏普比率）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,418,2,3.1 Motivation
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,434,2,3.2 Definition
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,488,2,3.3 Sharpe Ratio 的 Scale Invariance
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,531,2,3.4 Maximum Sharpe Ratio — Linear Algebra Perspective
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,601,3,Research Implication
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,621,1,4. Sharpe Ratio Is a Statistical Estimator
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,662,2,4.1 Mathematical Foundation — Delta Method
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,727,1,5. Asymptotic Distribution of Sharpe Ratio
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,729,2,5.1 Gaussian Case
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,781,2,5.2 Theorem and Proof
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,859,2,5.3 Why This Matters for RSI
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,942,1,6. Sharpe Ratio under Non-normal Returns
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,948,2,6.1 Skewness and Kurtosis
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1000,2,6.2 Generalized Asymptotic Variance
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1068,3,Consistency Check
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1090,2,6.3 Effects of Skewness and Kurtosis
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1163,1,7. Annualization（年化）与 Temporal Dependence
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1165,2,7.1 Why Do We Multiply by \(\sqrt{252}\)?
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1223,2,7.2 What If Returns Are Autocorrelated?
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1343,2,7.3 Actual Empirical Evidence
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1349,3,RSI Research Implication
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1365,1,8. Maximum Drawdown（最大回撤）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1371,2,8.1 Definition
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1431,2,"8.2 A Nontrivial Counterexample — Same Sharpe, Different Risk"
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1494,1,9. Financial Performance Metrics — Consolidated Comparison
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1530,1,10. Why Higher IC Does Not Guarantee Higher Sharpe Ratio
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1595,1,11. Financial RSI 的多层级性能诊断
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1599,2,11.1 Multi-level Performance Trajectory
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1633,2,11.2 Paired Evaluation（配对评价）
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1691,1,12. Research Practice — A Minimal Financial Evaluator
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1811,1,13. Research Hypothesis — Sharpe Ratio Overoptimization
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1916,1,14. Literature Index
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1942,1,15. IV-D — Conclusion Index
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1944,2,15.1 Core Conclusions
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,1965,2,15.2 Core Formula Sheet
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,2052,2,15.3 Proof Index
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,2069,1,16. The Most Important Research Insight
+67,[archival ID withheld],active,reading path,1,67-[archival ID withheld].md,2107,1,"Next — IV-E: Backtest Overfitting, PBO & Deflated Sharpe Ratio"
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1,1,4. Sharpe Ratio Is a Statistical Estimator
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,42,2,4.1 Mathematical Foundation — Delta Method
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,107,1,5. Asymptotic Distribution of Sharpe Ratio
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,109,2,5.1 Gaussian Case
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,161,2,5.2 Theorem and Proof
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,239,2,5.3 Why This Matters for RSI
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,322,1,6. Sharpe Ratio under Non-normal Returns
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,328,2,6.1 Skewness and Kurtosis
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,380,2,6.2 Generalized Asymptotic Variance
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,448,3,Consistency Check
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,470,2,6.3 Effects of Skewness and Kurtosis
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,543,1,7. Annualization（年化）与 Temporal Dependence
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,545,2,7.1 Why Do We Multiply by \(\sqrt{252}\)?
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,603,2,7.2 What If Returns Are Autocorrelated?
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,723,2,7.3 Actual Empirical Evidence
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,729,3,RSI Research Implication
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,745,1,8. Maximum Drawdown（最大回撤）
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,751,2,8.1 Definition
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,811,2,"8.2 A Nontrivial Counterexample — Same Sharpe, Different Risk"
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,874,1,9. Financial Performance Metrics — Consolidated Comparison
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,910,1,10. Why Higher IC Does Not Guarantee Higher Sharpe Ratio
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,975,1,11. Financial RSI 的多层级性能诊断
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,979,2,11.1 Multi-level Performance Trajectory
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1013,2,11.2 Paired Evaluation（配对评价）
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1071,1,12. Research Practice — A Minimal Financial Evaluator
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1191,1,13. Research Hypothesis — Sharpe Ratio Overoptimization
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1296,1,14. Literature Index
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1322,1,15. IV-D — Conclusion Index
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1324,2,15.1 Core Conclusions
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1345,2,15.2 Core Formula Sheet
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1432,2,15.3 Proof Index
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1449,1,16. The Most Important Research Insight
+68,[archival ID withheld],hidden,,1,68-[archival ID withheld].md,1487,1,"Next — IV-E: Backtest Overfitting, PBO & Deflated Sharpe Ratio"
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1,1,"IV-E — Backtest Overfitting, PBO & Deflated Sharpe Ratio"
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,34,2,1. Backtest Overfitting（回测过拟合）
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,36,3,1.1 普通回测与策略选择的区别
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,76,3,1.2 Three Levels of Backtest Overfitting
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,108,1,2. Probabilistic Sharpe Ratio (PSR)
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,110,2,2.1 从 Point Estimation 到 Statistical Inference
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,165,2,2.2 Definition of PSR
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,195,3,Interpretation
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,219,2,2.3 Interactive PSR Explorer
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,284,2,2.4 Minimum Track Record Length (MinTRL)
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,351,1,3. Deflated Sharpe Ratio (DSR)
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,361,2,3.1 Expected Maximum Sharpe Ratio
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,456,2,3.2 Extreme Value Approximation
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,509,2,3.3 Definition of DSR
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,578,2,3.4 Numerical Example — PSR vs. DSR
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,635,2,3.5 DSR 不等于严格的 Multiple Testing Correction
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,700,1,4. Correlated Trials & Effective Number of Trials
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,702,2,4.1 为什么实际候选策略通常不独立？
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,725,2,4.2 A Mathematical Model of Correlated Searches
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,828,2,4.3 Effective Number of Trials
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,872,1,5. Probability of Backtest Overfitting (PBO)
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,888,2,5.1 Mathematical Definition
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,922,2,5.2 A Simple Example
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,951,1,6. Combinatorially Symmetric Cross-Validation (CSCV)
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,953,2,6.1 Performance Matrix
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,985,2,6.2 Symmetric Partition
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1048,2,6.3 In-sample Selection
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1072,2,6.4 Relative Rank and Logit Transformation
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1178,2,6.5 Estimation of PBO
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1232,3,Interpretation
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1244,1,7. Python Implementation — Minimal CSCV
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1352,1,8. PBO Does Not Directly Measure RSI Performance Decay
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1412,1,9. Adaptive Backtest Overfitting in RSI
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1416,2,9.1 Classical Selection vs. Adaptive Candidate Generation
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1468,2,9.2 The Retrospective CSCV Trap
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1522,1,10. The Search-adjusted Performance Problem
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1577,1,11. Research Practice — Null-model Calibration
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1583,2,11.1 Experimental Design
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1620,2,11.2 Calibration Experiment
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1666,1,"12. Consolidated Comparison — PSR, DSR and PBO"
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1679,3,Which method answers which question?
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1719,1,13. Literature Index
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1753,1,14. IV-E — Conclusion Index
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1755,2,14.1 Core Conclusions
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1775,2,14.2 Core Formula Sheet
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1859,2,14.3 Proof Index
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1875,1,15. The Most Important Research Insight
+71,[archival ID withheld],active,reading path,1,71-[archival ID withheld].md,1918,1,"Next — IV-F: Market Regime, Non-stationarity & Robustness"
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,3,1,5. Probability of Backtest Overfitting (PBO)
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,19,2,5.1 Mathematical Definition
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,53,2,5.2 A Simple Example
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,82,1,6. Combinatorially Symmetric Cross-Validation (CSCV)
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,84,2,6.1 Performance Matrix
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,116,2,6.2 Symmetric Partition
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,179,2,6.3 In-sample Selection
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,203,2,6.4 Relative Rank and Logit Transformation
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,309,2,6.5 Estimation of PBO
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,363,3,Interpretation
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,375,1,7. Python Implementation — Minimal CSCV
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,483,1,8. PBO Does Not Directly Measure RSI Performance Decay
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,543,1,9. Adaptive Backtest Overfitting in RSI
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,547,2,9.1 Classical Selection vs. Adaptive Candidate Generation
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,599,2,9.2 The Retrospective CSCV Trap
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,653,1,10. The Search-adjusted Performance Problem
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,708,1,11. Research Practice — Null-model Calibration
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,714,2,11.1 Experimental Design
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,751,2,11.2 Calibration Experiment
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,797,1,"12. Consolidated Comparison — PSR, DSR and PBO"
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,810,3,Which method answers which question?
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,850,1,13. Literature Index
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,884,1,14. IV-E — Conclusion Index
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,886,2,14.1 Core Conclusions
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,906,2,14.2 Core Formula Sheet
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,990,2,14.3 Proof Index
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,1006,1,15. The Most Important Research Insight
+74,[archival ID withheld],hidden,,1,74-[archival ID withheld].md,1049,1,"Next — IV-F: Market Regime, Non-stationarity & Robustness"
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1,1,"IV-F — Market Regime, Non-stationarity & Robustness"
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,47,2,0. Learning Roadmap
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,61,2,1. Market Regime（市场状态）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,63,3,1.1 Definition
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,82,3,1.2 Regime-dependent Data Generating Process
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,170,2,2. Structural Break vs. Regime Switching
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,174,3,2.1 Structural Break（结构突变）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,202,3,2.2 Regime Switching（状态切换）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,277,1,3. Markov Chain and Hidden Markov Model
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,285,2,3.1 Markov Chain（马尔可夫链）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,334,3,Two-state Example
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,378,2,3.2 Expected Regime Duration（状态持续时间）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,419,2,3.3 Stationary Distribution（平稳分布）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,531,1,4. Hidden Markov Model (HMM)
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,535,2,4.1 Model Architecture
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,604,2,4.2 Filtering — 如何推断当前状态？
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,671,2,4.3 Filtering vs. Smoothing：一个严重的数据泄漏风险
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,716,1,5. Parameter Instability（参数不稳定性）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,722,2,5.1 Two-environment Linear Model
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,761,2,5.2 Theorem — Exact Risk under Parameter Shift
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,915,2,5.3 A Nontrivial Example — Generalization Decay without Overfitting
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,961,1,6. Regime Mixture and Predictability
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,967,2,6.1 Mixture Distribution
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1054,2,6.2 The Value of Regime Information
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1178,1,7. Robust Optimization（鲁棒优化）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1184,2,7.1 Average-risk Optimization
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1214,2,7.2 Worst-group Risk Minimization
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1234,2,7.3 Mathematical Example — Average-optimal vs. Robust-optimal
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1263,3,Average-risk Solution
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1280,3,Worst-case Solution
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1343,3,Performance Comparison
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1361,2,7.4 Distributionally Robust Optimization (DRO)
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1403,1,8. Robustness-oriented RSI
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1431,2,8.1 Three Candidate Selection Objectives
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1495,2,8.2 Rolling-window Robustness
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1524,1,9. Two-dimensional Performance Surface（二维性能曲面）
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1589,3,Metric 1 — Mean OOS Performance
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1597,3,Metric 2 — Worst-environment Performance
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1605,3,Metric 3 — Cross-environment Dispersion
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1631,1,10. Decay Attribution — 区分过拟合与分布变化
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1635,2,10.1 Risk Decomposition
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1693,2,10.2 Revision-level Decomposition
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1751,2,10.3 Numerical Attribution Example
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1794,1,11. Research Practice — Controlled Decay Attribution
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1798,2,11.1 Experimental Architecture
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,1949,2,11.2 Two-factor Experiment
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2026,1,12. Practical Mitigation Framework
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2049,1,13. Literature Index
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2083,1,14. IV-F — Conclusion Index
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2085,2,14.1 Core Conclusions
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2105,2,14.2 Core Formula Sheet
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2201,2,14.3 Proof Index
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2218,1,Part IV — Consolidated Conclusion
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2222,2,15. Core Knowledge Map
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2233,2,16. Part IV — Most Important Mathematical Results
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2252,1,17. Unified Research Hypotheses — Part II + III + IV
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2336,1,18. Foundation Knowledge — Self-assessment
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2362,1,Next — Part V: Literature & Research Frontier
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2380,2,Part V — Learning Roadmap
+77,[archival ID withheld],active,reading path,1,77-[archival ID withheld].md,2393,3,下一阶段：V-A — Supervisor & Research Group Landscape
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,3,1,7. Robust Optimization（鲁棒优化）
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,9,2,7.1 Average-risk Optimization
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,39,2,7.2 Worst-group Risk Minimization
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,59,2,7.3 Mathematical Example — Average-optimal vs. Robust-optimal
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,88,3,Average-risk Solution
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,105,3,Worst-case Solution
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,168,3,Performance Comparison
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,186,2,7.4 Distributionally Robust Optimization (DRO)
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,228,1,8. Robustness-oriented RSI
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,256,2,8.1 Three Candidate Selection Objectives
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,320,2,8.2 Rolling-window Robustness
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,349,1,9. Two-dimensional Performance Surface（二维性能曲面）
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,414,3,Metric 1 — Mean OOS Performance
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,422,3,Metric 2 — Worst-environment Performance
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,430,3,Metric 3 — Cross-environment Dispersion
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,456,1,10. Decay Attribution — 区分过拟合与分布变化
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,460,2,10.1 Risk Decomposition
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,518,2,10.2 Revision-level Decomposition
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,576,2,10.3 Numerical Attribution Example
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,619,1,11. Research Practice — Controlled Decay Attribution
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,623,2,11.1 Experimental Architecture
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,774,2,11.2 Two-factor Experiment
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,851,1,12. Practical Mitigation Framework
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,874,1,13. Literature Index
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,908,1,14. IV-F — Conclusion Index
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,910,2,14.1 Core Conclusions
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,930,2,14.2 Core Formula Sheet
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1026,2,14.3 Proof Index
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1043,1,Part IV — Consolidated Conclusion
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1047,2,15. Core Knowledge Map
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1058,2,16. Part IV — Most Important Mathematical Results
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1077,1,17. Unified Research Hypotheses — Part II + III + IV
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1161,1,18. Foundation Knowledge — Self-assessment
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1187,1,Next — Part V: Literature & Research Frontier
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1205,2,Part V — Learning Roadmap
+78,[archival ID withheld],hidden,,1,78-[archival ID withheld].md,1218,3,下一阶段：V-A — Supervisor & Research Group Landscape

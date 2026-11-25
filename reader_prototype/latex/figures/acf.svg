@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 244" width="340" height="244">
+      <text font-family="serif" x="10" y="12" font-size="11" font-weight="600" fill="#253037">ACF of returns</text>
+      <path d="M30 23 V104 H330" stroke="#253037" opacity=".3" fill="none"/>
+      <line x1="30" x2="330" y1="86" y2="86" stroke="#253037" opacity=".35"/>
+      <rect x="30" y="80" width="300" height="12" fill="#94a3b8" opacity=".12"/>
+        <line x1="44.5" x2="44.5" y1="86" y2="82.84939547855336" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="59.0" x2="59.0" y1="86" y2="90.19834449035139" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="73.5" x2="73.5" y1="86" y2="83.55609199545985" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="88.0" x2="88.0" y1="86" y2="85.05829011292646" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="102.5" x2="102.5" y1="86" y2="89.69878543805861" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="117.0" x2="117.0" y1="86" y2="82.01288579659865" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="131.5" x2="131.5" y1="86" y2="87.61425173760243" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="146.0" x2="146.0" y1="86" y2="87.83603975325376" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="160.5" x2="160.5" y1="86" y2="81.93912973897855" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="175.0" x2="175.0" y1="86" y2="89.5752812076401" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="189.5" x2="189.5" y1="86" y2="85.29662198505552" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="204.0" x2="204.0" y1="86" y2="83.36200660286573" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="218.5" x2="218.5" y1="86" y2="90.21864150455461" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="233.0" x2="233.0" y1="86" y2="83.01643404341311" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="247.5" x2="247.5" y1="86" y2="85.75711540500669" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="262.0" x2="262.0" y1="86" y2="89.30722231975152" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="276.5" x2="276.5" y1="86" y2="81.83583873760958" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="291.0" x2="291.0" y1="86" y2="88.2417392759946" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="305.5" x2="305.5" y1="86" y2="87.17692701127763" stroke="#64748b" stroke-width="2.5"/>
+        <line x1="320.0" x2="320.0" y1="86" y2="82.18994423118379" stroke="#64748b" stroke-width="2.5"/>
+        <text font-family="serif" x="102.5" y="115" text-anchor="middle" font-size="9" fill="#253037">5</text>
+        <text font-family="serif" x="175.0" y="115" text-anchor="middle" font-size="9" fill="#253037">10</text>
+        <text font-family="serif" x="247.5" y="115" text-anchor="middle" font-size="9" fill="#253037">15</text>
+        <text font-family="serif" x="320.0" y="115" text-anchor="middle" font-size="9" fill="#253037">20</text>
+      <text font-family="serif" x="10" y="130" font-size="11" font-weight="600" fill="#253037">ACF of squared returns</text>
+      <path d="M30 141 V222 H330" stroke="#253037" opacity=".3" fill="none"/>
+      <line x1="30" x2="330" y1="204" y2="204" stroke="#253037" opacity=".35"/>
+      <rect x="30" y="198" width="300" height="12" fill="#94a3b8" opacity=".12"/>
+        <line x1="44.5" x2="44.5" y1="204" y2="157.34264088841252" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="59.0" x2="59.0" y1="204" y2="162.28747053985106" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="73.5" x2="73.5" y1="204" y2="164.35909008319655" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="88.0" x2="88.0" y1="204" y2="169.84851365664971" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="102.5" x2="102.5" y1="204" y2="170.19284787641865" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="117.0" x2="117.0" y1="204" y2="176.1631595910443" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="131.5" x2="131.5" y1="204" y2="175.0942041112808" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="146.0" x2="146.0" y1="204" y2="181.3818513963945" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="160.5" x2="160.5" y1="204" y2="179.26994080537665" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="175.0" x2="175.0" y1="204" y2="185.6346901959629" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="189.5" x2="189.5" y1="204" y2="182.88626228343824" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="204.0" x2="204.0" y1="204" y2="189.03880374138467" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="218.5" x2="218.5" y1="204" y2="186.07176157404362" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="233.0" x2="233.0" y1="204" y2="191.7038273779697" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="247.5" x2="247.5" y1="204" y2="188.92071326693818" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="262.0" x2="262.0" y1="204" y2="193.73554198932777" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="276.5" x2="276.5" y1="204" y2="191.49687029203477" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="291.0" x2="291.0" y1="204" y2="195.23778104259816" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="305.5" x2="305.5" y1="204" y2="193.8378294961231" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="320.0" x2="320.0" y1="204" y2="196.31279053017312" stroke="#2563eb" stroke-width="2.5"/>
+        <text font-family="serif" x="102.5" y="233" text-anchor="middle" font-size="9" fill="#253037">5</text>
+        <text font-family="serif" x="175.0" y="233" text-anchor="middle" font-size="9" fill="#253037">10</text>
+        <text font-family="serif" x="247.5" y="233" text-anchor="middle" font-size="9" fill="#253037">15</text>
+        <text font-family="serif" x="320.0" y="233" text-anchor="middle" font-size="9" fill="#253037">20</text>
+  </svg>

@@ -1,0 +1,13 @@
+<box border radius="lg" padding={3} gap={2}>
+  <svg viewBox="0 0 340 176" width="100%">
+    {#each [{x:7,a:"Baseline",b:"ω"},{x:119,a:"Recent shock",b:"aε²ₜ₋₁"},{x:231,a:"Past variance",b:"bσ²ₜ₋₁"}] as p}
+      <rect x={p.x} y="8" width="102" height="54" rx="6" fill="#2563eb" fillOpacity=".08" stroke="#94a3b8"/>
+      <text x={p.x+51} y="26" fontSize="11" fill="currentColor" textAnchor="middle">{p.a}</text>
+      <text x={p.x+51} y="46" fontSize="15" fill="currentColor" textAnchor="middle">{p.b}</text>
+      <path d={`M${p.x+51} 62 V87 H170 V103`} stroke="currentColor" opacity=".45" fill="none"/>
+    {/each}
+    <rect x="89" y="103" width="162" height="55" rx="6" fill="#0d9488" fillOpacity=".1" stroke="#0d9488"/>
+    <text x="170" y="124" fontSize="12" textAnchor="middle" fill="currentColor">Current conditional variance</text>
+    <text x="170" y="145" fontSize="17" textAnchor="middle" fill="currentColor">σ²ₜ</text>
+  </svg>
+</box>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 176" width="340" height="176">
+      <rect x="7" y="8" width="102" height="54" rx="6" fill="#2563eb" fill-opacity=".08" stroke="#94a3b8"/>
+      <text font-family="serif" x="58" y="26" font-size="11" fill="#253037" text-anchor="middle">Baseline</text>
+      <text font-family="serif" x="58" y="46" font-size="15" fill="#253037" text-anchor="middle">ω</text>
+      <path d="M58 62 V87 H170 V103" stroke="#253037" opacity=".45" fill="none"/>
+      <rect x="119" y="8" width="102" height="54" rx="6" fill="#2563eb" fill-opacity=".08" stroke="#94a3b8"/>
+      <text font-family="serif" x="170" y="26" font-size="11" fill="#253037" text-anchor="middle">Recent shock</text>
+      <text font-family="serif" x="170" y="46" font-size="15" fill="#253037" text-anchor="middle">aε²ₜ₋₁</text>
+      <path d="M170 62 V87 H170 V103" stroke="#253037" opacity=".45" fill="none"/>
+      <rect x="231" y="8" width="102" height="54" rx="6" fill="#2563eb" fill-opacity=".08" stroke="#94a3b8"/>
+      <text font-family="serif" x="282" y="26" font-size="11" fill="#253037" text-anchor="middle">Past variance</text>
+      <text font-family="serif" x="282" y="46" font-size="15" fill="#253037" text-anchor="middle">bσ²ₜ₋₁</text>
+      <path d="M282 62 V87 H170 V103" stroke="#253037" opacity=".45" fill="none"/>
+    <rect x="89" y="103" width="162" height="55" rx="6" fill="#0d9488" fill-opacity=".1" stroke="#0d9488"/>
+    <text font-family="serif" x="170" y="124" font-size="12" text-anchor="middle" fill="#253037">Current conditional variance</text>
+    <text font-family="serif" x="170" y="145" font-size="17" text-anchor="middle" fill="#253037">σ²ₜ</text>
+  </svg>

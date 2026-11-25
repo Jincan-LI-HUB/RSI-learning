@@ -1,0 +1,15 @@
+<box border radius="lg" padding={3} gap={3}>
+  <svg viewBox="0 0 350 256" width="100%">
+    {#each [0,1] as panel}
+      <text x="10" y={panel*122+13} fontSize="11" fontWeight="600" fill="currentColor">{panel===0?"Returns with constant volatility":"Returns with volatility clustering"}</text>
+      {#if panel===1}
+        <rect x="84" y="142" width="62" height="88" fill="#d97706" opacity=".09"/>
+        <rect x="233" y="142" width="68" height="88" fill="#d97706" opacity=".09"/>
+      {/if}
+      <line x1="10" x2="340" y1={panel*122+67} y2={panel*122+67} stroke="currentColor" opacity=".25"/>
+      <path d={Array.from({length:180},(_,i)=>{const u=i/179;const wave=Math.sin(i*7.91)+.7*Math.cos(i*3.19)+.35*Math.sin(i*.83);const scale=panel===0?15:5+24*Math.exp(-Math.pow((u-.32)/.1,2))+22*Math.exp(-Math.pow((u-.78)/.11,2));return(i===0?"M":"L")+(10+330*u)+" "+(panel*122+67-scale*wave*.8)}).join(" ")} stroke={panel===0?"#64748b":"#2563eb"} strokeWidth="1.2" fill="none"/>
+    {/each}
+    <text x="175" y="253" fontSize="11" textAnchor="middle" fill="currentColor">Time</text>
+  </svg>
+  <caption>合成示意：下方序列的收益率方向难以预测，但波动幅度具有明显的持续性。</caption>
+</box>

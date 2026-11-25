@@ -1,0 +1,35 @@
+{@body const [p,setP]=DIL.useState(0.9)}
+<card gap={3}>
+  <title>GARCH — Volatility Shock Persistence</title>
+  <row align="center">
+    <label>Persistence \(a+b\)</label>
+    <spacer/>
+    **{p.toFixed(2)}**
+  </row>
+  <slider min={0} max={0.99} step={0.01} value={p} onChange={setP}/>
+  <svg viewBox="0 0 340 214" width="100%">
+    {#each [1,2,3,4] as y}
+      <line x1="32" x2="330" y1={170-(y-1)*45} y2={170-(y-1)*45} stroke="currentColor" opacity=".12"/>
+      <text x="24" y={174-(y-1)*45} fontSize="10" textAnchor="end" fill="currentColor">{y}</text>
+    {/each}
+    <path d="M32 15 V170 H330" stroke="currentColor" opacity=".4" fill="none"/>
+    <line x1="32" x2="330" y1="170" y2="170" stroke="#94a3b8" strokeDasharray="4 3"/>
+    <path d={Array.from({length:41},(_,h)=>(h===0?"M":"L")+(32+h*7.45)+" "+(170-135*p**h)).join(" ")} stroke="#2563eb" strokeWidth="2.7" fill="none"/>
+    {#each [0,10,20,30,40] as h}
+      <text x={32+h*7.45} y="186" fontSize="10" textAnchor="middle" fill="currentColor">{h}</text>
+    {/each}
+    <text x="180" y="207" fontSize="11" textAnchor="middle" fill="currentColor">Periods after shock</text>
+  </svg>
+  <grid columns={2}>
+    <grid-item>
+      <caption>Shock half-life（连续插值）</caption>
+      <title size="xl" tabularNums={true}>{p===0?"立即消失":(Math.log(.5)/Math.log(p)).toFixed(2)}</title>
+      <caption>Periods</caption>
+    </grid-item>
+    <grid-item>
+      <caption>Remaining shock after 20 periods</caption>
+      <title size="xl" tabularNums={true}>{(100*p**20).toFixed(1)}%</title>
+    </grid-item>
+  </grid>
+  <caption>归一化教学模型：长期方差为 1，初始超额方差为 3。曲线描述条件方差预测的恢复过程。</caption>
+</card>

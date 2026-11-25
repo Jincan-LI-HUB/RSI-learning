@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 214" width="340" height="214">
+      <line x1="32" x2="330" y1="170" y2="170" stroke="#253037" opacity=".12"/>
+      <text font-family="serif" x="24" y="174" font-size="18" text-anchor="end" fill="#253037">1</text>
+      <line x1="32" x2="330" y1="125" y2="125" stroke="#253037" opacity=".12"/>
+      <text font-family="serif" x="24" y="129" font-size="18" text-anchor="end" fill="#253037">2</text>
+      <line x1="32" x2="330" y1="80" y2="80" stroke="#253037" opacity=".12"/>
+      <text font-family="serif" x="24" y="84" font-size="18" text-anchor="end" fill="#253037">3</text>
+      <line x1="32" x2="330" y1="35" y2="35" stroke="#253037" opacity=".12"/>
+      <text font-family="serif" x="24" y="39" font-size="18" text-anchor="end" fill="#253037">4</text>
+    <path d="M32 15 V170 H330" stroke="#253037" opacity=".4" fill="none"/>
+    <line x1="32" x2="330" y1="170" y2="170" stroke="#94a3b8" stroke-dasharray="4 3"/>
+    <path d="M32.00000000 35.00000000 L39.45000000 48.50000000 L46.90000000 60.65000000 L54.35000000 71.58500000 L61.80000000 81.42650000 L69.25000000 90.28385000 L76.70000000 98.25546500 L84.15000000 105.42991850 L91.60000000 111.88692665 L99.05000000 117.69823398 L106.50000000 122.92841059 L113.95000000 127.63556953 L121.40000000 131.87201258 L128.85000000 135.68481132 L136.30000000 139.11633019 L143.75000000 142.20469717 L151.20000000 144.98422745 L158.65000000 147.48580471 L166.10000000 149.73722423 L173.55000000 151.76350181 L181.00000000 153.58715163 L188.45000000 155.22843647 L195.90000000 156.70559282 L203.35000000 158.03503354 L210.80000000 159.23153018 L218.25000000 160.30837717 L225.70000000 161.27753945 L233.15000000 162.14978550 L240.60000000 162.93480695 L248.05000000 163.64132626 L255.50000000 164.27719363 L262.95000000 164.84947427 L270.40000000 165.36452684 L277.85000000 165.82807416 L285.30000000 166.24526674 L292.75000000 166.62074007 L300.20000000 166.95866606 L307.65000000 167.26279946 L315.10000000 167.53651951 L322.55000000 167.78286756 L330.00000000 168.00458080" stroke="#2563eb" stroke-width="2.7" fill="none"/>
+      <text font-family="serif" x="32.0" y="186" font-size="18" text-anchor="middle" fill="#253037">0</text>
+      <text font-family="serif" x="106.5" y="186" font-size="18" text-anchor="middle" fill="#253037">10</text>
+      <text font-family="serif" x="181.0" y="186" font-size="18" text-anchor="middle" fill="#253037">20</text>
+      <text font-family="serif" x="255.5" y="186" font-size="18" text-anchor="middle" fill="#253037">30</text>
+      <text font-family="serif" x="330.0" y="186" font-size="18" text-anchor="middle" fill="#253037">40</text>
+    <text font-family="serif" x="180" y="207" font-size="19.5" text-anchor="middle" fill="#253037">Periods after shock</text>
+  </svg>

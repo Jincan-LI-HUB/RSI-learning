@@ -1,0 +1,122 @@
+% !TEX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage[a4paper,left=29mm,right=29mm,top=24mm,bottom=25mm,headheight=22pt]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{amsmath}
+\usepackage{unicode-math}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array,calc}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage[unicode,pdfusetitle,hidelinks]{hyperref}
+\usepackage{bookmark}
+
+\setmainfont{STIXTwoText}[
+  Extension=.otf,UprightFont=*-Regular,BoldFont=*-Bold,
+  ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic]
+\setmathfont{STIXTwoMath-Regular.otf}
+\setCJKmainfont{SimSun}[BoldFont=SimHei,ItalicFont=KaiTi]
+\setCJKsansfont{SimHei}
+\xeCJKsetup{PunctStyle=banjiao,CJKecglue={\hskip 0.16em plus 0.06em minus 0.04em}}
+
+\definecolor{ink}{HTML}{202B32}
+\definecolor{accent}{HTML}{275866}
+\definecolor{quiet}{HTML}{52646B}
+\definecolor{rulegray}{HTML}{BAC8CA}
+\definecolor{figureblue}{HTML}{2563EB}
+\definecolor{tailgold}{HTML}{A95A04}
+\AtBeginDocument{%
+  \color{ink}%
+  \fontsize{11.25}{17.1}\selectfont
+  \setlength{\abovedisplayskip}{7pt plus 2pt minus 2pt}%
+  \setlength{\belowdisplayskip}{7pt plus 2pt minus 2pt}%
+  \setlength{\abovedisplayshortskip}{5pt plus 2pt minus 1pt}%
+  \setlength{\belowdisplayshortskip}{6pt plus 2pt minus 1pt}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 0.6pt}
+\setlength{\emergencystretch}{2em}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+\interdisplaylinepenalty=10000
+\raggedbottom
+
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{2}
+\titleformat{\section}{\Large\bfseries\color{accent}}{}{0pt}{}
+\titleformat{\subsection}{\large\bfseries\color{ink}}{}{0pt}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{ink}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{21pt plus 3pt}{5pt}
+\titlespacing*{\subsection}{0pt}{13pt plus 3pt}{3pt}
+\titlespacing*{\subsubsection}{0pt}{10pt plus 2pt}{2pt}
+\setlist[itemize]{leftmargin=1.45em,itemsep=1pt,topsep=3pt,parsep=0pt}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\captionsetup{font=small,labelfont={bf,color=accent},labelsep=quad,hypcap=false,
+  justification=raggedright,singlelinecheck=false,skip=6pt}
+\captionsetup[table]{position=top}
+\renewcommand{\arraystretch}{1.18}
+\setlength{\LTpre}{7pt}
+\setlength{\LTpost}{7pt}
+\setlength{\LTcapwidth}{\textwidth}
+\newenvironment{readerfigure}
+  {\par\addvspace{7pt}\noindent\begin{minipage}{\linewidth}\centering\small}
+  {\end{minipage}\par\addvspace{9pt}}
+\newcommand{\figuretitle}[1]{\par{\bfseries\color{accent}#1}\par\smallskip}
+\newcommand{\legendmark}[1]{\textcolor{#1}{\rule[.22ex]{1.1em}{1.1pt}}}
+\newenvironment{readerquestion}[1]
+  {\par\addvspace{9pt}\noindent\begin{minipage}{\linewidth}%
+   {\color{rulegray}\hrule}\vspace{5pt}%
+   {\small\bfseries\color{accent}#1}\par\smallskip\small}
+  {\end{minipage}\par}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{quiet}科研准备学习路线}
+\fancyhead[R]{\small\color{quiet}IV-A \enspace Financial Time Series}
+\fancyfoot[R]{\small\color{quiet}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\makeatletter
+\renewcommand{\headrule}{\hbox to\headwidth{\color{rulegray}\leaders\hrule height \headrulewidth\hfill}}
+\makeatother
+
+\renewcommand{\contentsname}{选读目录}
+\title{科研准备学习路线 · 数学读本样张}
+\author{}
+\date{}
+\hypersetup{pdfsubject={IV-A Financial Time Series \& Data Generating Process},
+            pdflang={zh-CN}, bookmarksnumbered=false}
+
+\begin{document}
+\thispagestyle{empty}
+\pdfbookmark[0]{样张导读}{prototype}
+\vspace*{9mm}
+
+{\color{accent}\bfseries X Program \#161\enspace·\enspace Research Preparation\par}
+\vspace{4pt}
+{\fontsize{30}{39}\selectfont\bfseries 科研准备学习路线\par}
+{\large 数学读本样张\par}
+\vspace{10pt}
+{\color{rulegray}\hrule}
+\vspace{9pt}
+
+{\large\bfseries IV-A \enspace Financial Time Series \& Data Generating Process\par}
+\vspace{2pt}
+本样张取自原对话中从 §6.2 到 §7.3 的连续补讲。保留原文的中英术语、公式、推导和例表。图中的交互控件以标明参数的静态画面呈现。
+
+\input{reader-questions.tex}
+
+\vspace{7pt}
+\tableofcontents
+
+\clearpage
+\input{excerpt.tex}
+
+\end{document}

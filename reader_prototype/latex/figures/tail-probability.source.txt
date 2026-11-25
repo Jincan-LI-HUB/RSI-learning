@@ -1,0 +1,23 @@
+<box gap={2}>
+  <title size="md">Probability of a 5-standard-deviation event</title>
+  <box gap={1}>
+    <row align="center">
+      **Normal**
+      <spacer/>
+      <text tabularNums={true}>0.0000573%</text>
+    </row>
+    <box height="14px" background="surface-tertiary" radius="sm">
+      <box height="14px" width="0.0177%" background="#2563eb"/>
+    </box>
+  </box>
+  <box gap={1}>
+    <row align="center">
+      **Student's t**
+      <spacer/>
+      <text tabularNums={true}>0.324%</text>
+    </row>
+    <box height="14px" background="#d97706" radius="sm"/>
+  </box>
+  <title size="2xl" color="warning">约 5,650 倍</title>
+  <caption>即使均值和方差完全相同，极端事件概率也可能存在数量级差异。</caption>
+</box>

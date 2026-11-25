@@ -1,0 +1,10 @@
+{
+  "display_equations_compared": 39,
+  "equation_payloads_equal_after_boundary_trim": true,
+  "inline_expressions_meeting_source_multiplicity": 14,
+  "table_count": 5,
+  "graphics_count": 6,
+  "svg_and_pdf_files_each": 8,
+  "prose_source_lines": "58:7–587",
+  "source_prose_sha256": "839a56596f39f1261c048837fd870c9db6151cd5eef6c320e6f0bc8f5013c431"
+}

@@ -1,0 +1,6 @@
+# Preserve baseline source and palette bytes across Git checkout settings.
+/AGENTS.md -text
+/palette.tex -text
+/reader_prototype/latex/** -text
+*.pdf binary
+*.png binary

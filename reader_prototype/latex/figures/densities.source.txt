@@ -1,0 +1,17 @@
+<box border radius="lg" padding={3} gap={2}>
+  <svg viewBox="0 0 340 238" width="100%">
+    <path d="M20 10 V194 H330" stroke="currentColor" opacity=".4" fill="none"/>
+    {#each [{c:"#2563eb",kind:0},{c:"#d97706",kind:1}] as p}
+      <path d={Array.from({length:241},(_,i)=>{const x=-6+i*.05;const y=p.kind===0?Math.exp(-x*x/2)/Math.sqrt(2*Math.PI):2/(Math.PI*(1+x*x)**2);return (i===0?"M":"L")+(20+(x+6)*310/12)+" "+(194-y*260)}).join(" ")} stroke={p.c} strokeWidth="2.4" fill="none"/>
+    {/each}
+    {#each [-6,-4,-2,0,2,4,6] as x}
+      <text x={20+(x+6)*310/12} y="211" fontSize="10" textAnchor="middle" fill="currentColor">{x}</text>
+    {/each}
+    <text x="175" y="232" fontSize="11" textAnchor="middle" fill="currentColor">Standardized return</text>
+  </svg>
+  <row justify="center" wrap="wrap" gap={3}>
+    <row align="center" gap={1}><box size="9px" background="#2563eb" radius="full"/><caption>Standard Normal</caption></row>
+    <row align="center" gap={1}><box size="9px" background="#d97706" radius="full"/><caption>Standardized Student's t (ν=3)</caption></row>
+  </row>
+  <caption>两种分布均具有零均值和单位方差，但尾部概率存在显著差异。</caption>
+</box>

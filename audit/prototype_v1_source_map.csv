@@ -1,0 +1,11 @@
+prototype_location,prototype_page,archive_ordinal,message_id,source_lines,manuscript_path
+Research-preparation reader passage,1,05,[archival ID withheld],78–87,reader_prototype/latex/reader-questions.tex
+Continuation request,1,57,[archival ID withheld],1,reader_prototype/latex/reader-questions.tex
+Parent heading for section 6,2,52,[archival ID withheld],644,reader_prototype/latex/excerpt.tex
+Continuous excerpt IV-A sections 6.2–7.3,2–10,58,[archival ID withheld],7–587,reader_prototype/latex/excerpt.tex
+Figure 1 · Volatility clustering,2,58,[archival ID withheld],11–25,reader_prototype/latex/figures/volatility.source.txt
+Figure 2 · Return and squared-return ACF,3,58,[archival ID withheld],49–66,reader_prototype/latex/figures/acf.source.txt
+Figure 3 · GARCH components,6,58,[archival ID withheld],257–269,reader_prototype/latex/figures/garch-mechanism.source.txt
+Figure 4 · GARCH shock persistence,7,58,[archival ID withheld],342–376,reader_prototype/latex/figures/garch-persistence.source.txt
+Figure 5 · Normal and standardized t densities,8,58,[archival ID withheld],410–426,reader_prototype/latex/figures/densities.source.txt
+Figure 6 · Five-standard-deviation probabilities,8,58,[archival ID withheld],437–459,reader_prototype/latex/figures/tail-probability.source.txt
