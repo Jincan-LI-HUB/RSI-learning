@@ -1,0 +1,1101 @@
+% Archive record 37, line 1.
+\hypertarget{part-3-37-0001-iii-c-self-modification-and-recursive-optimization}{%
+\section{III-C --- Self-Modification and Recursive Optimization}\label{part-3-37-0001-iii-c-self-modification-and-recursive-optimization}}
+
+终于进入 RSI 本身了。
+
+前面 Part II 花了大量篇幅研究 Statistical Learning Theory，III-A 和 III-B 又分别介绍了 Agent Architecture、Memory、Planning 与 Reflection。现在这些知识可以真正汇合起来。
+
+本阶段最重要的思想是：
+
+\textbf{传统优化研究如何找到更好的解，而 Recursive Self-Improvement 进一步研究如何找到更好的优化器，并让改进后的优化器继续优化自身。}
+
+这会产生一个非常有意思的递归结构。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.60}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}@{}}
+\toprule
+Section & Topic & Progress \\
+\midrule
+\endhead
+III-A & Agent Architecture \& Harness & \\
+III-B & Tools, Memory, Planning \& Reflection & \\
+\textbf{III-C} & \textbf{Self-Modification \& Recursive Optimization} & 当前 \\
+III-D & Evaluation, Search \& Selection & 待学习 \\
+III-E & Automated Research Agents & 待学习 \\
+III-F & Failure Modes \& Instrumentation & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+本阶段主要研究 Object-level Optimization、Meta-level Optimization、Self-referential Improvement，以及具有代表性的 STOP（Self-Taught Optimizer）架构。最后，我们将尝试解释 RSI 为什么可能同时形成能力增长和统计偏差的正反馈循环。
+
+\hypertarget{part-3-37-0001-three-levels-of-optimization}{%
+\subsection{1. Three Levels of Optimization}\label{part-3-37-0001-three-levels-of-optimization}}
+
+\hypertarget{part-3-37-0001-object-level-optimizationux5bf9ux8c61ux5c42ux4f18ux5316}{%
+\subsubsection{1.1 Object-level Optimization（对象层优化）}\label{part-3-37-0001-object-level-optimizationux5bf9ux8c61ux5c42ux4f18ux5316}}
+
+考虑一个最普通的优化问题：
+\[x^*=\arg\max_{x\in\mathcal X}f(x).\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(x\)：候选解；
+\item
+  \(\mathcal X\)：解空间；
+\item
+  \(f\)：Objective Function；
+\item
+  \(x^*\)：最优解。
+\end{itemize}
+
+例如，我们使用 Gradient Descent、Genetic Algorithm 或 Random Search 寻找最优的金融模型参数。
+
+设优化算法为 \(\mathcal I\)，则可以将整个优化过程抽象为：
+\[x^*_{\mathcal I}=\mathcal I(f).\]
+
+这里的优化器不一定能够找到真正的全局最优解，因此使用下标 \(\mathcal I\) 表示它实际返回的结果。
+
+\textbf{优化器是固定的，被优化的是解。}
+
+\hypertarget{part-3-37-0001-meta-level-optimizationux5143ux5c42ux4f18ux5316}{%
+\subsubsection{1.2 Meta-level Optimization（元层优化）}\label{part-3-37-0001-meta-level-optimizationux5143ux5c42ux4f18ux5316}}
+
+现在改变研究对象。
+
+我们不再仅仅寻找最好的 \(x\)，而是寻找能够更有效地找到 \(x\) 的优化算法 \(\mathcal I\)。
+
+设 \(\mathfrak I\) 是允许的优化器集合，\(J(\mathcal I)\) 衡量优化器在指定任务分布及资源预算下的表现。
+
+那么：
+\[\boxed{
+\mathcal I^*
+=
+\arg\max_{\mathcal I\in\mathfrak I}
+J(\mathcal I)
+}\]
+
+例如：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Object-level Optimization & Meta-level Optimization \\
+\midrule
+\endhead
+寻找最优回归参数 & 寻找更好的参数估计方法 \\
+寻找最优金融特征 & 改进特征搜索算法 \\
+寻找最优交易策略 & 改进策略生成机制 \\
+修复一段 Python 程序 & 改进自动修复程序的 Agent \\
+寻找最优超参数 & 改进 Hyperparameter Optimizer \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里需要注意，Meta-optimization 本身并不是 RSI 独有的概念。Algorithm Configuration、Learning to Optimize 和部分 AutoML 方法早就涉及类似思想。
+
+\hypertarget{part-3-37-0001-recursive-meta-level-optimization}{%
+\subsubsection{1.3 Recursive Meta-level Optimization}\label{part-3-37-0001-recursive-meta-level-optimization}}
+
+现在进一步考虑：
+
+如果优化器本身就是一个能够接受程序、修改程序并改善程序性能的通用优化器，那么它是否能够将\textbf{自己的程序}作为优化对象？
+
+\bookgraphic{0.338}{part-3-37-0001-003-01}{从优化解，到优化求解方法，再到利用当前求解方法改进该方法本身。}
+
+这就是 Recursive Self-Improvement 最核心的结构。
+
+在一种简化的形式下，可以写成：
+\[\boxed{
+\mathcal I_{k+1}
+=
+\mathcal I_k(\mathcal I_k)
+}\]
+
+当然，这里隐含了一个重要条件：优化器必须能够接受自身的某种可修改表示，例如 Source Code，并且能够评价候选优化器。
+
+这不是普通意义上的函数递归调用，而是\textbf{优化对象与优化主体发生了重合}。
+
+\hypertarget{part-3-37-0001-what-does-self-modification-actually-mean}{%
+\subsection{2. What Does Self-Modification Actually Mean?}\label{part-3-37-0001-what-does-self-modification-actually-mean}}
+
+沿用 III-A 中的 Agent Representation：
+\[A_k=(\mathcal L,P_k,M_k,T_k,C_k).\]
+
+假设 Foundation Model 的权重始终冻结，那么 Self-Modification 可以发生在其余组件中。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.27}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}@{}}
+\toprule
+Modification Level & Modified Object & Example \\
+\midrule
+\endhead
+L0 --- Solution & 当前任务的解 & 修改某个金融预测模型 \\
+L1 --- Prompt & Agent 的持久性指令 & 改变研究任务的分析要求 \\
+L2 --- Memory & 历史知识及经验 & 修改经验提取和检索机制 \\
+L3 --- Tools & Agent 可以执行的操作 & 增加自动特征搜索工具 \\
+L4 --- Controller & Agent 的工作流程 & 将顺序搜索改为 Tree Search \\
+L5 --- Improver & Agent 自身的改进机制 & 改变候选 Agent 的生成与选择算法 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这是我们为了研究而建立的功能性分类，并非该领域统一认可的等级标准。L1--L5 也不一定代表逐渐增强的能力。
+
+其中，\textbf{L5 是最值得关注的层级。}
+
+因为到了这一层，Agent 修改的不仅是解决金融问题的方法，还可能是产生新方法的方法。
+
+\hypertarget{part-3-37-0001-fixed-improver-vs.-self-modifying-improver}{%
+\subsubsection{2.1 Fixed Improver vs. Self-modifying Improver}\label{part-3-37-0001-fixed-improver-vs.-self-modifying-improver}}
+
+\textbf{Fixed Improver}
+
+\bookgraphic{0.215}{part-3-37-0001-004-01}{}
+
+\[A_{k+1}=\mathcal I(A_k)\]
+
+\begin{verbatim}
+  负责产生新版本的机制始终固定。
+\end{verbatim}
+
+\textbf{Self-modifying Improver}
+
+\bookgraphic{0.215}{part-3-37-0001-004-02}{}
+
+\[A_{k+1}=\mathcal I_{A_k}(A_k)\]
+
+\begin{verbatim}
+  负责改进的机制本身也可以发生变化。
+\end{verbatim}
+
+右侧更接近严格意义上的 Recursive Self-Improvement。
+
+不过，真实研究中也经常将固定外层控制器驱动的、自适应方法修改系统称为 RSI。因此，阅读论文时不能只看作者是否使用了 RSI 这个词，还需要检查实际允许修改哪些组件。
+
+这也是我们之后与课题组沟通时需要确认的问题。
+
+\hypertarget{part-3-37-0001-stop-self-taught-optimizer}{%
+\subsection{3. STOP --- Self-Taught Optimizer}\label{part-3-37-0001-stop-self-taught-optimizer}}
+
+\hypertarget{part-3-37-0001-research-background}{%
+\subsubsection{3.1 Research Background}\label{part-3-37-0001-research-background}}
+
+\textbf{Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation}
+
+Eric Zelikman, Eliana Lorch, Lester Mackey, Adam Tauman Kalai
+
+COLM 2024 · 同行评审会议论文 · 初版预印本发表于 2023 年
+
+\href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{正式论文}
+
+\href{https://arxiv.org/abs/2310.02304}{arXiv}
+
+\href{https://github.com/microsoft/STOP}{GitHub}
+
+这是理解代码层面 RSI 非常合适的一篇入门论文。
+
+作者提出了一个由语言模型驱动的程序优化器，让它不仅能够改进其他程序，还能够将自身代码作为待优化对象。底层 LLM 始终不变，因此作者也明确指出，这并非完整意义上的 RSI。
+
+\href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{来源 1} \href{https://openreview.net/pdf?id=46Zgqo4QIU}{来源 2}
+
+\hypertarget{part-3-37-0001-the-seed-improver}{%
+\subsubsection{3.2 The Seed Improver}\label{part-3-37-0001-the-seed-improver}}
+
+首先，我们构造一个最简单的程序优化器：
+\[\mathcal I_0.\]
+
+它接收三个输入：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.67}}@{}}
+\toprule
+Input & Meaning \\
+\midrule
+\endhead
+\(u\) & Utility Function，用于评价程序表现 \\
+\(x\) & Initial Solution，待改进的程序 \\
+\(\mathcal L\) & Language Model \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+输出一个修改后的程序：
+\[x'=\mathcal I_0(u,x,\mathcal L).\]
+
+理想情况下：
+\[u(x')>u(x).\]
+
+其简化 Python 伪代码如下：
+
+\begin{verbatim}
+def improver(utility, initial_solution, llm):
+
+    candidates = llm.generate(
+        prompt=build_prompt(
+            initial_solution,
+            utility.description
+        ),
+        n=5
+    )
+
+    best_solution = max(
+        candidates,
+        key=utility
+    )
+
+    return best_solution
+\end{verbatim}
+
+上述代码是我们根据 STOP 思想重新构造的教学伪代码，不是原始实现。
+
+它本质上执行了三个步骤：
+\[\boxed{
+\text{Generate}
+\rightarrow
+\text{Evaluate}
+\rightarrow
+\text{Select}
+}\]
+
+到目前为止，没有任何特别神奇的地方。
+
+\hypertarget{part-3-37-0001-the-nontrivial-step-defining-meta-utility}{%
+\subsubsection{3.3 The Nontrivial Step --- Defining Meta-Utility}\label{part-3-37-0001-the-nontrivial-step-defining-meta-utility}}
+
+接下来才是 STOP 真正关键的地方。
+
+假设我们有一组 Downstream Tasks：
+\[D=\{\tau_1,\ldots,\tau_n\}.\]
+
+其中每一个任务：
+\[\tau_i=(u_i,x_i)\]
+
+由 Utility Function \(u_i\) 和 Initial Solution \(x_i\) 构成。
+
+如果使用优化器 \(\mathcal I\) 改进第 \(i\) 个任务，则得到：
+\[x_i'=\mathcal I(u_i,x_i,\mathcal L).\]
+
+其任务得分为：
+\[u_i(x_i').\]
+
+于是，我们可以定义这个优化器在所有开发任务上的平均表现：
+\[\boxed{
+\widehat J_D(\mathcal I)
+=
+\frac1n\sum_{i=1}^{n}
+u_i\big(
+\mathcal I(u_i,x_i,\mathcal L)
+\big)
+}\]
+
+这个量就称为 \textbf{Meta-Utility}。
+
+这里的 \(\widehat J_D\) 与 Part I 中的 Empirical Performance Notation 保持一致，只是现在被评价的对象变成了 Optimizer。
+
+\textbf{How to Evaluate an Optimizer}
+
+\bookgraphic{0.465}{part-3-37-0001-007-01}{假想金融任务示例，假设各任务的得分已经处于可比较的统一尺度。}
+
+这一步实现了一个非常重要的转换：
+
+我们原本只能评价一个 Solution，现在可以评价一个负责产生 Solution 的 Optimizer。 也就是说：
+\[u:\mathcal X\to\mathbb R\]
+
+评价的是解，而：
+\[\widehat J_D:\mathfrak I\to\mathbb R\]
+
+评价的是优化器。
+
+既然优化器也有了自己的 Objective Function，那么优化器本身就可以成为优化对象。
+
+\hypertarget{part-3-37-0001-the-recursive-step}{%
+\subsubsection{3.4 The Recursive Step}\label{part-3-37-0001-the-recursive-step}}
+
+现在，我们已经具备了执行 RSI 所需的三个条件：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Required Component & Available Object \\
+\midrule
+\endhead
+待优化程序 & 优化器自身的 Source Code \\
+优化机制 & 当前优化器 \(\mathcal I_k\) \\
+评价函数 & Meta-Utility \(\widehat J_D\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+因此可以执行：
+\[\boxed{
+\mathcal I_{k+1}
+=
+\mathcal I_k
+\left(
+\widehat J_D,
+\mathcal I_k,
+\mathcal L
+\right)
+}\]
+
+这里第二个参数实际指优化器的可修改代码表示。STOP 原论文 Algorithm 1 正是采用了这一递归结构。
+
+展开来看：
+\[\begin{aligned}
+\mathcal I_1
+&=\mathcal I_0(\widehat J_D,\mathcal I_0,\mathcal L),\\
+\mathcal I_2
+&=\mathcal I_1(\widehat J_D,\mathcal I_1,\mathcal L),\\
+\mathcal I_3
+&=\mathcal I_2(\widehat J_D,\mathcal I_2,\mathcal L),\\
+&\ \vdots
+\end{aligned}\]
+
+注意，每一轮执行改进操作的 Optimizer 都可能不同。
+
+\textbf{Recursive Self-Improvement --- Step-by-step}
+
+\bookgraphic{0.463}{part-3-37-0001-009-01}{}
+
+\[\mathcal I_{1}=\mathcal I_{0}(\widehat J_D,\mathcal I_{0},\mathcal L)\]
+
+Round 0 → 1
+
+观察每一轮的 Executing Optimizer 与 Input Source Code 如何同时改变。底层 LLM 和外部 Meta-Utility 保持固定。
+
+\hypertarget{part-3-37-0001-stop-ux7684ux7b80ux5316ux5b9eux73b0}{%
+\subsubsection{3.5 STOP 的简化实现}\label{part-3-37-0001-stop-ux7684ux7b80ux5316ux5b9eux73b0}}
+
+现在，我们可以将整个系统写成一段非常简洁的伪代码。
+
+\begin{verbatim}
+def meta_utility(improver_code):
+
+    scores = []
+
+    for task in development_tasks:
+
+        solution = isolated_runner.improve(
+            improver_code=improver_code,
+            initial_solution=task.initial_solution,
+            utility=task.utility,
+            llm=llm,
+            budget=task_budget
+        )
+
+        scores.append(
+            task.utility(solution)
+        )
+
+    return mean(scores)
+
+
+def recursive_self_improvement(seed_code, rounds):
+
+    current_code = seed_code
+
+    for k in range(rounds):
+
+        next_code = isolated_runner.improve(
+            improver_code=current_code,
+            initial_solution=current_code,
+            utility=meta_utility,
+            llm=llm,
+            budget=meta_budget
+        )
+
+        save_version(k + 1, next_code)
+
+        current_code = next_code
+
+    return current_code
+\end{verbatim}
+
+最值得关注的是：
+
+\begin{verbatim}
+improver_code=current_code,
+initial_solution=current_code,
+\end{verbatim}
+
+同一份代码既是执行优化的程序，也是被优化的对象。
+
+这就是 Self-reference 在实际程序中的表现。
+
+当然，这段代码省略了 API 实现、代码验证、异常处理、执行隔离、资源计量等工程细节，不能直接运行。真正的系统需要在受限制的执行环境中运行生成的代码，并由外部程序控制评价与预算。
+
+\hypertarget{part-3-37-0001-stop-ux5b9eux9645ux53d1ux73b0ux4e86ux4ec0ux4e48}{%
+\subsection{4. STOP 实际发现了什么？}\label{part-3-37-0001-stop-ux5b9eux9645ux53d1ux73b0ux4e86ux4ec0ux4e48}}
+
+我们现在看一下真实论文中的实验结果，而不只是讨论理论上的可能性。
+
+STOP 的论文 Figure 4 比较了不同 Foundation Model 在 Learning Parity with Noise 任务上的样本外 Meta-Utility 随 RSI 轮数变化的情况。
+
+\textbf{STOP --- Held-out Test Meta-Utility}
+
+\textbf{GPT-4}
+
+\textbf{+11 pp}
+
+\bookgraphic{0.296}{part-3-37-0001-010-01}{RSI round}
+
+\textbf{GPT-3.5}
+
+\textbf{-37 pp}
+
+\bookgraphic{0.296}{part-3-37-0001-010-02}{RSI round}
+
+\textbf{Mixtral}
+
+\textbf{-13 pp}
+
+\bookgraphic{0.296}{part-3-37-0001-010-03}{RSI round}
+
+依据 STOP 原论文 Figure 4 近似读图重绘，纵轴统一为百分比。数值不是原始实验数据，误差带未重绘。
+
+原论文报告，在所研究的任务中，GPT-4 驱动的优化器取得了平均性能提升，而 GPT-3.5 和 Mixtral 驱动的优化器则出现了性能退化。作者也指出，即使是 GPT-4，单次独立运行中的改进也不一定单调。
+
+这个结果对我们很有启发性。
+
+它说明：
+\[\boxed{
+\text{Recursive Self-Modification}
+\not\Rightarrow
+\text{Recursive Performance Improvement}
+}\]
+
+底层模型是否能够提出合理的改进、是否能够正确实现复杂算法，以及 Evaluator 能否可靠地区分有效和无效修改，都会影响 RSI 的结果。
+
+不过，这并不能直接证明 GPT-3.5 和 Mixtral 的性能下降是由 Adaptive Overfitting 引起的。程序实现错误、搜索能力不足等机制同样可能导致下降。
+
+这种区分正是 X Program \#161 所强调的 Diagnosing，而不仅仅是 Observing。
+
+\hypertarget{part-3-37-0001-why-rsi-does-not-guarantee-monotonic-improvement}{%
+\subsection{5. Why RSI Does Not Guarantee Monotonic Improvement}\label{part-3-37-0001-why-rsi-does-not-guarantee-monotonic-improvement}}
+
+这是本阶段最重要的理论部分。
+
+\hypertarget{part-3-37-0001-ux4e09ux79cdux4e0dux540cux7684-improvement}{%
+\subsubsection{5.1 三种不同的 Improvement}\label{part-3-37-0001-ux4e09ux79cdux4e0dux540cux7684-improvement}}
+
+假设我们拥有一个优化器 \(\mathcal I_k\)，需要区分三个性能指标。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.47}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.49}}@{}}
+\toprule
+Performance & 衡量对象 \\
+\midrule
+\endhead
+Object-level Performance & 它找到的具体解有多好 \\
+Meta-level Performance & 它在一组任务上寻找好解的能力 \\
+Self-improvement Capability & 它产生更好的未来优化器的能力 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这三者不一定同步变化。
+
+例如：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}@{}}
+\toprule
+Optimizer & Financial Task Score & Ability to Modify Optimizer Code \\
+\midrule
+\endhead
+\(\mathcal I_0\) & 0.65 & Strong \\
+\(\mathcal I_1\) & 0.80 & Moderate \\
+\(\mathcal I_2\) & 0.85 & Weak \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+假想例子：对当前金融任务的优化能力上升，但继续改进自身的能力可能下降。
+
+这意味着一个 Agent 可以通过将自身修改为高度针对特定任务的 Optimizer 获得更高得分，却同时失去原有的通用搜索能力。
+
+STOP 论文也明确讨论了这一局限：能够更好地解决下游任务的 Improver，不一定更加擅长改进自身。
+
+\href{https://openreview.net/pdf?id=46Zgqo4QIU}{来源 1}
+
+因此：
+\[\boxed{
+\text{Better Downstream Optimizer}
+\not\Rightarrow
+\text{Better Self-improver}
+}\]
+
+我们可以将 Self-improvement Capability 视为一个单独的研究维度。
+
+\hypertarget{part-3-37-0001-myopic-optimizationux77edux89c6ux4f18ux5316}{%
+\subsubsection{5.2 Myopic Optimization（短视优化）}\label{part-3-37-0001-myopic-optimizationux77edux89c6ux4f18ux5316}}
+
+假设当前优化器产生了两个候选版本。
+
+\bookgraphic{0.446}{part-3-37-0001-014-01}{假想且确定性的搜索树。即使不存在统计噪声，Greedy Selection 也可能错过长期更优的路径。}
+
+在第一轮中：
+\[J(A)>J(B).\]
+
+但是在后续改进中：
+\[J(B')>J(A').\]
+
+所以，选择当前得分最高的 Agent，不一定能够产生长期最优的 Agent。
+
+这是一个与 Statistical Overfitting 不完全相同的问题，称为 \textbf{Myopic Optimization}，即优化过程过于关注当前收益，而忽略未来改进潜力。
+
+其后果可能包括：
+
+\begin{itemize}
+\tightlist
+\item
+  Premature Convergence：过早收敛；
+\item
+  Loss of Diversity：候选方法多样性下降；
+\item
+  Local Optimum：陷入局部最优；
+\item
+  Loss of Improvability：继续改进的能力下降。
+\end{itemize}
+
+这些机制即使在完全确定性的优化环境中也可能出现。
+
+\hypertarget{part-3-37-0001-path-dependenceux8defux5f84ux4f9dux8d56}{%
+\subsection{6. Path Dependence（路径依赖）}\label{part-3-37-0001-path-dependenceux8defux5f84ux4f9dux8d56}}
+
+\hypertarget{part-3-37-0001-ux4e3aux4ec0ux4e48-rsi-ux9700ux8981ux7814ux7a76ux5b8cux6574ux7684ux6f14ux5316ux5386ux53f2}{%
+\subsubsection{6.1 为什么 RSI 需要研究完整的演化历史？}\label{part-3-37-0001-ux4e3aux4ec0ux4e48-rsi-ux9700ux8981ux7814ux7a76ux5b8cux6574ux7684ux6f14ux5316ux5386ux53f2}}
+
+对于传统的固定目标优化，我们往往更关心最终结果。
+
+但在 RSI 中，当前版本不仅决定当前性能，还决定下一轮能够产生什么样的候选版本。
+
+因此，两个不同的初期修改可能产生完全不同的后续演化路径。
+
+\textbf{Path-dependent Agent Evolution}
+
+\bookgraphic{0.391}{part-3-37-0001-015-01}{不同的早期 Revision 可以改变后续候选生成机制，从而形成不同的演化轨迹。}
+
+假设：
+
+\begin{itemize}
+\tightlist
+\item
+  \(A_1\) 修改了特征生成方式，使未来搜索优先考虑稳健性。
+\item
+  \(B_1\) 修改了特征生成方式，使未来搜索优先考虑历史高收益。
+\end{itemize}
+
+那么在未来的十轮中，这两个 Agent 产生的候选模型集合可能完全不同。
+
+即使二者使用相同 LLM、相同 Evaluation Budget 和相同初始数据，也可能表现出不同的 Generalization Trajectory。
+
+这就是 Path Dependence。
+
+\hypertarget{part-3-37-0001-markovian-representation}{%
+\subsubsection{6.2 Markovian Representation}\label{part-3-37-0001-markovian-representation}}
+
+我们可以形式化地表示：
+\[A_{k+1}
+\sim
+\mathcal K(\cdot\mid A_k,H_k).\]
+
+其中 \(\mathcal K\) 为版本演化的 Transition Kernel。
+
+如果当前 Agent 状态没有完整包含历史信息，那么：
+\[\mathbb P(A_{k+1}\mid A_k,H_k)\]
+
+不一定等于：
+\[\mathbb P(A_{k+1}\mid A_k).\]
+
+但是，如果将全部相关历史纳入状态：
+\[W_k=(A_k,H_k),\]
+
+并且外部环境与其他必要状态都已被适当包含，就可以将版本演化描述为扩展状态上的 Markov Process。
+
+这只是一种系统建模方式，目前不需要进一步学习 Markov Chain 的完整理论。
+
+我们真正需要掌握的是：
+
+\textbf{两个相同的 Agent 代码版本，如果拥有不同的 Memory 和 Experiment History，其未来行为也可能不同。}
+
+因此，仅仅保存 Source Code 可能不足以完整复现 RSI 实验。
+
+还需要保存当时的 Context、Memory、配置、资源预算和随机性相关信息。
+
+\hypertarget{part-3-37-0001-positive-feedback-loops-in-rsi}{%
+\subsection{7. Positive Feedback Loops in RSI}\label{part-3-37-0001-positive-feedback-loops-in-rsi}}
+
+现在我们终于可以将 Part II 的统计理论与 Part III 的系统结构真正联系起来。
+
+\hypertarget{part-3-37-0001-capability-enhancing-feedback-loop}{%
+\subsubsection{7.1 Capability-enhancing Feedback Loop}\label{part-3-37-0001-capability-enhancing-feedback-loop}}
+
+理想情况下，RSI 可以形成一个正向的能力增长循环。
+
+\bookgraphic{0.484}{part-3-37-0001-016-01}{}
+
+如果每一轮 Agent 都能够更加可靠地识别真正有价值的修改，那么改进后的 Agent 可能进一步提升未来的研究质量。
+
+\hypertarget{part-3-37-0001-overfitting-amplifying-feedback-loop}{%
+\subsubsection{7.2 Overfitting-amplifying Feedback Loop}\label{part-3-37-0001-overfitting-amplifying-feedback-loop}}
+
+但是，完全相同的递归架构也可能形成另一种循环。
+
+\bookgraphic{0.484}{part-3-37-0001-017-01}{}
+
+Agent 不仅可以积累有效的优化策略，也可能积累并强化对有限评估数据的适应能力。
+
+更值得关注的是，这两种过程并不互斥，它们完全可以同时发生。
+
+\hypertarget{part-3-37-0001-a-toy-model-for-better-then-worse}{%
+\subsubsection{7.3 A Toy Model for Better, Then Worse}\label{part-3-37-0001-a-toy-model-for-better-then-worse}}
+
+我们尝试构造一个简单的 Phenomenological Model（现象模型）。
+
+定义：
+
+\begin{itemize}
+\tightlist
+\item
+  \(B_k\)：第 \(k\) 轮积累的 Genuine Improvement；
+\item
+  \(V_k\)：第 \(k\) 轮积累的 IS-specific Advantage；
+\item
+  \(\lambda\geq0\)：过度适应开发环境对 OOS 性能造成的损害系数；
+\item
+  \(S_0\)：初始性能。
+\end{itemize}
+
+假设：
+\[S_k^{\mathrm{IS}}
+=
+S_0+B_k+V_k,\]
+
+\[S_k^{\mathrm{OOS}}
+=
+S_0+B_k-\lambda V_k.\]
+
+于是：
+\[\boxed{
+G_k=(1+\lambda)V_k
+}\]
+
+这意味着在该模型中，IS/OOS Gap 的扩大来自 IS-specific Advantage 的累积。
+
+进一步考察相邻两轮：
+\[\Delta_k^{\mathrm{IS}}
+=
+\Delta B_k+\Delta V_k,\]
+
+\[\Delta_k^{\mathrm{OOS}}
+=
+\Delta B_k-\lambda\Delta V_k.\]
+
+因此，在假设两种收益均非负的情况下，当：
+\[\boxed{
+\Delta B_k<\lambda\Delta V_k
+}\]
+
+就会出现：
+\[\Delta_k^{\mathrm{IS}}>0,
+\qquad
+\Delta_k^{\mathrm{OOS}}<0.\]
+
+这为 Better, Then Worse 提供了一个非常简洁的解释框架。
+
+\textbf{Better, Then Worse --- Mechanistic Toy Model}
+
+假设 Genuine Improvement 逐渐饱和，而 IS-specific Advantage 持续累积。
+
+OOS penalty coefficient \(\lambda\)\\
+\textbf{0.80}
+
+0.8（范围 0--1.5）
+
+IS-specific gain per round\\
+\textbf{0.035}
+
+0.035（范围 0--0.06）
+
+\bookgraphic{0.446}{part-3-37-0001-018-01}{}
+
+IS score
+
+OOS score
+
+Genuine improvement + baseline
+
+OOS Peak Round
+
+\textbf{4}
+
+Peak-to-Final Decay
+
+\textbf{0.335}
+
+Final Generalization Gap
+
+\textbf{1.260}
+
+确定性教学模型：\(B_k=0.35(1-e^{-0.28k})\)，\(V_k\) 线性增长。参数均为人为设定，Score 不受 {[}0,1{]} 限制，并非真实实验数据。
+
+lambda = 0
+
+\bookgraphic{0.446}{part-3-37-0001-018-state-01}{}
+
+可以尝试将 \(\lambda\) 调整为零。
+
+你会发现，IS 和 OOS 仍然可能逐渐分离，但 OOS 不再发生退化。
+
+这恰好复现了我们在 Part I 中强调过的：
+\[\text{Score Inflation}
+\not\Rightarrow
+\text{Performance Decay}.\]
+
+需要特别说明：这个 Toy Model 是我们为理解研究问题而构造的现象解释模型。其不等式是由设定严格推出的，但设定本身尚未经实验验证。不能据此断言真实 RSI 一定符合这种数学形式。
+
+\hypertarget{part-3-37-0001-linear-evolution-vs.-open-ended-evolution}{%
+\subsection{8. Linear Evolution vs. Open-ended Evolution}\label{part-3-37-0001-linear-evolution-vs.-open-ended-evolution}}
+
+现在考虑另一个系统设计问题。
+
+假设某一轮 Self-Modification 损害了 Agent 的继续改进能力，那么下一轮是否必须基于这个已经受损的 Agent 继续工作？
+
+不一定。
+
+\hypertarget{part-3-37-0001-linear-evolution}{%
+\subsubsection{8.1 Linear Evolution}\label{part-3-37-0001-linear-evolution}}
+
+\bookgraphic{0.830}{part-3-37-0001-019-01}{每一轮只能基于上一轮版本继续改进。}
+
+如果某次 Revision 导致搜索机制退化，其影响可能被后续版本不断继承。
+
+\hypertarget{part-3-37-0001-archive-based-evolution}{%
+\subsubsection{8.2 Archive-based Evolution}\label{part-3-37-0001-archive-based-evolution}}
+
+\bookgraphic{0.531}{part-3-37-0001-020-01}{保存多个历史版本，允许从不同 Parent Version 继续探索。}
+
+Archive-based Evolution 不要求所有版本都沿同一条路径持续改进。
+
+这种思想也是 Darwin Gödel Machine（DGM）的重要组成部分：通过维护已发现 Agent 的 Archive，从历史版本中选择 Parent，并产生新的自我修改版本。
+
+\href{https://arxiv.org/abs/2505.22954}{来源 1}
+
+我们将在 III-E 中正式分析这篇论文。
+
+不过，Archive-based Evolution 也存在统计上的 Trade-off。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.41}}@{}}
+\toprule
+Evolution Strategy & Advantage & Potential Statistical Risk \\
+\midrule
+\endhead
+Linear & 简单、轨迹清晰 & 错误修改容易持续继承 \\
+Greedy with Rollback & 可以避免部分明显退化 & 容易产生短视选择 \\
+Archive-based & 保留多样性和替代路径 & 扩大搜索空间及选择压力 \\
+Population-based & 能够并行探索多个方向 & 更高计算成本与 Multiple Testing Risk \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+从 Part II 的视角来看，一个更强大的 Archive-based Search 不一定自动具有更好的泛化性能。
+
+它可能改善 Optimization，却同时增加 Statistical Complexity。
+
+\hypertarget{part-3-37-0001-research-practice-ux5982ux4f55ux9a8cux8bc1-rsi-ux672cux8eabux7684ux8d21ux732e}{%
+\subsection{9. Research Practice --- 如何验证 RSI 本身的贡献？}\label{part-3-37-0001-research-practice-ux5982ux4f55ux9a8cux8bc1-rsi-ux672cux8eabux7684ux8d21ux732e}}
+
+假设我们希望回答：
+
+\begin{quote}
+性能退化究竟来自普通的迭代搜索，还是来自优化机制本身的递归演化？
+\end{quote}
+
+我们可以设计三组对照实验。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}@{}}
+\toprule
+& Group A & Group B & Group C \\
+\midrule
+\endhead
+Method & Random Search & Fixed Adaptive Optimizer & RSI \\
+根据历史反馈调整搜索 & No & Yes & Yes \\
+修改研究方案 & Yes & Yes & Yes \\
+修改优化器自身 & No & No & Yes \\
+底层 LLM & Fixed & Fixed & Fixed \\
+Evaluation Protocol & Identical & Identical & Identical \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中：
+
+\textbf{A vs. B} 用于研究 Adaptive Search 的额外影响。
+
+\textbf{B vs. C} 用于研究允许优化机制本身变化之后，系统性能和统计风险如何改变。
+
+实验需要尽量匹配任务、候选方法空间和预算，并记录实际的 Token Usage、Evaluator Calls 与计算开销。否则，很难判断差异究竟来自 Recursive Modification，还是单纯来自使用了更多资源。
+
+建议记录的核心数据：
+
+\begin{verbatim}
+run_id
+iteration
+agent_version
+parent_version
+improver_version
+revision_category
+candidate_count
+evaluation_calls
+is_meta_utility
+oos_meta_utility
+execution_success
+resource_usage
+\end{verbatim}
+
+这里新增了一个特别重要的字段：
+
+\begin{verbatim}
+improver_version
+\end{verbatim}
+
+它允许我们区分：
+
+\begin{itemize}
+\tightlist
+\item
+  被优化的 Financial Method 发生了什么变化；
+\item
+  负责优化 Financial Method 的 Agent 发生了什么变化；
+\item
+  负责产生新 Agent 的 Improver 是否发生了变化。
+\end{itemize}
+
+这套实验可以帮助研究人员区分普通 Model Selection、Adaptive Optimization 与 Recursive Meta-optimization 所产生的影响。
+
+目前它仍然是一套候选研究设计，没有经过实际运行，也不能确认课题组的现有框架是否支持这样的组件隔离。
+
+\hypertarget{part-3-37-0001-literature-reading-guide-stop}{%
+\subsection{10. Literature Reading Guide --- STOP}\label{part-3-37-0001-literature-reading-guide-stop}}
+
+本阶段实际上只需要认真阅读一篇论文。
+
+\textbf{\href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{Self-Taught Optimizer (STOP)}}
+
+我已经核对了正式 COLM 2024 论文中的 Problem Statement、Algorithm 1 和主要实验图表。
+
+建议采用以下阅读顺序，而不是从第一页开始逐字阅读。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Reading Order & Paper Section & Focus \\
+\midrule
+\endhead
+1 & Abstract \& Introduction & 研究动机与定义 \\
+2 & Figure 2 & Seed Improver \\
+3 & Figure 3 & Self-improvement Pipeline \\
+4 & Section 3 & Utility 与 Meta-Utility \\
+5 & Algorithm 1 \& Section 4 & Recursive Optimization \\
+6 & Section 5 \& Figure 4 & 实验结果与性能退化 \\
+7 & Section 7 & Limitations \\
+8 & Appendix A & 理论泛化分析，第二轮阅读 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+尤其是 Appendix A，与我们在 Part II 学习过的 Generalization Theory 存在直接联系。
+
+STOP 不仅可以被视为一篇 Agent Architecture 论文，也可以被视为一篇涉及 Meta-level Model Selection 和 Generalization 的论文。
+
+\hypertarget{part-3-37-0001-iii-c-conclusion-index}{%
+\subsection{11. III-C --- Conclusion Index}\label{part-3-37-0001-iii-c-conclusion-index}}
+
+按照之前确定的学习方式，将本阶段压缩为以下核心结论。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.72}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+C1 & Object-level Optimization 优化解，Meta-level Optimization 优化求解方法 & §1 \\
+C2 & RSI 使优化主体与优化对象发生重合 & §1.3 \\
+C3 & 固定优化器驱动的迭代优化不一定属于严格的 RSI & §2 \\
+C4 & Meta-Utility 使优化器本身成为可评价的对象 & §3.3 \\
+C5 & STOP 通过当前 Improver 修改其自身代码 & §3.4--5 \\
+C6 & Self-Modification 不保证 Performance Improvement & §4 \\
+C7 & Downstream Performance 与 Self-improvement Capability 不等价 & §5 \\
+C8 & Greedy Selection 可能损害长期优化潜力 & §5.2 \\
+C9 & RSI 存在 Path Dependence & §6 \\
+C10 & 递归反馈既可能放大能力，也可能放大统计偏差 & §7 \\
+C11 & Genuine Improvement 与 IS-specific Advantage 可以形成竞争关系 & §7.3 \\
+C12 & Archive-based Evolution 可以保留替代路径，但可能扩大搜索风险 & §8 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-37-0001-core-formula-sheet}{%
+\subsubsection{11.1 Core Formula Sheet}\label{part-3-37-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Meta-optimization}
+
+\[\mathcal I^*
+=
+\arg\max_{\mathcal I\in\mathfrak I}
+J(\mathcal I).\]
+
+\textbf{Result 2 --- Meta-Utility}
+
+\[\widehat J_D(\mathcal I)
+=
+\frac1n\sum_{i=1}^{n}
+u_i\big(\mathcal I(u_i,x_i,\mathcal L)\big).\]
+
+\textbf{Result 3 --- Recursive Self-Improvement}
+
+\[\boxed{
+\mathcal I_{k+1}
+=
+\mathcal I_k
+(\widehat J_D,\mathcal I_k,\mathcal L)
+}\]
+
+\textbf{Result 4 --- Path-dependent Evolution}
+
+\[A_{k+1}\sim\mathcal K(\cdot\mid A_k,H_k).\]
+
+\textbf{Result 5 --- Candidate Decay Mechanism}
+
+\[\begin{cases}
+S_k^{\mathrm{IS}}=S_0+B_k+V_k,\\
+S_k^{\mathrm{OOS}}=S_0+B_k-\lambda V_k.
+\end{cases}\]
+
+在该假设模型下，OOS Performance Decay 发生于：
+\[\Delta B_k<\lambda\Delta V_k.\]
+
+前四项是优化与系统建模框架；第五项是我们提出的解释性 Toy Model，需要明确区分其证据等级。
+
+\hypertarget{part-3-37-0001-the-most-important-insight}{%
+\subsection{12. The Most Important Insight}\label{part-3-37-0001-the-most-important-insight}}
+
+我认为学到这里，我们对 X Program \#161 的认识已经发生了一次比较本质的变化。
+
+最初，我们将 RSI Overfitting 理解为：
+\[\text{Repeated Optimization}
+\longrightarrow
+\text{Overfitting}.\]
+
+但现在，我们可以进一步认识到，真正值得研究的是：
+
+\textbf{Optimization of Solutions}
+
+寻找表现更好的金融模型
+
+↓ \textbf{Optimization of Optimizers}
+
+寻找更擅长研究金融模型的 Agent
+
+↓ \textbf{Recursive Optimization of the Improvement Process}
+
+改进后的 Agent 继续改变自身的搜索与评价机制
+
+↓
+
+\textbf{Capability Accumulation}
+
+不断强化真正有效的研究方法
+
+\textbf{Bias Accumulation}
+
+不断强化对有限数据的适应
+
+↓ \textbf{Competition between the two processes}
+
+Potential explanation for Better, Then Worse
+
+\textbf{RSI 最有意思的地方在于：它不仅能够优化模型，也能够不断优化模型发生过拟合的方式。}
+
+这不是说 RSI 必然导致过拟合，而是说产生过拟合的机制本身，也可能成为递归演化的对象。
+
+这正是它与传统的固定优化器场景之间一个值得研究的区别。
+
+\hypertarget{part-3-37-0001-next-iii-d-agent-evaluation-search-selection}{%
+\subsection{Next --- III-D: Agent Evaluation, Search \& Selection}\label{part-3-37-0001-next-iii-d-agent-evaluation-search-selection}}
+
+III-A --- Agent Architecture \& Harness
+
+III-B --- Tools, Memory, Planning \& Reflection
+
+III-C --- Self-Modification \& Recursive Optimization
+
+III-D --- Evaluation, Search \& Selection
+
+III-E --- Automated Research Agents
+
+III-F --- Failure Modes \& Instrumentation
+
+下一阶段将从 Algorithm Design 的角度进一步研究 RSI。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Greedy Search & 每次选择最优候选是否合理？ \\
+Beam Search & 如何保留多条有潜力的演化路径？ \\
+Evolutionary Algorithms & 如何通过 Mutation 和 Selection 改进 Agent？ \\
+Monte Carlo Tree Search & 如何评价具有长期潜力的搜索路径？ \\
+Evaluator--Optimizer & 如何组织生成、评价与改进？ \\
+Selection Pressure & 搜索策略如何影响统计过拟合？ \\
+Multi-objective Optimization & 能否同时优化性能、复杂度和稳健性？ \\
+Goodhart's Law & 为什么过度优化评价指标可能破坏真实研究目标？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这一部分将与你目前学习的 Data Structures \& Algorithm Design 产生更多联系。
+
+III-C 解决了 \textbf{RSI 如何发生}；III-D 则进一步研究 \textbf{RSI 应该沿着怎样的搜索路径发生，以及不同搜索策略为什么会产生不同的泛化结果}。

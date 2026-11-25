@@ -1,0 +1,120 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 58,
+    "first_line": 7,
+    "last_line": 1318,
+    "chapter": "part-4-58-0007",
+    "chosen_title": "IV-A — 波动率聚集、厚尾与时间依赖",
+    "tables": 11,
+    "source_sha256": "199bae9a28b2b6fc7ac9b5eaf75cb8d6d749c899c7f0f973df2d358a13b527ac",
+    "source_math": 101,
+    "matched_math": 101
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 58,
+      "line": 11,
+      "component": "box",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 49,
+      "component": "box",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 257,
+      "component": "box",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 342,
+      "component": "card",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 410,
+      "component": "box",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 437,
+      "component": "box",
+      "state": "approved vector",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 741,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 823,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 934,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 1058,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 1229,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 1265,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 58,
+      "line": 1297,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    }
+  ]
+}

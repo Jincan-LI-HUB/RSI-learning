@@ -1,0 +1,1475 @@
+% Archive record 48, line 1.
+\hypertarget{part-3-48-0001-iii-f-rsi-failure-modes-experimental-instrumentation}{%
+\section{III-F --- RSI Failure Modes \& Experimental Instrumentation}\label{part-3-48-0001-iii-f-rsi-failure-modes-experimental-instrumentation}}
+
+这是 Part III 的最后一个模块，也是目前最接近实际科研工作的一个模块。
+
+此前我们已经理解了 RSI 的统计机制、系统架构、搜索算法以及代表性研究论文。现在假设导师或博士生直接给我们一个能够运行的 Financial RSI Framework，我们需要回答：
+
+\textbf{如何将一条看似简单的 IS/OOS Performance Curve，转化为具有科学解释力的研究结论？}
+
+这实际上涉及四个层次的研究工作。
+
+\textbf{01}
+
+\textbf{Observation --- 观察}
+
+记录每个 Agent 版本的行为和性能。
+
+\textbf{02}
+
+\textbf{Detection --- 检测}
+
+判断性能是否真的退化，以及何时开始退化。
+
+\textbf{03}
+
+\textbf{Diagnosis --- 诊断}
+
+识别可能造成退化的 Revision 和统计机制。
+
+\textbf{04}
+
+\textbf{Intervention --- 干预}
+
+通过受控实验验证缓解机制是否有效。
+
+这四个层次恰好对应 X Program \#161 的核心研究任务。
+
+本阶段会减少基础概念的重复介绍，重点学习新的实验分析方法。
+
+\hypertarget{part-3-48-0001-rsi-failure-taxonomyux5931ux8d25ux673aux5236ux5206ux7c7b}{%
+\subsection{1. RSI Failure Taxonomy（失败机制分类）}\label{part-3-48-0001-rsi-failure-taxonomyux5931ux8d25ux673aux5236ux5206ux7c7b}}
+
+首先，我们将 Part II 和 Part III 中已经讨论过的失败机制统一整理。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}@{}}
+\toprule
+Failure Mode & 主要机制 & Knowledge Index \\
+\midrule
+\endhead
+Classical Overfitting & 金融模型过度拟合训练数据 & II-A / B \\
+Selection Bias & 从大量候选中选择受噪声影响的最优者 & II-C \\
+Adaptive Overfitting & 反复利用历史评估反馈 & II-D \\
+Data Leakage & 使用不应获得的信息 & II-E \\
+Distribution Shift & 数据生成机制发生变化 & II-E \\
+Memory-mediated Bias & 将错误经验持久化 & III-B \\
+Loss of Improvability & 修改损害后续自我改进能力 & III-C \\
+Premature Convergence & 过早集中于某条搜索路径 & III-D \\
+Reward Hacking & 利用代理指标或评价机制的缺陷 & III-D \\
+Implementation Failure & 代码错误、工具失败或功能退化 & III-A \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这十种 Failure Modes 可以进一步归纳为四个研究层面。
+
+\textbf{Statistical Failure}
+
+过拟合、选择偏差、评估噪声
+
+\textbf{Optimization Failure}
+
+局部最优、短视搜索、改进能力退化
+
+\textbf{Evaluation Failure}
+
+数据泄漏、指标失效、Reward Hacking
+
+\textbf{System Failure}
+
+代码错误、状态污染、资源耗尽
+
+另外，Distribution Shift 属于外部环境层面的变化，可能与上述四类机制共同作用。
+
+这里的分类是我们为本项目建立的工作性 Taxonomy，不是互斥的正式学术分类。
+
+尤其需要注意：\textbf{观察到 OOS Decay 并不意味着已经观察到了 Overfitting。} 前者是实验现象，后者是需要进一步验证的机制解释。
+
+\hypertarget{part-3-48-0001-experimental-instrumentationux5b9eux9a8cux89c2ux6d4bux4f53ux7cfb}{%
+\subsection{2. Experimental Instrumentation（实验观测体系）}\label{part-3-48-0001-experimental-instrumentationux5b9eux9a8cux89c2ux6d4bux4f53ux7cfb}}
+
+\hypertarget{part-3-48-0001-ux4ec0ux4e48ux662f-instrumentation}{%
+\subsubsection{2.1 什么是 Instrumentation？}\label{part-3-48-0001-ux4ec0ux4e48ux662f-instrumentation}}
+
+在软件工程和实验研究中，Instrumentation 指在系统内部设置观测点，使原本不可见的运行过程能够被记录、测量和分析。
+
+对于 RSI，我们不能只保存：
+
+\begin{verbatim}
+Round 1: Score = 0.65
+Round 2: Score = 0.71
+Round 3: Score = 0.75
+\end{verbatim}
+
+因为这样的记录只能说明得分发生了变化，却无法解释变化的原因。
+
+我们需要保存足够的信息，以重建整个 Agent Evolution Process。
+
+\bookgraphic{0.432}{part-3-48-0001-003-01}{Instrumentation 将 Agent 的内部演化过程转化为可以进行统计分析的研究数据。}
+
+\hypertarget{part-3-48-0001-four-levels-of-experiment-logging}{%
+\subsubsection{2.2 Four Levels of Experiment Logging}\label{part-3-48-0001-four-levels-of-experiment-logging}}
+
+建议将实验数据分成四种粒度，而不是全部混合在一个 CSV 文件中。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}@{}}
+\toprule
+Logging Level & 记录对象 & Key Variables \\
+\midrule
+\endhead
+Run-level & 一次完整 RSI 实验 & Seed、LLM、Dataset、Budget \\
+Iteration-level & 一轮改进过程 & Incumbent、IS/OOS Score、Query Count \\
+Candidate-level & 每一个候选版本 & Parent、Code Diff、Acceptance、Failure \\
+Task-level & 每个版本在具体任务上的表现 & Loss、Return、Prediction、Runtime \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里最容易被忽略的是 \textbf{Candidate-level Logging}。
+
+假设 Agent 在 100 次尝试中只接受了 7 次修改。如果我们只保存这 7 个成功版本，就无法充分分析 Selection Bias，因为另外 93 个被拒绝的候选同样参与了搜索与选择过程。
+
+这实际上是一种实验记录层面的 Survivorship Bias。
+
+\hypertarget{part-3-48-0001-recommended-data-schema}{%
+\subsubsection{2.3 Recommended Data Schema}\label{part-3-48-0001-recommended-data-schema}}
+
+一个初步的研究数据结构可以如下设计：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+File & Purpose \\
+\midrule
+\endhead
+\texttt{runs.jsonl} & 保存每次独立实验的配置 \\
+\texttt{iterations.parquet} & 保存每轮演化轨迹 \\
+\texttt{candidates.parquet} & 保存全部候选及选择结果 \\
+\texttt{evaluations.parquet} & 保存任务级别的评估结果 \\
+\texttt{revisions.jsonl} & 保存代码修改及分类标签 \\
+\texttt{versions/} & 保存完整 Agent 版本 \\
+\texttt{manifest.json} & 保存数据、代码和环境的版本信息 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+例如，一条 Candidate Record 可以采用如下结构：
+
+\begin{verbatim}
+{
+    "run_id": "run_001",
+    "iteration": 12,
+    "candidate_id": "candidate_047",
+    "parent_version_id": "agent_008",
+    "improver_version_id": "agent_008",
+    "code_commit": "example_hash",
+    "revision_categories": [
+        "feature_expansion",
+        "search_budget_expansion"
+    ],
+    "is_score": 0.812,
+    "accepted": true,
+    "evaluation_calls": 15,
+    "input_tokens": 12500,
+    "output_tokens": 3200,
+    "execution_status": "success"
+}
+\end{verbatim}
+
+OOS Audit Record 则由外部 Evaluator 单独维护，不能被正在优化的 Agent 读取或修改。
+
+上述字段和目录是候选设计，并非课题组现有的数据格式。
+
+\hypertarget{part-3-48-0001-trajectory-analysisux6f14ux5316ux8f68ux8ff9ux5206ux6790}{%
+\subsection{3. Trajectory Analysis（演化轨迹分析）}\label{part-3-48-0001-trajectory-analysisux6f14ux5316ux8f68ux8ff9ux5206ux6790}}
+
+\hypertarget{part-3-48-0001-rsi-ux5b9eux9645ux4e0aux5b58ux5728ux4e09ux79cdux4e0dux540cux7684ux65f6ux95f4ux5c3aux5ea6}{%
+\subsubsection{3.1 RSI 实际上存在三种不同的时间尺度}\label{part-3-48-0001-rsi-ux5b9eux9645ux4e0aux5b58ux5728ux4e09ux79cdux4e0dux540cux7684ux65f6ux95f4ux5c3aux5ea6}}
+
+这是一个此前没有充分展开的研究问题。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.49}}@{}}
+\toprule
+Time Axis & Notation & 含义 \\
+\midrule
+\endhead
+Proposal Index & \(j\) & 已经产生了多少候选版本 \\
+Improvement Depth & \(k\) & 当前版本经历了多少次谱系上的改进 \\
+Evaluation Budget & \(Q_k\) & 累计执行了多少次评估 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+假设一个系统一共生成了 100 个候选 Agent，但只有 10 个被接受。
+
+那么：
+\[\text{Proposal Count}=100\]
+
+并不意味着：
+\[\text{Improvement Depth}=100.\]
+
+而对于 Archive-based Evolution，即使已经接受了 10 个不同版本，最终版本的谱系深度也可能小于 10。
+
+\bookgraphic{0.477}{part-3-48-0001-004-01}{虽然 A₆ 是第六个新生成的 Agent，但它的谱系深度只有 3。}
+
+因此，研究时应当明确区分：
+
+\begin{itemize}
+\tightlist
+\item
+  Chronological Trajectory：按照版本生成时间排列；
+\item
+  Incumbent Trajectory：按照每一时刻被选中的当前最优版本排列；
+\item
+  Lineage Trajectory：按照父子继承关系排列。
+\end{itemize}
+
+如果采用 Archive-based RSI，这三条曲线可能具有完全不同的含义。
+
+\hypertarget{part-3-48-0001-core-trajectory-metrics}{%
+\subsubsection{3.2 Core Trajectory Metrics}\label{part-3-48-0001-core-trajectory-metrics}}
+
+沿用 Part I 中的记号：
+\[S_k^{\mathrm{IS}},
+\qquad
+S_k^{\mathrm{OOS}},\]
+
+并统一采用 Score 越高越好的定义。
+
+\hypertarget{part-3-48-0001-metric-1-generalization-gap}{%
+\paragraph{Metric 1 --- Generalization Gap}\label{part-3-48-0001-metric-1-generalization-gap}}
+
+\[\boxed{
+G_k=S_k^{\mathrm{IS}}-S_k^{\mathrm{OOS}}
+}\]
+
+衡量开发得分与样本外得分之间的差距。
+
+\hypertarget{part-3-48-0001-metric-2-incremental-improvement}{%
+\paragraph{Metric 2 --- Incremental Improvement}\label{part-3-48-0001-metric-2-incremental-improvement}}
+
+\[\begin{aligned}
+\Delta_k^{\mathrm{IS}}
+&=S_k^{\mathrm{IS}}-S_{k-1}^{\mathrm{IS}},\\
+\Delta_k^{\mathrm{OOS}}
+&=S_k^{\mathrm{OOS}}-S_{k-1}^{\mathrm{OOS}}.
+\end{aligned}\]
+
+衡量相邻版本之间的变化。
+
+对于树状演化结构，应当将 \(A_{k-1}\) 替换为对应的 Parent Version，才能分析实际 Revision 的影响。
+
+\hypertarget{part-3-48-0001-metric-3-peak-round}{%
+\paragraph{Metric 3 --- Peak Round}\label{part-3-48-0001-metric-3-peak-round}}
+
+\[\boxed{
+k_{\mathrm{peak}}
+=
+\arg\max_{0\leq k\leq K}
+S_k^{\mathrm{OOS}}
+}\]
+
+记录观察到的 OOS Performance Peak。
+
+\hypertarget{part-3-48-0001-metric-4-peak-to-final-decay}{%
+\paragraph{Metric 4 --- Peak-to-Final Decay}\label{part-3-48-0001-metric-4-peak-to-final-decay}}
+
+\[\boxed{
+D_{\mathrm{PF}}
+=
+S_{k_{\mathrm{peak}}}^{\mathrm{OOS}}
+-
+S_K^{\mathrm{OOS}}
+}\]
+
+衡量最终版本相对于历史峰值的退化程度。
+
+\hypertarget{part-3-48-0001-metric-5-endpoint-improvement}{%
+\paragraph{Metric 5 --- Endpoint Improvement}\label{part-3-48-0001-metric-5-endpoint-improvement}}
+
+\[\boxed{
+I_{\mathrm{end}}
+=
+S_K^{\mathrm{OOS}}-S_0^{\mathrm{OOS}}
+}\]
+
+衡量 RSI 的最终净收益。
+
+\hypertarget{part-3-48-0001-metric-6-maximum-performance-drawdown}{%
+\paragraph{Metric 6 --- Maximum Performance Drawdown}\label{part-3-48-0001-metric-6-maximum-performance-drawdown}}
+
+借鉴金融领域 Drawdown 的思想，可以定义：
+\[\boxed{
+D_{\max}
+=
+\max_{0\leq i\leq j\leq K}
+\left(
+S_i^{\mathrm{OOS}}-S_j^{\mathrm{OOS}}
+\right)
+}\]
+
+它与 Peak-to-Final Decay 的区别在于，后者只关注最终时刻，而前者能够捕捉中途发生、后来又得到恢复的严重性能退化。
+
+\textbf{RSI Trajectory --- Metric Illustration}
+
+\bookgraphic{0.786}{part-3-48-0001-005-01}{}
+
+Peak Round
+
+\textbf{4}
+
+Endpoint Improvement
+
+\textbf{+0.15}
+
+Peak-to-Final Decay
+
+\textbf{0.15}
+
+Maximum Drawdown
+
+\textbf{0.28}
+
+Final IS/OOS Gap
+
+\textbf{0.39}
+
+Peak OOS Performance
+
+\textbf{0.70}
+
+合成教学数据。最终版本虽然优于初始版本，但已经经历了严重的中途退化。
+
+如果研究人员只报告 Endpoint Improvement，就可能将上述实验视为一次成功的 RSI。
+
+而从完整轨迹来看，该系统显然还存在需要研究的 Generalization Problem。
+
+需要注意，这些基于经验最大值的指标都可能受到 Extreme Value Selection Bias 的影响，因此应当结合统计不确定性进行解释。
+
+\hypertarget{part-3-48-0001-change-point-detectionux53d8ux70b9ux68c0ux6d4b}{%
+\subsection{4. Change-point Detection（变点检测）}\label{part-3-48-0001-change-point-detectionux53d8ux70b9ux68c0ux6d4b}}
+
+这是整个 III-F 中最重要的新数学内容。
+
+项目描述明确要求识别：
+
+\begin{quote}
+The iteration at which out-of-sample performance begins to decay.
+\end{quote}
+
+但如何定义这个时刻，并不是一件完全 Trivial 的事情。
+
+\hypertarget{part-3-48-0001-peak-detection-ux4e0dux7b49ux4e8e-change-point-detection}{%
+\subsubsection{4.1 Peak Detection 不等于 Change-point Detection}\label{part-3-48-0001-peak-detection-ux4e0dux7b49ux4e8e-change-point-detection}}
+
+如果我们直接使用：
+\[k_{\mathrm{peak}}
+=
+\arg\max_k S_k^{\mathrm{OOS}},\]
+
+得到的只是观察得分最高的时刻。
+
+由于 Evaluation Noise 的存在，这个时刻不一定是真正的性能变化点。
+
+我们将观察得分写为：
+\[S_k^{\mathrm{OOS}}
+=
+J_k^{\mathrm{OOS}}+\eta_k,\]
+
+其中 \(J_k^{\mathrm{OOS}}\) 表示潜在的真实性能，\(\eta_k\) 表示评估误差。
+
+研究者真正希望识别的是 \(J_k^{\mathrm{OOS}}\) 的趋势何时发生变化，而不是简单寻找 \(S_k^{\mathrm{OOS}}\) 的最大值。
+
+\bookgraphic{0.477}{part-3-48-0001-006-01}{}
+
+Observed OOS
+
+Latent performance
+
+合成示意：经验峰值出现在第 4 轮，而潜在趋势在第 6 轮才发生变化。
+
+\hypertarget{part-3-48-0001-segmented-regressionux5206ux6bb5ux56deux5f52}{%
+\subsubsection{4.2 Segmented Regression（分段回归）}\label{part-3-48-0001-segmented-regressionux5206ux6bb5ux56deux5f52}}
+
+我们可以利用你已经熟悉的 Linear Regression，建立一个具有未知变点的模型。
+
+沿用 Part I 中的参数记号：
+\[\boxed{
+S_k^{\mathrm{OOS}}
+=
+\alpha+\beta k
++\gamma(k-\tau)_+
++\eta_k
+}\]
+
+其中：
+\[(k-\tau)_+=\max(0,k-\tau).\]
+
+这里的 \(\alpha\) 为回归截距，\(\tau\) 为候选变点，并非此前 Softmax Selection 的温度参数。
+
+展开可得：
+\[S_k^{\mathrm{OOS}}
+=
+\begin{cases}
+\alpha+\beta k+\eta_k,
+&k\leq\tau,\\
+\alpha+\beta k+\gamma(k-\tau)+\eta_k,
+&k>\tau.
+\end{cases}\]
+
+因此：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.58}}@{}}
+\toprule
+Parameter & Interpretation \\
+\midrule
+\endhead
+\(\alpha\) & 初始预期性能 \\
+\(\beta\) & 变点前的改善速度 \\
+\(\gamma\) & 变点处的斜率变化 \\
+\(\beta+\gamma\) & 变点后的改善或退化速度 \\
+\(\tau\) & 潜在趋势变化点 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对于 Better, Then Worse，我们特别关注：
+\[\boxed{
+\beta>0,
+\qquad
+\beta+\gamma<0.
+}\]
+
+这表示 Agent 在早期具有正向性能趋势，但在后期进入负向性能趋势。
+
+\textbf{Segmented Regression Explorer}
+
+\[S_k^{\mathrm{OOS}}=\alpha+\beta k+\gamma(k-\tau)_+\]
+
+Change point \(\tau\)\\
+\textbf{Round 6}
+
+6（范围 2--18）
+
+Initial slope \(\beta\)\\
+\textbf{0.045}
+
+0.045（范围 0--0.07）
+
+Slope change \(\gamma\)\\
+\textbf{-0.075}
+
+-0.075（范围 -0.12--0.04）
+
+\bookgraphic{0.467}{part-3-48-0001-007-01}{}
+
+Pre-change slope
+
+\textbf{0.045}
+
+Post-change slope
+
+\textbf{-0.030}
+
+\textbf{Better, Then Worse}
+
+确定性教学模型，固定截距 α = 0.4，暂时省略 Evaluation Noise。
+
+tau = 18
+
+\bookgraphic{0.467}{part-3-48-0001-007-state-01}{}
+
+你会发现，仅仅发生斜率变化并不意味着性能退化。
+
+例如：
+\[\beta=0.05,\qquad\gamma=-0.02,\]
+
+则：
+\[\beta+\gamma=0.03>0.\]
+
+此时 Agent 仍然在改善，只不过改善速度有所下降。
+
+所以 \textbf{Diminishing Returns 不等于 Performance Decay。}
+
+\hypertarget{part-3-48-0001-ux5982ux4f55ux4f30ux8ba1ux672aux77e5ux7684ux53d8ux70b9}{%
+\subsubsection{4.3 如何估计未知的变点？}\label{part-3-48-0001-ux5982ux4f55ux4f30ux8ba1ux672aux77e5ux7684ux53d8ux70b9}}
+
+既然我们事先不知道 \(\tau\)，就可以枚举所有合理的候选位置。
+
+对于每一个候选变点 \(\tau\)，通过 Ordinary Least Squares 估计：
+\[\hat\alpha_\tau,\quad
+\hat\beta_\tau,\quad
+\hat\gamma_\tau.\]
+
+并计算 Residual Sum of Squares：
+\[\operatorname{RSS}(\tau)
+=
+\sum_{k=0}^{K}
+\left[
+S_k^{\mathrm{OOS}}
+-\hat\alpha_\tau
+-\hat\beta_\tau k
+-\hat\gamma_\tau(k-\tau)_+
+\right]^2.\]
+
+最后：
+\[\boxed{
+\hat\tau=
+\arg\min_{\tau\in\mathcal T}
+\operatorname{RSS}(\tau)
+}\]
+
+其中 \(\mathcal T\) 为允许的变点位置集合，需要保证变点两侧均具有足够的观测值。
+
+下面是一个简化的 Python 实现：
+
+\begin{verbatim}
+import numpy as np
+
+
+def estimate_change_point(scores, min_segment=3):
+    y = np.asarray(scores, dtype=float)
+    k = np.arange(len(y))
+
+    results = []
+
+    for tau in range(
+        min_segment,
+        len(y) - min_segment
+    ):
+        X = np.column_stack([
+            np.ones(len(y)),
+            k,
+            np.maximum(k - tau, 0)
+        ])
+
+        coefficients, *_ = np.linalg.lstsq(
+            X, y, rcond=None
+        )
+
+        alpha, beta, gamma = coefficients
+
+        fitted = X @ coefficients
+        rss = np.sum((y - fitted) ** 2)
+
+        results.append({
+            "change_point": tau,
+            "pre_slope": beta,
+            "post_slope": beta + gamma,
+            "rss": rss
+        })
+
+    if not results:
+        raise ValueError("Insufficient observations")
+
+    return min(results, key=lambda r: r["rss"])
+\end{verbatim}
+
+该代码只是单变点的探索性 OLS Estimator，尚未包含统计检验和置信区间，也未在真实 RSI 数据上运行。
+
+未知变点的分段回归具有成熟的统计研究基础，可以进一步参考 Muggeo (2003) 的工作。
+
+\href{https://doi.org/10.1002/sim.1545}{来源 1}
+
+\hypertarget{part-3-48-0001-ux4e00ux4e2aux975eux5e38ux91cdux8981ux7684ux7edfux8ba1ux9677ux9631}{%
+\subsubsection{4.4 一个非常重要的统计陷阱}\label{part-3-48-0001-ux4e00ux4e2aux975eux5e38ux91cdux8981ux7684ux7edfux8ba1ux9677ux9631}}
+
+上述算法只要具有足够的观测值，就一定会返回一个候选变点。
+
+但这并不意味着真实变点一定存在。
+
+因此，需要比较两个竞争模型：
+\[\mathcal M_0:
+\quad
+S_k^{\mathrm{OOS}}
+=
+\alpha+\beta k+\eta_k,\]
+
+\[\mathcal M_1:
+\quad
+S_k^{\mathrm{OOS}}
+=
+\alpha+\beta k+\gamma(k-\tau)_+
++\eta_k.\]
+
+由于 \(\mathcal M_1\) 具有更大的模型灵活性，它的拟合误差通常不会高于 \(\mathcal M_0\)。
+
+所以不能仅仅因为：
+\[\operatorname{RSS}_1<\operatorname{RSS}_0\]
+
+就认定存在真正的 Change Point。
+
+还需要考虑模型复杂度、变点搜索产生的选择偏差以及残差相关性。由于在无变点的零假设下 \(\tau\) 不可识别，普通固定参数的 F-test 也不能直接照搬。
+
+对于初期研究，建议采用如下优先级：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}@{}}
+\toprule
+Method & Function & Priority \\
+\midrule
+\endhead
+Peak Detection & 描述经验峰值 & P0 \\
+Segmented Regression & 估计趋势变化点 & P0 \\
+Bootstrap-based Calibration & 估计变点与模型比较的不确定性 & P0 \\
+PELT & 检测多个变点 & P1 \\
+CUSUM & 检测累计偏离或监控变化 & P1 \\
+Bayesian Change-point Detection & 建立变点的概率模型 & P2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+关于更多 Offline Change-point Detection 方法，可以参考 Truong、Oudre 和 Vayatis (2020) 的综述。
+
+\href{https://www.sciencedirect.com/science/article/pii/S0165168419303494}{来源 1}
+
+现阶段不需要将所有方法都学完。\textbf{Segmented Regression 已经足够作为一个有解释力的研究起点。}
+
+\hypertarget{part-3-48-0001-revision-classificationux4feeux6539ux5206ux7c7b}{%
+\subsection{5. Revision Classification（修改分类）}\label{part-3-48-0001-revision-classificationux4feeux6539ux5206ux7c7b}}
+
+识别变点之后，下一步是研究变点附近发生了什么。
+
+\hypertarget{part-3-48-0001-revision-ux4e0dux5e94ux8be5ux53eaux7528ux5355ux4e00ux7c7bux522bux8868ux793a}{%
+\subsubsection{5.1 Revision 不应该只用单一类别表示}\label{part-3-48-0001-revision-ux4e0dux5e94ux8be5ux53eaux7528ux5355ux4e00ux7c7bux522bux8868ux793a}}
+
+假设 Agent 执行如下代码修改：
+
+\begin{verbatim}
+- candidates = generate_features(n=10)
++ candidates = generate_features(n=100)
+
+- model = Ridge(alpha=1.0)
++ model = Ridge(alpha=0.01)
+
++ memory.save_best_feature_combinations()
+\end{verbatim}
+
+这实际上同时改变了三个组件：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}@{}}
+\toprule
+Code Change & Revision Label & Statistical Implication \\
+\midrule
+\endhead
+10 → 100 candidates & Search Expansion & 更强的选择压力 \\
+Ridge penalty 1 → 0.01 & Regularization Reduction & 模型约束降低 \\
+Save best combinations & Memory Expansion & 历史选择信息积累 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+因此，Revision Classification 更适合被设计为一个 \textbf{Multi-label Classification Problem}，而不是强制每一轮只能归入一个类别。
+
+\hypertarget{part-3-48-0001-proposed-revision-taxonomy}{%
+\subsubsection{5.2 Proposed Revision Taxonomy}\label{part-3-48-0001-proposed-revision-taxonomy}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.45}}@{}}
+\toprule
+Code & Category & 修改对象 \\
+\midrule
+\endhead
+R01 & Feature Engineering & 特征构造、筛选、变换 \\
+R02 & Model Architecture & 预测模型结构 \\
+R03 & Hyperparameter & 模型参数设置 \\
+R04 & Search Strategy & 搜索宽度、深度与路径 \\
+R05 & Memory \& Context & 历史信息保存与检索 \\
+R06 & Evaluation Logic & 评价指标及验证协议 \\
+R07 & Data Processing & 数据清洗、划分与时间处理 \\
+R08 & Regularization & 复杂度及稳健性约束 \\
+R09 & Resource Allocation & 时间、Token、候选预算 \\
+R10 & Infrastructure & 调试、并行化、执行优化 \\
+R11 & Improver Logic & 自我改进机制 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+值得注意的是，Revision Category 与 Failure Mechanism 并不是同一个概念。
+
+例如，Feature Expansion 可能产生真实改进，也可能引发过拟合。分类应当先描述发生了什么修改，再独立调查其统计影响。
+
+\hypertarget{part-3-48-0001-revision-impact-quadrants}{%
+\subsubsection{5.3 Revision Impact Quadrants}\label{part-3-48-0001-revision-impact-quadrants}}
+
+对于每一次被接受的 Revision，可以定义：
+\[\Delta_k^{\mathrm{IS}},
+\qquad
+\Delta_k^{\mathrm{OOS}}.\]
+
+将每次修改放入一个二维坐标系中。
+
+\textbf{Revision Impact Map}
+
+\bookgraphic{0.350}{part-3-48-0001-010-01}{假想 Revision 数据。右下象限是重点诊断区域，但进入该区域并不能单独证明过拟合。}
+
+我们可以据此定义一个描述性统计量：
+\[\widehat p_r
+=
+\frac{
+\sum_k
+\mathbf 1_{\{
+r\in\mathcal R_k,\,
+\Delta_k^{\mathrm{IS}}>0,\,
+\Delta_k^{\mathrm{OOS}}<0
+\}}
+}{
+\sum_k\mathbf 1_{\{r\in\mathcal R_k\}}
+},\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(r\)：某种 Revision Category；
+\item
+  \(\mathcal R_k\)：第 \(k\) 次修改包含的类别集合。
+\end{itemize}
+
+它衡量包含某类修改的实验中，有多少比例表现为 IS 改善、OOS 下降。
+
+但这个比例仅仅是 Association，并非该类修改导致过拟合的因果概率。不同修改可能共同出现，而且后期修改本身就可能处在更容易发生退化的阶段。
+
+\hypertarget{part-3-48-0001-rollback-counterfactual-and-ablation-study}{%
+\subsection{6. Rollback, Counterfactual and Ablation Study}\label{part-3-48-0001-rollback-counterfactual-and-ablation-study}}
+
+这是从描述性分析进入机制验证的关键一步。
+
+\hypertarget{part-3-48-0001-rollbackux56deux6edaux5b9eux9a8c}{%
+\subsubsection{6.1 Rollback（回滚实验）}\label{part-3-48-0001-rollbackux56deux6edaux5b9eux9a8c}}
+
+假设某个 Agent 的演化过程如下：
+\[A_0\rightarrow A_1\rightarrow
+A_2\rightarrow A_3\rightarrow A_4.\]
+
+我们发现 \(A_3\) 的 OOS Performance 明显下降。
+
+一种自然的方法是回滚到 \(A_2\)，重新执行实验。
+
+但回滚实际上可以回答两种不同的问题。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.62}}@{}}
+\toprule
+Experiment & Question \\
+\midrule
+\endhead
+Static Rollback & 旧版本是否具有更好的当前性能？ \\
+Evolutionary Rollback & 从旧版本继续改进，是否能够形成更好的长期轨迹？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+前者关注版本的直接性能，后者关注 Path Dependence 和未来演化潜力。
+
+两者不能混为一谈。
+
+\hypertarget{part-3-48-0001-counterfactual-revision-analysisux53cdux4e8bux5b9eux4feeux6539ux5206ux6790}{%
+\subsubsection{6.2 Counterfactual Revision Analysis（反事实修改分析）}\label{part-3-48-0001-counterfactual-revision-analysisux53cdux4e8bux5b9eux4feeux6539ux5206ux6790}}
+
+假设 \(A_3\) 相对于 \(A_2\) 包含三个修改：
+\[A_3=A_2+\{r_1,r_2,r_3\}.\]
+
+这里的加号表示应用一组代码修改，并非通常意义上的代数运算。
+
+为了分析 \(r_2\) 的影响，我们构造：
+\[A_3^{(-r_2)}
+=
+A_2+\{r_1,r_3\}.\]
+
+然后比较：
+\[\boxed{
+\delta_{r_2}^{\mathrm{OOS}}
+=
+J^{\mathrm{OOS}}(A_3)
+-
+J^{\mathrm{OOS}}(A_3^{(-r_2)})
+}\]
+
+其中 \(\delta_{r_2}^{\mathrm{OOS}}\) 表示在其余修改保持不变时，保留 \(r_2\) 所对应的性能差异。
+
+\bookgraphic{0.439}{part-3-48-0001-011-01}{假想实验结果。只有在其余组件、资源预算及评价条件得到充分控制时，这种差异才具有明确的干预解释。}
+
+这比观察 Revision 前后的得分变化更具有解释力，因为我们主动改变了一个实验因素。
+
+\hypertarget{part-3-48-0001-single-component-ablation-ux7684ux5c40ux9650}{%
+\subsubsection{6.3 Single-component Ablation 的局限}\label{part-3-48-0001-single-component-ablation-ux7684ux5c40ux9650}}
+
+但删除单个组件也存在一个问题：不同修改可能具有 Interaction Effect。
+
+例如：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.70}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.26}}@{}}
+\toprule
+Configuration & OOS Score \\
+\midrule
+\endhead
+Baseline & 0.60 \\
+Feature Expansion & 0.50 \\
+Regularization & 0.63 \\
+Feature Expansion + Regularization & 0.72 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里 Feature Expansion 单独使用时损害性能，但与 Regularization 结合之后反而能够获得更好的结果。
+
+因此不能简单认定 Feature Expansion 是一个有害的 Revision Category。
+
+对于高度相关的组件，可以进一步采用 III-B 中介绍过的 Factorial Experiment。
+
+\hypertarget{part-3-48-0001-direct-effect-vs.-evolutionary-effect}{%
+\subsubsection{6.4 Direct Effect vs. Evolutionary Effect}\label{part-3-48-0001-direct-effect-vs.-evolutionary-effect}}
+
+这一点是 RSI 特有的研究难题。
+
+某次 Revision 可能只使当前 OOS Score 提高 0.01，但却显著改变后续候选生成机制，使未来十轮的表现大幅提高或下降。
+
+因此我们可以分别研究：
+\[\delta_r^{\mathrm{direct}}
+=
+J^{\mathrm{OOS}}(A^+)
+-
+J^{\mathrm{OOS}}(A^-),\]
+
+以及：
+\[\boxed{
+\delta_r^{\mathrm{evolution}}(L)
+=
+\mathbb E\left[
+J^{\mathrm{OOS}}(A_L^+)
+-
+J^{\mathrm{OOS}}(A_L^-)
+\right].
+}\]
+
+其中 \(A^+\) 和 \(A^-\) 分别表示包含与不包含该修改的版本；\(A_L^+\) 和 \(A_L^-\) 表示从两个版本出发，在匹配预算下继续执行 \(L\) 轮改进得到的 Agent。
+
+后者衡量的不是某次修改的即时收益，而是其对未来演化过程的影响。
+
+\textbf{A Revision can improve the agent while damaging its future evolution.}
+
+这可能是 RSI Diagnosis 区别于普通 Model Ablation 的重要研究方向。
+
+\hypertarget{part-3-48-0001-statistical-analysis-across-independent-runs}{%
+\subsection{7. Statistical Analysis across Independent Runs}\label{part-3-48-0001-statistical-analysis-across-independent-runs}}
+
+\hypertarget{part-3-48-0001-ux4e3aux4ec0ux4e48ux4e00ux6761ux6f02ux4eaeux7684ux66f2ux7ebfux8fdcux8fdcux4e0dux591f}{%
+\subsubsection{7.1 为什么一条漂亮的曲线远远不够？}\label{part-3-48-0001-ux4e3aux4ec0ux4e48ux4e00ux6761ux6f02ux4eaeux7684ux66f2ux7ebfux8fdcux8fdcux4e0dux591f}}
+
+LLM-based RSI 通常具有较强随机性。
+
+相同的初始 Agent、相同的任务和相同的 Evaluation Protocol，也可能产生完全不同的演化路径。
+
+\bookgraphic{0.723}{part-3-48-0001-012-01}{}
+
+假想的四次独立 RSI Runs：不同实验具有不同的退化时间，甚至可能完全不发生退化。
+
+如果我们只展示 Run 1 和 Run 3，就可能夸大 RSI 退化现象的普遍性。
+
+如果只展示 Run 4，又可能掩盖 RSI 的统计风险。
+
+因此，需要报告所有符合预先规定实验条件的 Runs，包括失败、中断和未检测到退化的实验。
+
+\hypertarget{part-3-48-0001-mean-trajectory-ux4e0e-uncertainty}{%
+\subsubsection{7.2 Mean Trajectory 与 Uncertainty}\label{part-3-48-0001-mean-trajectory-ux4e0e-uncertainty}}
+
+设我们执行了 \(N\) 次独立实验，其中 \(S_{r,k}^{\mathrm{OOS}}\) 表示第 \(r\) 次实验、第 \(k\) 轮的 OOS 得分。
+
+定义平均轨迹：
+\[\boxed{
+\bar S_k^{\mathrm{OOS}}
+=
+\frac1N\sum_{r=1}^{N}
+S_{r,k}^{\mathrm{OOS}}
+}\]
+
+在 Runs 独立同分布且具有有限方差的条件下，对平均得分的标准误差可以估计为：
+\[\widehat{\operatorname{SE}}_k
+=
+\frac{s_k}{\sqrt N},\]
+
+其中 \(s_k\) 为第 \(k\) 轮不同 Runs 之间的样本标准差。
+
+\textbf{Mean Trajectory with Uncertainty}
+
+\bookgraphic{0.465}{part-3-48-0001-014-01}{示意性平均轨迹及不确定性区间，并非根据上图四组数据计算的实际置信区间。}
+
+但是，同一次实验中相邻版本的性能显然具有较强相关性。
+
+因此，不能把每个 Iteration 都当成独立观测值。
+
+比较完整演化过程时，应当尽可能以 \textbf{Run} 为重采样或统计比较单位，并保留每条轨迹内部的依赖关系。
+
+还需要区分：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Uncertainty Source & Meaning \\
+\midrule
+\endhead
+Agent Stochasticity & LLM 采样和搜索随机性 \\
+Evaluation Uncertainty & 有限 OOS 样本造成的得分波动 \\
+Environment Variation & 不同市场时期和任务分布的差异 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+如果所有 Runs 都使用同一套金融数据，那么跨 Run 的置信区间主要描述算法随机性，并不充分覆盖未来市场的不确定性。
+
+\hypertarget{part-3-48-0001-decay-onset-ux672cux8eabux4e5fux662fux968fux673aux53d8ux91cf}{%
+\subsubsection{7.3 Decay Onset 本身也是随机变量}\label{part-3-48-0001-decay-onset-ux672cux8eabux4e5fux662fux968fux673aux53d8ux91cf}}
+
+设第 \(r\) 次独立实验检测到的变点为：
+\[\hat\tau_r.\]
+
+我们不仅可以研究平均性能轨迹，还可以研究：
+\[\hat\tau_1,\ldots,\hat\tau_N\]
+
+的分布。
+
+这会产生几个新的 Research Metrics：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.58}}@{}}
+\toprule
+Metric & Research Meaning \\
+\midrule
+\endhead
+Decay Incidence & 有多少比例的实验检测到了退化 \\
+Median Decay Onset & 退化通常何时开始 \\
+Decay Severity & 退化发生后有多严重 \\
+Time-to-decay & 在多大评估预算之后开始退化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对于直到实验结束仍未发生退化的 Runs，可以考虑将其视为 Right-censored Observations，引入 Survival Analysis。
+
+不过，Survival Analysis 暂时属于进阶内容，而且必须先建立可靠的退化事件定义。检测结果本身不可靠时，更复杂的分析模型也不能自动解决问题。
+
+\hypertarget{part-3-48-0001-reproducibilityux53efux590dux73b0ux6027}{%
+\subsection{8. Reproducibility（可复现性）}\label{part-3-48-0001-reproducibilityux53efux590dux73b0ux6027}}
+
+RSI 的复现比普通机器学习实验更加复杂，因为它的最终结果不仅取决于模型参数，还取决于整个演化历史。
+
+\[A_{k+1}
+\sim
+\mathcal K(\cdot\mid A_k,H_k).\]
+
+因此，保存 \(A_K\) 并不足以完整复现整个过程。
+
+\hypertarget{part-3-48-0001-three-levels-of-reproducibility}{%
+\subsubsection{8.1 Three Levels of Reproducibility}\label{part-3-48-0001-three-levels-of-reproducibility}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Level & Research Goal \\
+\midrule
+\endhead
+Artifact Reproduction & 重新运行某个已经生成的 Agent \\
+Trajectory Replay & 重建此前发生的修改和选择过程 \\
+Statistical Replication & 独立运行系统并复现总体统计结论 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+第三层通常比要求每一次 LLM 输出完全相同更具有科研价值。
+
+尤其是在使用商业 LLM API 时，即使指定了相同的 Seed，也未必能够保证输出完全确定。
+
+\hypertarget{part-3-48-0001-reproducibility-checklist}{%
+\subsubsection{8.2 Reproducibility Checklist}\label{part-3-48-0001-reproducibility-checklist}}
+
+\textbf{Research Reproducibility Checklist}
+
+\begin{itemize}
+\item
+  固定并记录 Foundation Model 及 API 配置
+\item
+  保存初始 Agent 和全部候选代码版本
+\item
+  记录 Prompt、Memory 和工具调用历史
+\item
+  保存数据版本、划分方法与文件校验值
+\item
+  固定外部 Evaluator 和评分协议
+\item
+  记录随机种子及依赖环境
+\item
+  记录全部成功、失败和被拒绝的实验
+\item
+  记录 Token、Runtime 和 Evaluation Budget
+\item
+  隔离 OOS Audit 与 Agent Development
+\item
+  保留能够复现实验结果的分析脚本
+\end{itemize}
+
+适用于未来实际搭建或审阅 RSI Experimental Framework。
+
+你的实验日志不应该仅仅服务于论文写作，而应该能够成为整个研究结论的 Evidence Chain。
+
+\hypertarget{part-3-48-0001-mitigation-mechanismsux7f13ux89e3ux673aux5236}{%
+\subsection{9. Mitigation Mechanisms（缓解机制）}\label{part-3-48-0001-mitigation-mechanismsux7f13ux89e3ux673aux5236}}
+
+现在我们可以将 Part II 和 Part III 中已经讨论过的干预手段统一整理。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.21}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Mitigation & 干预位置 & Targeted Failure \\
+\midrule
+\endhead
+Early Stopping & Outer Loop & 后期过拟合 \\
+Search Budget Control & Generation & Multiple Testing \\
+Feedback Compression & Evaluator & Information Accumulation \\
+Reusable Holdout & Evaluation & Adaptive Overfitting \\
+Complexity Penalty & Selection & Complexity Accumulation \\
+Statistical Acceptance & Selection & Noise-driven Revision \\
+Sparse Modification & Generation & 复杂度累积、归因困难 \\
+Memory Filtering & Memory & Spurious Experience \\
+Archive-based Search & Controller & Premature Convergence \\
+Independent Verification & Evaluation & Leakage、Reward Hacking \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+它们并不是可以无条件解决问题的十种方法，而是针对不同 Failure Mechanism 的候选干预。
+
+例如，如果性能退化主要来自 Concept Drift，那么单纯限制 Agent 的 Search Budget 可能没有太大效果。
+
+这说明研究流程应当是：
+\[\boxed{
+\text{Diagnosis}
+\longrightarrow
+\text{Targeted Intervention}
+\longrightarrow
+\text{Independent Verification}
+}\]
+
+而不是在还没有理解失败原因时，直接将所有 Regularization Mechanisms 添加到系统中。
+
+\hypertarget{part-3-48-0001-research-practice-ux4e00ux4e2aux5b8cux6574ux7684ux6700ux5c0fux7814ux7a76ux9879ux76ee}{%
+\subsection{10. Research Practice --- 一个完整的最小研究项目}\label{part-3-48-0001-research-practice-ux4e00ux4e2aux5b8cux6574ux7684ux6700ux5c0fux7814ux7a76ux9879ux76ee}}
+
+假设现在我们希望独立开展一个与 X Program \#161 相关的 Pilot Study。
+
+我建议先构建一个不涉及昂贵 LLM 调用的可控实验，再逐步引入真实 Agent。
+
+\textbf{Phase 1 --- Synthetic Financial Environment}
+
+\begin{verbatim}
+  构造包含真实预测信号与无效噪声特征的数据集，控制 SNR。
+\end{verbatim}
+
+\textbf{Phase 2 --- Non-adaptive Baseline}
+
+\begin{verbatim}
+  通过 Random Search 建立普通 Model Selection 的基线。
+\end{verbatim}
+
+\textbf{Phase 3 --- Adaptive Optimization}
+
+\begin{verbatim}
+  允许系统根据历史 IS Feedback 调整特征搜索方向。
+\end{verbatim}
+
+\textbf{Phase 4 --- Self-modifying Optimizer}
+
+\begin{verbatim}
+  允许优化机制本身改变，包括候选生成、搜索宽度与选择规则。
+\end{verbatim}
+
+\textbf{Phase 5 --- Diagnosis}
+
+\begin{verbatim}
+  记录完整轨迹，执行 Segmented Regression、Revision Classification 和 Rollback。
+\end{verbatim}
+
+\textbf{Phase 6 --- Mitigation}
+
+\begin{verbatim}
+  引入复杂度约束、反馈控制或统计接受机制，在独立环境中检验效果。
+\end{verbatim}
+
+这项研究最有价值的地方是，我们可以逐步增加系统的复杂度。
+
+如果仅仅通过 Phase 2 就能够复现 Better, Then Worse，那么不应该将全部退化归因于 RSI。
+
+如果 Phase 3 明显加重退化，则说明 Adaptive Feedback 值得关注。
+
+如果在严格控制预算之后，Phase 4 仍然表现出额外的退化，就有理由继续研究 Recursive Self-Modification 的独特影响。
+
+这样的实验结果即使不支持最初的研究假设，也仍然具有科学价值。
+
+\hypertarget{part-3-48-0001-literature-index}{%
+\subsection{11. Literature Index}\label{part-3-48-0001-literature-index}}
+
+本阶段不需要额外阅读大量 Agent 论文，主要补充两篇统计方法文献。
+
+\textbf{P0 --- Estimating Regression Models with Unknown Break-points}
+
+Vito M. R. Muggeo · Statistics in Medicine · 2003 · 同行评审
+
+重点学习未知变点的分段回归建模及估计方法。
+
+\href{https://doi.org/10.1002/sim.1545}{DOI: 10.1002/sim.1545} \href{https://pubmed.ncbi.nlm.nih.gov/12973787/}{来源 1}
+
+\textbf{P1 --- Selective Review of Offline Change Point Detection Methods}
+
+Charles Truong, Laurent Oudre, Nicolas Vayatis · Signal Processing · 2020 · 同行评审
+
+系统了解 Change-point Detection 中的 Cost Function、Search Method 和模型选择问题。
+
+\href{https://www.sciencedirect.com/science/article/pii/S0165168419303494}{正式出版页面} \href{https://www.sciencedirect.com/science/article/pii/S0165168419303494}{来源 1}
+
+上述两篇论文是统计方法参考，并不是专门针对 RSI 的研究。如何将这些方法用于短而高度相关的 Agent Trajectories，仍需要根据实际实验条件进行适配。
+
+\hypertarget{part-3-48-0001-iii-f-conclusion-index}{%
+\subsection{12. III-F --- Conclusion Index}\label{part-3-48-0001-iii-f-conclusion-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.69}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.15}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+F1 & OOS Decay 不等于已经确认的 Overfitting & §1 \\
+F2 & Instrumentation 必须保存完整搜索历史 & §2 \\
+F3 & Proposal Count、Lineage Depth 和 Evaluation Budget 不等价 & §3.1 \\
+F4 & Endpoint Improvement 可能掩盖严重的中间退化 & §3.2 \\
+F5 & Observed Peak 不等于真实 Change Point & §4.1 \\
+F6 & Segmented Regression 可以估计趋势变化 & §4.2--3 \\
+F7 & 拟合出一个变点不代表真实变点存在 & §4.4 \\
+F8 & Revision Classification 应当允许多标签 & §5 \\
+F9 & Revision Association 不等于因果效应 & §5.3 \\
+F10 & Rollback 和 Ablation 有助于验证具体修改的影响 & §6 \\
+F11 & Direct Effect 与 Evolutionary Effect 需要区分 & §6.4 \\
+F12 & 独立重复实验是统计可靠性的基础 & §7 \\
+F13 & RSI Reproducibility 需要保存完整演化历史 & §8 \\
+F14 & Mitigation 应当针对已经识别的失败机制 & §9 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-48-0001-part-iii-consolidated-conclusion-index}{%
+\subsection{Part III --- Consolidated Conclusion Index}\label{part-3-48-0001-part-iii-consolidated-conclusion-index}}
+
+至此，我们正式完成了 Part III。
+
+按照之前的学习方式，这里不再重复全部推导，而是将六个模块的本质结论统一整理。
+
+\hypertarget{part-3-48-0001-core-knowledge-map}{%
+\subsection{13. Core Knowledge Map}\label{part-3-48-0001-core-knowledge-map}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.46}}@{}}
+\toprule
+Module & Fundamental Question & Core Knowledge \\
+\midrule
+\endhead
+III-A & Agent 是什么？ & Architecture、Harness、State \\
+III-B & Agent 如何执行任务和积累经验？ & Tools、Memory、Planning、Reflection \\
+III-C & Agent 如何递归改进自身？ & Self-reference、Meta-optimization \\
+III-D & Agent 如何选择演化方向？ & Search、Evaluation、Selection Pressure \\
+III-E & 真实 RSI 系统如何实现？ & STOP、AIDE、ADAS、DGM 等 \\
+III-F & 如何研究 RSI 的性能退化？ & Instrumentation、Change Point、Ablation \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-48-0001-core-mathematical-results}{%
+\subsection{14. Core Mathematical Results}\label{part-3-48-0001-core-mathematical-results}}
+
+\hypertarget{part-3-48-0001-result-1-agent-representation}{%
+\paragraph{Result 1 --- Agent Representation}\label{part-3-48-0001-result-1-agent-representation}}
+
+\[A=(\mathcal L,P,M,T,C).\]
+
+Agent 的能力由底层模型与外围软件系统共同决定。
+
+Index：III-A §3
+
+\hypertarget{part-3-48-0001-result-2-agent-execution}{%
+\paragraph{Result 2 --- Agent Execution}\label{part-3-48-0001-result-2-agent-execution}}
+
+\[\begin{cases}
+a_t\sim\pi_A(\cdot\mid s_t),\\
+(e_{t+1},o_{t+1})
+\sim\mathcal E(\cdot\mid e_t,a_t),\\
+s_{t+1}=U_A(s_t,a_t,o_{t+1}).
+\end{cases}\]
+
+Agent 可以被抽象为与环境持续交互的状态转换系统。
+
+Index：III-A §3.2
+
+\hypertarget{part-3-48-0001-result-3-memory-mediated-adaptation}{%
+\paragraph{Result 3 --- Memory-mediated Adaptation}\label{part-3-48-0001-result-3-memory-mediated-adaptation}}
+
+\[M_{k+1}=U_M(M_k,F_k,H_k).\]
+
+Memory 可以积累可迁移经验，也可能积累开发数据中特有的统计偏差。
+
+Index：III-B §3
+
+\hypertarget{part-3-48-0001-result-4-recursive-meta-optimization}{%
+\paragraph{Result 4 --- Recursive Meta-optimization}\label{part-3-48-0001-result-4-recursive-meta-optimization}}
+
+\[\boxed{
+\mathcal I_{k+1}
+=
+\mathcal I_k
+(\widehat J_D,\mathcal I_k,\mathcal L)
+}\]
+
+当前优化器同时充当优化主体与待优化对象。
+
+Index：III-C §3
+
+\hypertarget{part-3-48-0001-result-5-path-dependent-evolution}{%
+\paragraph{Result 5 --- Path-dependent Evolution}\label{part-3-48-0001-result-5-path-dependent-evolution}}
+
+\[A_{k+1}\sim\mathcal K(\cdot\mid A_k,H_k).\]
+
+未来演化受到当前 Agent 及历史信息的共同影响。
+
+Index：III-C §6
+
+\hypertarget{part-3-48-0001-result-6-candidate-decay-model}{%
+\paragraph{Result 6 --- Candidate Decay Model}\label{part-3-48-0001-result-6-candidate-decay-model}}
+
+\[\begin{cases}
+S_k^{\mathrm{IS}}=S_0+B_k+V_k,\\
+S_k^{\mathrm{OOS}}=S_0+B_k-\lambda V_k.
+\end{cases}\]
+
+在这一解释性模型中，当真实边际收益不足以抵消过度适应造成的损害时，OOS Performance 开始下降。
+
+\[\Delta B_k<\lambda\Delta V_k.\]
+
+Index：III-C §7.3。属于假设性 Toy Model，而非已验证的 RSI 定律。
+
+\hypertarget{part-3-48-0001-result-7-greedy-selection}{%
+\paragraph{Result 7 --- Greedy Selection}\label{part-3-48-0001-result-7-greedy-selection}}
+
+\[A_{k+1}
+=
+\arg\max_{A\in\mathcal C_k\cup\{A_k\}}
+\widehat J_{\mathrm{IS}}(A).\]
+
+固定、确定性的 IS Score 可以在这一规则下机械地保持单调增长。
+
+Index：III-D §2.1
+
+\hypertarget{part-3-48-0001-result-8-regularized-agent-optimization}{%
+\paragraph{Result 8 --- Regularized Agent Optimization}\label{part-3-48-0001-result-8-regularized-agent-optimization}}
+
+\[U(A)
+=
+\widehat J_{\mathrm{IS}}(A)
+-\lambda_1\Omega(A)
+-\lambda_2C_{\mathrm{res}}(A).\]
+
+通过复杂度与资源约束限制无节制的 Proxy Optimization。
+
+Index：III-D §6
+
+\hypertarget{part-3-48-0001-result-9-performance-change-point-model}{%
+\paragraph{Result 9 --- Performance Change-point Model}\label{part-3-48-0001-result-9-performance-change-point-model}}
+
+\[\boxed{
+S_k^{\mathrm{OOS}}
+=
+\alpha+\beta k+\gamma(k-\tau)_++\eta_k
+}\]
+
+在所设模型下，Better, Then Worse 对应：
+\[\beta>0,\qquad\beta+\gamma<0.\]
+
+Index：III-F §4
+
+\hypertarget{part-3-48-0001-result-10-evolutionary-revision-effect}{%
+\paragraph{Result 10 --- Evolutionary Revision Effect}\label{part-3-48-0001-result-10-evolutionary-revision-effect}}
+
+\[\boxed{
+\delta_r^{\mathrm{evolution}}(L)
+=
+\mathbb E[
+J^{\mathrm{OOS}}(A_L^+)
+-
+J^{\mathrm{OOS}}(A_L^-)
+]
+}\]
+
+研究特定修改对后续演化过程的长期影响，而不仅是即时性能变化。
+
+Index：III-F §6.4
+
+\hypertarget{part-3-48-0001-part-ii-part-iii-unified-research-framework}{%
+\subsection{15. Part II + Part III --- Unified Research Framework}\label{part-3-48-0001-part-ii-part-iii-unified-research-framework}}
+
+现在我们可以将之前两大部分真正整合起来。
+
+\textbf{Part II --- Statistics}
+
+Finite-sample Error
+
+Selection Bias
+
+Adaptive Overfitting
+
+Distribution Shift
+
+\textbf{Part III --- Systems}
+
+Agent Harness
+
+Recursive Optimization
+
+Search \& Selection
+
+Memory \& Feedback
+
+↓
+
+\textbf{Statistical Bias Propagating through Recursive Agent Evolution}
+
+统计偏差通过 Agent 的搜索、记忆与递归修改机制不断传播
+
+↓
+
+\textbf{Performance Trajectory}
+
+IS Growth · OOS Improvement · Potential Decay
+
+↓
+
+\textbf{Detection}
+
+When?
+
+\textbf{Diagnosis}
+
+Why?
+
+↓
+
+\textbf{Mitigation \& Independent Verification}
+
+How can we improve generalization?
+
+学到这里，我们已经能够从统计学和计算机科学两个角度解释该课题。
+
+不过，目前仍然缺少第三个关键维度：
+
+\textbf{为什么 Finance 特别容易成为 RSI Overfitting 的高风险环境？}
+
+前面所有的统计推导，很多都是建立在 IID、有限方差、有界损失或相对稳定的数据生成机制之上。
+
+真实金融数据恰恰经常不满足这些条件。
+
+这将是 Part IV 的核心。
+
+\hypertarget{part-3-48-0001-next-part-iv-financial-ai-and-quantitative-research}{%
+\subsection{Next --- Part IV: Financial AI and Quantitative Research}\label{part-3-48-0001-next-part-iv-financial-ai-and-quantitative-research}}
+
+Part I --- Understanding the Research Problem
+
+Completed
+
+Part II --- Statistical Learning Theory
+
+Completed
+
+Part III --- Agentic AI \& Recursive Self-Improvement
+
+Completed
+
+Part IV --- Financial AI \& Quantitative Research
+
+Next
+
+Part V --- Literature \& Research Frontier
+
+Part VI --- Research Practice
+
+\hypertarget{part-3-48-0001-part-iv-learning-roadmap}{%
+\subsection{Part IV --- Learning Roadmap}\label{part-3-48-0001-part-iv-learning-roadmap}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.61}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Section & Topic & Priority \\
+\midrule
+\endhead
+IV-A & Financial Time Series \& Data Generating Process & P0 \\
+IV-B & Low Signal-to-Noise Ratio \& Predictability & P0 \\
+IV-C & Financial Factors \& Machine Learning Models & P1 \\
+IV-D & Returns, Sharpe Ratio \& Performance Evaluation & P0 \\
+IV-E & Backtest Overfitting, PBO \& Deflated Sharpe Ratio & P0 \\
+IV-F & Market Regime, Non-stationarity \& Robustness & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+我们暂时不深入 Options Pricing、Stochastic Calculus 和复杂的金融衍生品定价，因为这些并不是当前研究所必需的知识。
+
+此外，目前仍然没有获得课题组的实际 Framework、Dataset 和具体 Financial Task。因此，本阶段提出的诊断指标、日志结构、变点算法和实验方案均属于待验证的研究设计。
+
+\textbf{Part II 解决了 Why Overfitting Happens；Part III 解决了 How RSI Amplifies or Mitigates It；Part IV 将解决 Why Finance Makes This Problem Particularly Difficult。}

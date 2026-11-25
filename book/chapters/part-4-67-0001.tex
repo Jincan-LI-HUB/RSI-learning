@@ -1,0 +1,1820 @@
+% Archive record 67, line 1.
+\hypertarget{part-4-67-0001-iv-d-returns-sharpe-ratio-performance-evaluation}{%
+\section{IV-D --- Returns, Sharpe Ratio \& Performance Evaluation}\label{part-4-67-0001-iv-d-returns-sharpe-ratio-performance-evaluation}}
+
+上一阶段 IV-C，我们研究了 Financial Factors、Prediction Models、Information Coefficient 和 Rank IC。
+
+但现在出现了一个非常重要的问题：
+
+\textbf{假设 RSI Agent 不断提高金融预测模型的 IC，那么它所创造的经济价值是否也会不断提高？}
+
+答案是不一定。
+
+在金融研究中，我们需要严格区分三个不同层级的性能：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}@{}}
+\toprule
+Performance Level & Research Question & Typical Metrics \\
+\midrule
+\endhead
+Statistical Performance & 预测是否准确？ & MSE、MAE、\(R^2\) \\
+Ranking Performance & 是否正确识别相对表现？ & IC、Rank IC、ICIR \\
+Economic Performance & 预测转化为投资组合后是否有效？ & Return、Sharpe Ratio、Drawdown \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这三类性能之间存在联系，但并不等价。
+
+对于 RSI 而言，选择哪一种指标作为 Objective Function，将直接影响 Agent 的搜索方向、Revision 类型以及潜在的过拟合机制。
+
+\hypertarget{part-4-67-0001-learning-roadmap}{%
+\subsection{0. Learning Roadmap}\label{part-4-67-0001-learning-roadmap}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.55}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.21}}@{}}
+\toprule
+Section & Topic & Priority \\
+\midrule
+\endhead
+IV-A & Financial Time Series \& DGP & \\
+IV-B & Low SNR \& Predictability & \\
+IV-C & Financial Factors \& ML Models & \\
+\textbf{IV-D} & \textbf{Returns, Sharpe Ratio \& Evaluation} & 当前 \\
+IV-E & Backtest Overfitting, PBO \& DSR & 待学习 \\
+IV-F & Market Regime \& Robustness & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+本阶段最重要的新数学内容是 \textbf{Sharpe Ratio 的统计性质}。我们将利用 Linear Algebra、Conditional Expectation、CLT 和 Delta Method 解释为什么这个广泛使用的金融指标可能被 RSI 系统严重高估。
+
+\hypertarget{part-4-67-0001-from-prediction-to-portfolioux4eceux9884ux6d4bux5230ux6295ux8d44ux7ec4ux5408}{%
+\subsection{1. From Prediction to Portfolio（从预测到投资组合）}\label{part-4-67-0001-from-prediction-to-portfolioux4eceux9884ux6d4bux5230ux6295ux8d44ux7ec4ux5408}}
+
+\hypertarget{part-4-67-0001-prediction-is-not-a-trading-decision}{%
+\subsubsection{1.1 Prediction Is Not a Trading Decision}\label{part-4-67-0001-prediction-is-not-a-trading-decision}}
+
+沿用 IV-C 中的记号：
+\[\hat r_{i,t+1}=h(X_{i,t}).\]
+
+这是资产 \(i\) 在时刻 \(t\) 对下一期收益率的预测。
+
+但是，预测模型本身并没有决定投资组合如何分配资金。我们还需要一个 Portfolio Construction Function。
+
+定义：
+\[\boldsymbol w_t
+=
+\psi(\hat{\boldsymbol r}_{t+1}),\]
+
+其中：
+\[\boldsymbol w_t=
+\begin{pmatrix}
+w_{1,t}\\
+\vdots\\
+w_{N,t}
+\end{pmatrix}\]
+
+表示投资组合中各资产的期初权重，\(\psi\) 表示从预测结果到资产权重的映射。
+
+\bookgraphic{0.360}{part-4-67-0001-004-01}{预测模型只是整个金融研究系统中的一个组件。Portfolio Construction 和 Execution Protocol 同样决定最终经济绩效。}
+
+因此，两个 Agent 即使拥有完全相同的预测结果，也可能产生不同的组合收益。
+
+\hypertarget{part-4-67-0001-portfolio-return}{%
+\subsubsection{1.2 Portfolio Return}\label{part-4-67-0001-portfolio-return}}
+
+定义资产收益率向量：
+\[\boldsymbol r_{t+1}
+=
+\begin{pmatrix}
+r_{1,t+1}\\
+\vdots\\
+r_{N,t+1}
+\end{pmatrix}.\]
+
+在充分投资、忽略交易成本且使用期初权重的条件下，组合的单期简单收益率为：
+\[\boxed{
+R_{t+1}^{\mathrm{gross}}
+=
+\boldsymbol w_t^\top\boldsymbol r_{t+1}
+}\]
+
+对于只允许做多的 Fully-invested Portfolio：
+\[\sum_{i=1}^{N}w_{i,t}=1,
+\qquad
+w_{i,t}\geq0.\]
+
+如果允许做空、融资或持有现金，则需要额外明确杠杆、现金收益和融资成本的处理方式。
+
+\hypertarget{part-4-67-0001-expected-return-and-portfolio-risk}{%
+\subsubsection{1.3 Expected Return and Portfolio Risk}\label{part-4-67-0001-expected-return-and-portfolio-risk}}
+
+定义：
+\[\boldsymbol\mu_t
+=
+\mathbb E[\boldsymbol r_{t+1}\mid\mathcal F_t],\]
+
+\[\Sigma_t
+=
+\operatorname{Cov}(\boldsymbol r_{t+1}\mid\mathcal F_t).\]
+
+由于合法的投资权重 \(\boldsymbol w_t\) 在时刻 \(t\) 已经确定，即对 \(\mathcal F_t\) 可测，因此：
+\[\boxed{
+\mathbb E[R_{t+1}^{\mathrm{gross}}\mid\mathcal F_t]
+=
+\boldsymbol w_t^\top\boldsymbol\mu_t
+}\]
+
+以及：
+\[\boxed{
+\operatorname{Var}(R_{t+1}^{\mathrm{gross}}\mid\mathcal F_t)
+=
+\boldsymbol w_t^\top\Sigma_t\boldsymbol w_t
+}\]
+
+这就是经典 Portfolio Theory 的数学基础。
+
+特别需要注意，组合风险不仅取决于每个资产自身的方差，也取决于资产之间的协方差。
+
+\textbf{Portfolio Risk --- Diversification Explorer}
+
+假想资产 A：预期收益 8\%，波动率 20\%；资产 B：预期收益 5\%，波动率 10\%。各参数采用相同时间尺度。
+
+Weight of Asset A\\
+\textbf{50\%}
+
+0.5（范围 0--1）
+
+Correlation \(\rho_{AB}\)\\
+\textbf{0.20}
+
+0.2（范围 -1--1）
+
+Expected Portfolio Return
+
+\textbf{6.50\%}
+
+Portfolio Volatility
+
+\textbf{12.04\%}
+
+调整相关系数，可以看到组合的预期收益保持不变，但风险可能发生显著变化。纯数学教学模型。
+
+这说明，即使预测模型的预期收益保持不变，通过改变 Portfolio Construction，也有可能改变风险调整后的表现。
+
+所以，在诊断 RSI 时，我们不能将 Portfolio-level Improvement 全部归因于预测模型变得更准确。
+
+\hypertarget{part-4-67-0001-return-wealth-and-transaction-costs}{%
+\subsection{2. Return, Wealth and Transaction Costs}\label{part-4-67-0001-return-wealth-and-transaction-costs}}
+
+\hypertarget{part-4-67-0001-cumulative-returnux7d2fux8ba1ux6536ux76caux7387}{%
+\subsubsection{2.1 Cumulative Return（累计收益率）}\label{part-4-67-0001-cumulative-returnux7d2fux8ba1ux6536ux76caux7387}}
+
+沿用 IV-A 中的 Simple Return 定义。
+
+设 \(W_t\) 为时刻 \(t\) 的投资组合财富，\(R_t^{\mathrm{net}}\) 为扣除交易成本后的单期组合收益率。
+
+那么：
+\[W_t=W_{t-1}(1+R_t^{\mathrm{net}}).\]
+
+递归展开：
+\[\boxed{
+W_T=W_0\prod_{t=1}^{T}(1+R_t^{\mathrm{net}})
+}\]
+
+相应的累计收益率为：
+\[R_{\mathrm{cum}}
+=
+\prod_{t=1}^{T}(1+R_t^{\mathrm{net}})-1.\]
+
+这里需要区分 Arithmetic Mean Return 与 Geometric Mean Return：
+\[\bar R_{\mathrm{arith}}
+=
+\frac1T\sum_{t=1}^{T}R_t^{\mathrm{net}},\]
+
+\[\bar R_{\mathrm{geo}}
+=
+\left[
+\prod_{t=1}^{T}(1+R_t^{\mathrm{net}})
+\right]^{1/T}-1.\]
+
+在财富始终为正的条件下，由 AM--GM Inequality：
+\[\boxed{
+\bar R_{\mathrm{geo}}
+\leq
+\bar R_{\mathrm{arith}}
+}\]
+
+只有每期收益率完全相同时才达到等号。
+
+这意味着相同的算术平均收益率，可以对应不同的最终财富。
+
+\hypertarget{part-4-67-0001-volatility-dragux6ce2ux52a8ux635fux8017}{%
+\subsubsection{2.2 Volatility Drag（波动损耗）}\label{part-4-67-0001-volatility-dragux6ce2ux52a8ux635fux8017}}
+
+考虑两个假想投资组合，它们的算术平均收益率完全相同。
+
+\bookgraphic{0.786}{part-4-67-0001-006-01}{}
+
+Portfolio A --- Final Wealth
+
+\textbf{100.00}
+
+每期收益率 0\%
+
+Portfolio B --- Final Wealth
+
+\textbf{88.47}
+
+交替获得 +20\% 与 −20\%
+
+两者的算术平均收益率均为 0\%，但 Portfolio B 的累计收益为 −11.53\%。合成教学数据。
+
+从数学上看，对于较小的收益率 \(R\)，利用 Taylor Expansion：
+\[\log(1+R)\approx R-\frac12R^2.\]
+
+取期望：
+\[\mathbb E[\log(1+R)]
+\approx
+\mu-\frac12(\sigma^2+\mu^2).\]
+
+其中：
+\[\mu=\mathbb E[R],
+\qquad
+\sigma^2=\operatorname{Var}(R).\]
+
+如果 \(\mu^2\) 可以忽略，则：
+\[\boxed{
+\mathbb E[\log(1+R)]
+\approx
+\mu-\frac12\sigma^2
+}\]
+
+这个近似说明，在其他条件相同的情况下，波动率可能降低长期复利增长率。
+
+不过，这并非对任意收益率分布都成立的精确公式，尤其需要注意大幅收益变化和厚尾分布。
+
+\hypertarget{part-4-67-0001-turnoverux6362ux624bux7387}{%
+\subsubsection{2.3 Turnover（换手率）}\label{part-4-67-0001-turnoverux6362ux624bux7387}}
+
+假设上一期投资组合经过市场价格变化之后，其当前权重为 \(\boldsymbol w_t^-\)，而 Agent 希望调整到新的目标权重 \(\boldsymbol w_t\)。
+
+定义双边交易量口径的 Turnover：
+\[\boxed{
+\mathrm{TO}_t
+=
+\sum_{i=1}^{N}|w_{i,t}-w_{i,t}^-|
+}\]
+
+如果采用单边换手率口径，则通常再除以 2。整个实验必须统一定义。
+
+注意，\(\boldsymbol w_t^-\) 不一定等于上一期目标权重 \(\boldsymbol w_{t-1}\)，因为价格变化本身会改变资产在组合中的相对权重。
+
+假设单位交易金额的比例成本为 \(c\)，则可以构造简化的净收益模型：
+\[\boxed{
+R_{t+1}^{\mathrm{net}}
+\approx
+R_{t+1}^{\mathrm{gross}}
+-c\cdot\mathrm{TO}_t
+}\]
+
+这是忽略成本复合效应、融资费用和市场冲击等因素的一阶近似。
+
+\textbf{Transaction Cost Explorer}
+
+使用 Basis Point（bp）作为收益单位，1 bp = 0.01\%。
+
+Gross return\\
+\textbf{12 bp}
+
+12（范围 0--50）
+
+Turnover\\
+\textbf{150\%}
+
+1.5（范围 0--3）
+
+Cost per unit traded\\
+\textbf{10 bp}
+
+10（范围 0--30）
+
+Gross Return
+
+\textbf{12 bp}
+
+Trading Cost
+
+\textbf{15.0 bp}
+
+Net Return
+
+\textbf{-3.0 bp}
+
+假想成本模型。实际交易成本还可能包括 Bid--Ask Spread、Slippage、Market Impact 和融资成本。
+
+这就解释了为什么某些金融预测模型虽然具有不错的 IC，但其经济价值却非常有限。
+
+对于 RSI，Agent 如果不断增加短周期因子、调整交易频率或者增加组合换手率，就可能出现：
+\[R^{\mathrm{gross}}\uparrow,
+\qquad
+R^{\mathrm{net}}\downarrow.\]
+
+这种现象未必属于 Statistical Overfitting，也可能只是 Objective Function 没有正确计入实际成本。
+
+\hypertarget{part-4-67-0001-sharpe-ratioux590fux666eux6bd4ux7387}{%
+\subsection{3. Sharpe Ratio（夏普比率）}\label{part-4-67-0001-sharpe-ratioux590fux666eux6bd4ux7387}}
+
+这是整个 IV-D 最核心的评价指标。
+
+\hypertarget{part-4-67-0001-motivation}{%
+\subsubsection{3.1 Motivation}\label{part-4-67-0001-motivation}}
+
+假设我们拥有三个投资组合：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.44}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.27}}@{}}
+\toprule
+Portfolio & Expected Excess Return & Volatility \\
+\midrule
+\endhead
+A & 10\% & 20\% \\
+B & 8\% & 8\% \\
+C & 15\% & 40\% \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+如果仅根据预期收益进行比较，那么 C 表现最好。
+
+但 C 同时承担了更大的风险。
+
+为了衡量单位风险对应的超额收益，我们引入 Sharpe Ratio。
+
+\hypertarget{part-4-67-0001-definition}{%
+\subsubsection{3.2 Definition}\label{part-4-67-0001-definition}}
+
+本节新定义 \(Y_t\) 为组合在时刻 \(t\) 的净超额收益率：
+\[Y_t=R_t^{\mathrm{net}}-r_{f,t}.\]
+
+设：
+\[\mu=\mathbb E[Y_t],\]
+
+\[\sigma^2=\operatorname{Var}(Y_t)>0.\]
+
+Population Sharpe Ratio 定义为：
+\[\boxed{
+\mathrm{SR}
+=
+\frac{\mu}{\sigma}
+}\]
+
+它衡量单位超额收益波动所对应的平均超额收益。
+
+\textbf{Risk-adjusted Performance Comparison}
+
+\textbf{Portfolio A}
+
+SR = 0.500
+
+Excess return: 10\% · Volatility: 20\%
+
+\textbf{Portfolio B}
+
+SR = 1.000
+
+Excess return: 8\% · Volatility: 8\%
+
+\textbf{Portfolio C}
+
+SR = 0.375
+
+Excess return: 15\% · Volatility: 40\%
+
+三个组合的参数为假想数据，采用相同时间尺度。Sharpe Ratio 不反映所有风险维度。
+
+Portfolio B 虽然没有最高收益，却具有最高的 Risk-adjusted Performance。
+
+但 Sharpe Ratio 将上行和下行波动同等计入风险，因此并不是完整的风险评价体系。
+
+\hypertarget{part-4-67-0001-sharpe-ratio-ux7684-scale-invariance}{%
+\subsubsection{3.3 Sharpe Ratio 的 Scale Invariance}\label{part-4-67-0001-sharpe-ratio-ux7684-scale-invariance}}
+
+假设我们将整个超额收益序列乘以一个正常数 \(a>0\)：
+\[Y_t'=aY_t.\]
+
+那么：
+\[\mathbb E[Y_t']=a\mu,\]
+
+\[\operatorname{Std}(Y_t')=a\sigma.\]
+
+因此：
+\[\begin{aligned}
+\mathrm{SR}'
+&=\frac{a\mu}{a\sigma}\\
+&=\frac{\mu}{\sigma}.
+\end{aligned}\]
+
+即：
+\[\boxed{
+\mathrm{SR}(aY)=\mathrm{SR}(Y),
+\qquad a>0.
+}\]
+
+在理想的线性收益模型下，单纯增加风险敞口不会提高 Sharpe Ratio。
+
+不过，真实市场中的交易成本、融资约束和杠杆导致的非线性损失，可能破坏这种不变性。
+
+\hypertarget{part-4-67-0001-maximum-sharpe-ratio-linear-algebra-perspective}{%
+\subsubsection{3.4 Maximum Sharpe Ratio --- Linear Algebra Perspective}\label{part-4-67-0001-maximum-sharpe-ratio-linear-algebra-perspective}}
+
+这一节将 Sharpe Ratio 与你熟悉的 Linear Algebra 联系起来。
+
+设资产的超额收益均值向量为 \(\boldsymbol\mu\)，协方差矩阵为正定矩阵 \(\Sigma\)。
+
+对于非零风险资产敞口 \(\boldsymbol w\)，在允许现金调节、忽略成本和其他仓位约束的理想模型中：
+\[\mathrm{SR}(\boldsymbol w)
+=
+\frac{\boldsymbol w^\top\boldsymbol\mu}
+{\sqrt{\boldsymbol w^\top\Sigma\boldsymbol w}}.\]
+
+令：
+\[\boldsymbol u=\Sigma^{1/2}\boldsymbol w,
+\qquad
+\boldsymbol v=\Sigma^{-1/2}\boldsymbol\mu.\]
+
+那么：
+\[\mathrm{SR}(\boldsymbol w)
+=
+\frac{\boldsymbol u^\top\boldsymbol v}
+{\|\boldsymbol u\|_2}.\]
+
+由 Cauchy--Schwarz Inequality：
+\[\boldsymbol u^\top\boldsymbol v
+\leq
+\|\boldsymbol u\|_2\|\boldsymbol v\|_2.\]
+
+因此：
+\[\mathrm{SR}(\boldsymbol w)
+\leq
+\|\Sigma^{-1/2}\boldsymbol\mu\|_2.\]
+
+最终得到：
+\[\boxed{
+\mathrm{SR}_{\max}
+=
+\sqrt{\boldsymbol\mu^\top\Sigma^{-1}\boldsymbol\mu}
+}\]
+
+当 \(\boldsymbol\mu\neq\boldsymbol 0\) 时，最优风险资产敞口方向为：
+\[\boxed{
+\boldsymbol w^*
+\propto
+\Sigma^{-1}\boldsymbol\mu
+}\]
+
+这里比例系数为正。
+
+\hypertarget{part-4-67-0001-research-implication}{%
+\paragraph{Research Implication}\label{part-4-67-0001-research-implication}}
+
+上述推导假设已知真实的 \(\boldsymbol\mu\) 与 \(\Sigma\)。
+
+但现实中只能使用估计量：
+\[\hat{\boldsymbol w}
+\propto
+\hat\Sigma^{-1}\hat{\boldsymbol\mu}.\]
+
+当收益均值估计包含大量噪声，或者 \(\hat\Sigma\) 接近奇异矩阵时，组合权重可能极其不稳定。
+
+因此，即使金融预测模型本身没有发生明显过拟合，\textbf{Portfolio Optimization 也可能独立地引入另一层过拟合。}
+
+这与 IV-C 中 Ridge Regression 对小特征值的处理具有相似的数学结构。
+
+\hypertarget{part-4-67-0001-sharpe-ratio-is-a-statistical-estimator}{%
+\subsection{4. Sharpe Ratio Is a Statistical Estimator}\label{part-4-67-0001-sharpe-ratio-is-a-statistical-estimator}}
+
+现在进入本阶段最重要的数学问题。
+
+此前，我们一直在讨论 Population Sharpe Ratio：
+\[\mathrm{SR}=\frac{\mu}{\sigma}.\]
+
+但现实中，\(\mu\) 和 \(\sigma\) 都是未知参数。
+
+因此，Agent 实际能够观察到的只是 Empirical Sharpe Ratio：
+\[\boxed{
+\widehat{\mathrm{SR}}
+=
+\frac{\hat\mu}{\hat\sigma}
+}\]
+
+其中：
+\[\hat\mu=\frac1n\sum_{t=1}^{n}Y_t,\]
+
+\[\hat\sigma^2
+=
+\frac1{n-1}
+\sum_{t=1}^{n}(Y_t-\hat\mu)^2.\]
+
+这个统计量同时包含两种估计误差：均值估计误差与方差估计误差。
+
+所以，Sharpe Ratio 本身也具有 Sampling Distribution。
+
+Andrew W. Lo 在 2002 年发表的 \emph{The Statistics of Sharpe Ratios} 中，系统研究了 IID Returns、Stationary Returns 和 Time Aggregation 条件下 Sharpe Ratio 的统计性质。
+
+\href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{来源 1}
+
+\hypertarget{part-4-67-0001-mathematical-foundation-delta-method}{%
+\subsubsection{4.1 Mathematical Foundation --- Delta Method}\label{part-4-67-0001-mathematical-foundation-delta-method}}
+
+这是一个值得提前掌握的统计工具。
+
+假设估计量 \(\hat{\boldsymbol\theta}_n\) 满足：
+\[\sqrt n
+(\hat{\boldsymbol\theta}_n-\boldsymbol\theta)
+\xrightarrow{d}
+\mathcal N(\boldsymbol 0,V).\]
+
+对于在 \(\boldsymbol\theta\) 附近连续可微的函数 \(f\)，通过一阶 Taylor Expansion：
+\[f(\hat{\boldsymbol\theta}_n)
+\approx
+f(\boldsymbol\theta)
++
+\nabla f(\boldsymbol\theta)^\top
+(\hat{\boldsymbol\theta}_n-\boldsymbol\theta).\]
+
+因此：
+\[\boxed{
+\sqrt n
+\left(
+f(\hat{\boldsymbol\theta}_n)
+-f(\boldsymbol\theta)
+\right)
+\xrightarrow{d}
+\mathcal N
+\left(
+0,\nabla f^\top V\nabla f
+\right)
+}\]
+
+这就是 Multivariate Delta Method。
+
+其思想非常自然：如果我们知道某个估计量的渐近分布，那么可以通过函数的一阶局部线性近似，推导该估计量经过非线性变换后的渐近分布。
+
+\bookgraphic{0.495}{part-4-67-0001-010-01}{Delta Method 的几何直觉：当估计量集中于真实参数附近时，非线性函数可以在局部近似为线性函数。}
+
+这项工具不仅适用于 Sharpe Ratio，也可以用于比率估计量、Correlation Coefficient、MLE 的函数以及其他复杂统计指标。
+
+\hypertarget{part-4-67-0001-asymptotic-distribution-of-sharpe-ratio}{%
+\subsection{5. Asymptotic Distribution of Sharpe Ratio}\label{part-4-67-0001-asymptotic-distribution-of-sharpe-ratio}}
+
+\hypertarget{part-4-67-0001-gaussian-case}{%
+\subsubsection{5.1 Gaussian Case}\label{part-4-67-0001-gaussian-case}}
+
+假设组合的单期超额收益率满足：
+\[Y_t\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(\mu,\sigma^2).\]
+
+定义：
+\[\boldsymbol\theta=
+\begin{pmatrix}
+\mu\\
+\sigma^2
+\end{pmatrix},
+\qquad
+f(\mu,\sigma^2)
+=
+\frac{\mu}{\sqrt{\sigma^2}}.\]
+
+于是：
+\[f(\boldsymbol\theta)=\mathrm{SR}.\]
+
+由 CLT 以及正态总体样本方差的性质：
+\[\sqrt n
+\begin{pmatrix}
+\hat\mu-\mu\\
+\hat\sigma^2-\sigma^2
+\end{pmatrix}
+\xrightarrow{d}
+\mathcal N
+\left[
+\begin{pmatrix}
+0\\0
+\end{pmatrix},
+\begin{pmatrix}
+\sigma^2&0\\
+0&2\sigma^4
+\end{pmatrix}
+\right].\]
+
+这里协方差项为零，源于正态总体下样本均值与样本方差的独立性。
+
+\hypertarget{part-4-67-0001-theorem-and-proof}{%
+\subsubsection{5.2 Theorem and Proof}\label{part-4-67-0001-theorem-and-proof}}
+
+首先计算梯度：
+\[\nabla f
+=
+\begin{pmatrix}
+\frac1\sigma\\[4pt]
+-\frac{\mu}{2\sigma^3}
+\end{pmatrix}.\]
+
+根据 Delta Method：
+\[\begin{aligned}
+V_{\mathrm{SR}}
+&=
+\nabla f^\top V\nabla f\\
+&=
+\frac1{\sigma^2}\sigma^2
++
+\frac{\mu^2}{4\sigma^6}2\sigma^4\\
+&=
+1+\frac{\mu^2}{2\sigma^2}\\
+&=
+1+\frac12\mathrm{SR}^2.
+\end{aligned}\]
+
+所以：
+\[\boxed{
+\sqrt n
+(\widehat{\mathrm{SR}}-\mathrm{SR})
+\xrightarrow{d}
+\mathcal N
+\left(
+0,1+\frac12\mathrm{SR}^2
+\right)
+}\]
+
+等价地，在大样本条件下：
+\[\boxed{
+\widehat{\mathrm{SR}}
+\overset{\mathrm{approx}}{\sim}
+\mathcal N
+\left(
+\mathrm{SR},
+\frac{1+\frac12\mathrm{SR}^2}{n}
+\right)
+}\]
+
+\(\square\)
+
+因此，其 Standard Error 可以近似估计为：
+\[\boxed{
+\widehat{\operatorname{SE}}
+(\widehat{\mathrm{SR}})
+=
+\sqrt{
+\frac{1+\frac12\widehat{\mathrm{SR}}^2}{n}
+}
+}\]
+
+这是 Lo (2002) 在 IID Gaussian 条件下得到的经典结果。
+
+\href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{来源 1}
+
+\hypertarget{part-4-67-0001-why-this-matters-for-rsi}{%
+\subsubsection{5.3 Why This Matters for RSI}\label{part-4-67-0001-why-this-matters-for-rsi}}
+
+假设某个 Agent 的日度 Sharpe Ratio 估计值为：
+\[\widehat{\mathrm{SR}}_{\mathrm{daily}}=0.063.\]
+
+如果使用 252 个交易日进行常规年化：
+\[\widehat{\mathrm{SR}}_{\mathrm{annual}}
+\approx1.\]
+
+但是，估计值为 1，并不意味着真实年化 Sharpe Ratio 就接近 1。
+
+\textbf{Sharpe Ratio --- Estimation Uncertainty}
+
+IID Gaussian 日收益率模型，假设每年有 252 个交易日。
+
+Observed annualized Sharpe Ratio\\
+\textbf{1.00}
+
+1（范围 0--3）
+
+Observation length\\
+\textbf{1 years}
+
+1（范围 1--20）
+
+\bookgraphic{0.830}{part-4-67-0001-012-01}{}
+
+Standard Error
+
+\textbf{1.001}
+
+Approximate 95\% Confidence Interval
+
+\textbf{{[}-0.96, 2.96{]}}
+
+该置信区间包含零，无法在对应的近似双侧检验下排除真实 Sharpe Ratio 为零。 所有结果均建立在固定策略及相应分布假设下。
+
+sr = 3
+
+\bookgraphic{0.830}{part-4-67-0001-012-state-01}{}
+
+这里有一个相当 Nontrivial 的结果：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}@{}}
+\toprule
+Historical Data Length & Observed Annualized SR & Approximate 95\% CI \\
+\midrule
+\endhead
+1 year & 1.00 & {[}−0.96, 2.96{]} \\
+5 years & 1.00 & {[}0.12, 1.88{]} \\
+10 years & 1.00 & {[}0.38, 1.62{]} \\
+20 years & 1.00 & {[}0.56, 1.44{]} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+即使是在相对理想的 IID Gaussian Model 中，Sharpe Ratio 的估计也可能存在相当大的统计不确定性。
+
+而 Financial RSI 可能在同一批数据上反复比较几百个甚至更多候选策略。
+
+这意味着我们不仅面临 Estimation Error，还面临 Selection Bias。
+
+\hypertarget{part-4-67-0001-sharpe-ratio-under-non-normal-returns}{%
+\subsection{6. Sharpe Ratio under Non-normal Returns}\label{part-4-67-0001-sharpe-ratio-under-non-normal-returns}}
+
+我们不能忘记 IV-A 中讨论的 Heavy Tails 与 Asymmetric Return Distribution。
+
+Gaussian Assumption 往往不足以描述真实金融收益率。因此，需要将上一节的公式推广。
+
+\hypertarget{part-4-67-0001-skewness-and-kurtosis}{%
+\subsubsection{6.1 Skewness and Kurtosis}\label{part-4-67-0001-skewness-and-kurtosis}}
+
+定义收益率的标准化三阶矩：
+\[\boxed{
+\gamma_3=
+\frac{\mathbb E[(Y_t-\mu)^3]}{\sigma^3}
+}\]
+
+即 Skewness（偏度）。
+
+以及标准化四阶矩：
+\[\boxed{
+\gamma_4=
+\frac{\mathbb E[(Y_t-\mu)^4]}{\sigma^4}
+}\]
+
+即 Kurtosis（峰度）。
+
+注意这里使用的是 Raw Kurtosis，而不是 Excess Kurtosis。
+
+对于 Normal Distribution：
+\[\gamma_3=0,\qquad\gamma_4=3.\]
+
+\textbf{Negative Skewness}
+
+左尾较长
+
+\textbf{Symmetric}
+
+左右对称
+
+\textbf{Positive Skewness}
+
+右尾较长
+
+两个收益分布可以具有相同的均值和方差，却具有完全不同的偏度和峰度。因此，它们虽然具有相同的 Population Sharpe Ratio，其估计可靠性却可能不同。
+
+\hypertarget{part-4-67-0001-generalized-asymptotic-variance}{%
+\subsubsection{6.2 Generalized Asymptotic Variance}\label{part-4-67-0001-generalized-asymptotic-variance}}
+
+假设 \(Y_t\) 为 IID，且具有有限四阶矩。
+
+此时样本均值与样本方差的渐近协方差矩阵为：
+\[V=
+\begin{pmatrix}
+\sigma^2 & \gamma_3\sigma^3\\
+\gamma_3\sigma^3 & (\gamma_4-1)\sigma^4
+\end{pmatrix}.\]
+
+继续使用此前定义的梯度：
+\[\nabla f=
+\begin{pmatrix}
+1/\sigma\\
+-\mu/(2\sigma^3)
+\end{pmatrix}.\]
+
+通过 Delta Method：
+\[\begin{aligned}
+V_{\mathrm{SR}}
+&=
+\nabla f^\top V\nabla f\\
+&=
+1-\frac{\mu}{\sigma}\gamma_3
++\frac{\mu^2}{4\sigma^2}(\gamma_4-1).
+\end{aligned}\]
+
+因此：
+\[\boxed{
+V_{\mathrm{SR}}
+=
+1-\gamma_3\mathrm{SR}
++
+\frac{\gamma_4-1}{4}\mathrm{SR}^2
+}\]
+
+最终得到：
+\[\boxed{
+\operatorname{SE}(\widehat{\mathrm{SR}})
+\approx
+\sqrt{
+\frac{
+1-\gamma_3\mathrm{SR}
++\frac{\gamma_4-1}{4}\mathrm{SR}^2
+}{n}
+}
+}\]
+
+实际计算时，可以使用对应的样本估计量代替未知总体参数。
+
+这个结果也是 Bailey 与 López de Prado 后来构造 Probabilistic Sharpe Ratio 的数学基础。
+
+\href{https://papers.ssrn.com/sol3/Delivery.cfm/SSRN_ID3594389_code434076.pdf?abstractid=1821643\&type=2}{来源 1} \href{https://ideas.repec.org/a/rsk/journ4/2223785.html}{来源 2}
+
+\hypertarget{part-4-67-0001-consistency-check}{%
+\paragraph{Consistency Check}\label{part-4-67-0001-consistency-check}}
+
+将 Gaussian Distribution 的参数代入：
+\[\gamma_3=0,\qquad\gamma_4=3,\]
+
+则：
+\[V_{\mathrm{SR}}
+=
+1+\frac{3-1}{4}\mathrm{SR}^2
+=
+1+\frac12\mathrm{SR}^2.\]
+
+恰好恢复了 §5 的结果。
+
+\hypertarget{part-4-67-0001-effects-of-skewness-and-kurtosis}{%
+\subsubsection{6.3 Effects of Skewness and Kurtosis}\label{part-4-67-0001-effects-of-skewness-and-kurtosis}}
+
+\textbf{Non-normality and Sharpe Ratio Uncertainty}
+
+Population Sharpe Ratio\\
+\textbf{0.30}
+
+0.3（范围 0.05--1）
+
+Skewness \(\gamma_3\)\\
+\textbf{-1.0}
+
+-1（范围 -2--2）
+
+Kurtosis \(\gamma_4\)\\
+\textbf{7.0}
+
+7（范围 2--15）
+
+Gaussian asymptotic variance
+
+\begin{verbatim}
+  **1.045**
+\end{verbatim}
+
+Non-Gaussian asymptotic variance
+
+\begin{verbatim}
+  **1.435**
+\end{verbatim}
+
+Standard Error Multiplier
+
+\textbf{1.172×}
+
+Relative Sample Requirement
+
+\textbf{1.373×}
+
+固定真实 SR 时，比较达到相同渐近估计精度所需的样本量。参数受矩不等式 \(\gamma_4\geq\gamma_3^2+1\) 约束。
+
+对于正 Sharpe Ratio：
+
+\begin{itemize}
+\tightlist
+\item
+  Negative Skewness 通常会提高渐近估计方差；
+\item
+  Higher Kurtosis 会提高渐近估计方差；
+\item
+  在其他条件相同的情况下，需要更多观测数据才能达到相同统计精度。
+\end{itemize}
+
+如果收益率不具有有限四阶矩，那么这一渐近方差公式也不再能够直接使用。
+
+这正是 IV-A 中 Moment Existence 问题在金融绩效评价中的实际体现。
+
+\hypertarget{part-4-67-0001-annualizationux5e74ux5316ux4e0e-temporal-dependence}{%
+\subsection{7. Annualization（年化）与 Temporal Dependence}\label{part-4-67-0001-annualizationux5e74ux5316ux4e0e-temporal-dependence}}
+
+\hypertarget{part-4-67-0001-why-do-we-multiply-by-sqrt252}{%
+\subsubsection{\texorpdfstring{7.1 Why Do We Multiply by \(\sqrt{252}\)?}{7.1 Why Do We Multiply by \textbackslash sqrt\{252\}?}}\label{part-4-67-0001-why-do-we-multiply-by-sqrt252}}
+
+你可能见过以下金融公式：
+\[\mathrm{SR}_{\mathrm{annual}}
+=
+\sqrt{252}\,
+\mathrm{SR}_{\mathrm{daily}}.\]
+
+但为什么是平方根，而不是直接乘以 252？
+
+设 \(q\) 为聚合的时期数量，定义超额收益率的加法聚合量：
+\[Y_{1:q}^{\mathrm{sum}}
+=
+\sum_{t=1}^{q}Y_t.\]
+
+假设每一期具有相同均值、方差，且彼此不相关。
+
+那么：
+\[\mathbb E[Y_{1:q}^{\mathrm{sum}}]=q\mu,\]
+
+\[\operatorname{Var}(Y_{1:q}^{\mathrm{sum}})
+=q\sigma^2.\]
+
+因此：
+\[\begin{aligned}
+\mathrm{SR}(q)
+&=\frac{q\mu}{\sqrt{q\sigma^2}}\\
+&=\sqrt q\frac{\mu}{\sigma}.
+\end{aligned}\]
+
+即：
+\[\boxed{
+\mathrm{SR}(q)=\sqrt q\,\mathrm{SR}(1)
+}\]
+
+这里必须强调：该推导基于加法聚合收益，而不是对简单收益率进行精确复利累积。
+
+常见的日度 Sharpe 年化属于这一口径。
+
+\hypertarget{part-4-67-0001-what-if-returns-are-autocorrelated}{%
+\subsubsection{7.2 What If Returns Are Autocorrelated?}\label{part-4-67-0001-what-if-returns-are-autocorrelated}}
+
+现在去掉不相关假设。
+
+假设 \(Y_t\) 为弱平稳序列，其自相关函数为：
+\[\rho_h=\operatorname{Corr}(Y_t,Y_{t+h}).\]
+
+利用 IV-A 中已经推导过的方差公式：
+\[\operatorname{Var}
+\left(
+\sum_{t=1}^{q}Y_t
+\right)
+=
+\sigma^2
+\left[
+q+2\sum_{h=1}^{q-1}(q-h)\rho_h
+\right].\]
+
+所以：
+\[\mathrm{SR}(q)
+=
+\frac{q\mu}{
+\sigma\sqrt{
+q+2\sum_{h=1}^{q-1}(q-h)\rho_h
+}
+}.\]
+
+整理得到：
+\[\boxed{
+\mathrm{SR}(q)
+=
+\frac{
+\sqrt q\,\mathrm{SR}(1)
+}{
+\sqrt{
+1+2\sum_{h=1}^{q-1}
+(1-h/q)\rho_h
+}
+}
+}\]
+
+这就是考虑 Serial Correlation 后的 Sharpe Ratio 时间尺度转换公式。
+
+\href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{来源 1}
+
+\textbf{Sharpe Ratio --- Autocorrelation Adjustment}
+
+假设超额收益率遵循平稳 AR(1) 结构，常规年化 SR 固定为 1.50。
+
+Autocorrelation parameter \(\phi\)\\
+\textbf{0.30}
+
+0.3（范围 -0.5--0.9）
+
+Naive annualization
+
+\begin{verbatim}
+  **1.50**
+\end{verbatim}
+
+Autocorrelation-adjusted SR
+
+\begin{verbatim}
+  **1.102**
+\end{verbatim}
+
+Annualization multiplier
+
+\textbf{11.66}
+
+Naive SR relative bias
+
+\textbf{36.1\%}
+
+根据理论自相关函数计算的聚合调整差异，并非有限样本估计量的实际统计偏差。
+
+对于 AR(1)：
+\[\rho_h=\phi^h.\]
+
+当 \(q\) 足够大时：
+\[\boxed{
+\mathrm{SR}(q)
+\approx
+\sqrt{
+q\frac{1-\phi}{1+\phi}
+}\,\mathrm{SR}(1)
+}\]
+
+你应该已经看出了它与 IV-A 中 Effective Sample Size 公式的联系。
+
+\hypertarget{part-4-67-0001-actual-empirical-evidence}{%
+\subsubsection{7.3 Actual Empirical Evidence}\label{part-4-67-0001-actual-empirical-evidence}}
+
+Lo (2002) 在其共同基金和对冲基金的示例研究中发现，若忽略月度收益率的 Serial Correlation，某个对冲基金的年化 Sharpe Ratio 可能被高估多达 65\%，而正确考虑时间依赖后，基金之间的绩效排名也可能发生显著变化。
+
+\href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{来源 1}
+
+这不是说所有金融策略的 Sharpe Ratio 都被高估 65\%，而是说明年化规则本身可能产生具有实际意义的评价偏差。
+
+\hypertarget{part-4-67-0001-rsi-research-implication}{%
+\paragraph{RSI Research Implication}\label{part-4-67-0001-rsi-research-implication}}
+
+假设某次 Revision 将预测周期从一天改为二十天，或者引入了具有高度持续性的持仓规则。
+
+这可能同时改变：
+\[\mu,\quad\sigma,\quad\rho_h.\]
+
+如果 Evaluator 仍然机械地使用原来的年化公式，就可能无法正确比较两个 Agent 版本。
+
+进一步而言，\textbf{时间尺度转换的修正与 Sharpe Ratio 标准误差的修正是两个不同的问题}。后者仍然需要 HAC、GMM 或适当的 Block Bootstrap 来处理时间依赖，而不能简单认为修正年化公式之后，IID 置信区间就自动有效。
+
+\hypertarget{part-4-67-0001-maximum-drawdownux6700ux5927ux56deux64a4}{%
+\subsection{8. Maximum Drawdown（最大回撤）}\label{part-4-67-0001-maximum-drawdownux6700ux5927ux56deux64a4}}
+
+Sharpe Ratio 是一个基于收益率均值和方差的指标。
+
+它并不直接考虑损失发生的顺序。
+
+\hypertarget{part-4-67-0001-definition-1}{%
+\subsubsection{8.1 Definition}\label{part-4-67-0001-definition-1}}
+
+沿用 §2 中的组合财富 \(W_t>0\)，定义历史最高财富：
+\[M_t=\max_{0\leq s\leq t}W_s.\]
+
+时刻 \(t\) 的 Drawdown 为：
+\[\boxed{
+D_t=1-\frac{W_t}{M_t}
+}\]
+
+Maximum Drawdown 为：
+\[\boxed{
+\mathrm{MDD}
+=
+\max_{0\leq t\leq T}D_t
+}\]
+
+即：
+\[\mathrm{MDD}
+=
+\max_{0\leq s\leq t\leq T}
+\frac{W_s-W_t}{W_s}.\]
+
+\textbf{Maximum Drawdown}
+
+\bookgraphic{0.448}{part-4-67-0001-019-01}{}
+
+\[\mathrm{MDD}=\frac{140-98}{140}=30\%\]
+
+假想财富轨迹。即使最后恢复并创下新高，历史最大回撤仍然为 30\%。
+
+\hypertarget{part-4-67-0001-a-nontrivial-counterexample-same-sharpe-different-risk}{%
+\subsubsection{8.2 A Nontrivial Counterexample --- Same Sharpe, Different Risk}\label{part-4-67-0001-a-nontrivial-counterexample-same-sharpe-different-risk}}
+
+假设两个组合拥有完全相同的一组收益率，只是发生顺序不同。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}@{}}
+\toprule
+Period & Portfolio A & Portfolio B \\
+\midrule
+\endhead
+1 & +10\% & +10\% \\
+2 & −10\% & +10\% \\
+3 & +10\% & +10\% \\
+4 & −10\% & −10\% \\
+5 & +10\% & −10\% \\
+6 & −10\% & −10\% \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+假设无风险收益率为零。
+
+由于这两个收益率序列的 Multiset 完全相同，因此它们拥有相同的：
+\[\hat\mu,\quad\hat\sigma,
+\quad\widehat{\mathrm{SR}},
+\quad R_{\mathrm{cum}}.\]
+
+但 Maximum Drawdown 并不相同。
+
+\bookgraphic{0.786}{part-4-67-0001-020-01}{}
+
+Portfolio A --- MDD
+
+\textbf{11.79\%}
+
+Portfolio B --- MDD
+
+\textbf{27.10\%}
+
+Both --- Empirical SR
+
+\textbf{0.00}
+
+Both --- Cumulative Return
+
+\textbf{−2.97\%}
+
+这严格说明：
+\[\boxed{
+\text{Same Sharpe Ratio}
+\not\Rightarrow
+\text{Same Risk Profile}
+}\]
+
+原因在于 Sharpe Ratio 对收益率序列的排列顺序不敏感，而 Maximum Drawdown 是 Path-dependent Statistic。
+
+这也解释了为什么只优化 Sharpe Ratio 可能产生未被该指标充分反映的风险。
+
+\hypertarget{part-4-67-0001-financial-performance-metrics-consolidated-comparison}{%
+\subsection{9. Financial Performance Metrics --- Consolidated Comparison}\label{part-4-67-0001-financial-performance-metrics-consolidated-comparison}}
+
+除了 Sharpe Ratio 和 MDD，量化金融中还有其他常见指标。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}@{}}
+\toprule
+Metric & Definition & Main Purpose \\
+\midrule
+\endhead
+Cumulative Return & \(\prod_t(1+R_t)-1\) & 总财富增长 \\
+Annualized Volatility & 同一口径下的年化标准差 & 收益波动程度 \\
+Sharpe Ratio & 超额收益 / 超额收益标准差 & 风险调整绩效 \\
+Sortino Ratio & 超目标收益 / 下行偏差 & 强调下行风险 \\
+Information Ratio & 主动收益均值 / Tracking Error & 相对于基准的表现 \\
+Maximum Drawdown & 最大历史峰谷跌幅 & 路径风险 \\
+Calmar Ratio & 年化收益 / MDD & 收益与回撤的关系 \\
+Turnover & 投资组合交易量比例 & 交易成本与稳定性 \\
+Alpha & 风险模型回归截距 & 风险调整后的异常收益 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 Sharpe Ratio 与 Information Ratio 容易混淆。
+
+如果用 \(R_t^b\) 表示 Benchmark Return，则：
+\[\mathrm{IR}
+=
+\frac{
+\mathbb E[R_t-R_t^b]
+}{
+\operatorname{Std}(R_t-R_t^b)
+}.\]
+
+而 Sharpe Ratio 通常以无风险收益率作为比较基准。
+
+因此，二者回答的是不同的金融研究问题。
+
+\hypertarget{part-4-67-0001-why-higher-ic-does-not-guarantee-higher-sharpe-ratio}{%
+\subsection{10. Why Higher IC Does Not Guarantee Higher Sharpe Ratio}\label{part-4-67-0001-why-higher-ic-does-not-guarantee-higher-sharpe-ratio}}
+
+现在回到 IV-C 中的 Information Coefficient。
+
+\[\mathrm{IC}_t
+=
+\operatorname{Corr}_i
+(\hat r_{i,t+1},r_{i,t+1}).\]
+
+它衡量预测结果与未来收益之间的横截面相关性。
+
+而：
+\[\mathrm{SR}
+=
+\frac{
+\mathbb E[R_t^{\mathrm{net}}-r_{f,t}]
+}{
+\operatorname{Std}(R_t^{\mathrm{net}}-r_{f,t})
+}\]
+
+衡量的是经过组合构建、交易执行和风险暴露之后的经济绩效。
+
+两者之间隔着多个系统组件。
+
+\textbf{Predictive Information} \(\mathrm{IC},\quad\mathrm{RankIC},\quad R^2\) ↓ \textbf{Portfolio Construction}
+
+Ranking · Weighting · Risk exposure
+
+↓ \textbf{Trading Execution}
+
+Turnover · Transaction costs · Market impact
+
+↓ \textbf{Net Economic Performance} \(\mathrm{SR},\quad\mathrm{MDD},\quad R_{\mathrm{cum}}\)
+
+考虑下面的假想单期实验。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.50}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}@{}}
+\toprule
+Metric & Agent A & Agent B \\
+\midrule
+\endhead
+Mean IC & 0.04 & \textbf{0.07} \\
+Mean Gross Return & 12 bp & \textbf{16 bp} \\
+Turnover & 30\% & 180\% \\
+Trading Cost per unit & 10 bp & 10 bp \\
+Mean Net Return & \textbf{9 bp} & −2 bp \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+Agent B 的预测表现更好，毛收益也更高，但是它产生的组合换手率过高，导致净收益反而为负。
+
+上述均值数据不足以直接计算 Sharpe Ratio，因为尚未给出净收益率的标准差。但它足以说明，更好的 Statistical Prediction 不保证更好的 Economic Performance。
+
+对 X Program \#161 而言，这会带来一个新的研究维度：
+
+\textbf{OOS Decay 发生在预测模型层，还是发生在投资组合及交易执行层？}
+
+如果我们只记录最终 Sharpe Ratio，就很难识别具体原因。
+
+\hypertarget{part-4-67-0001-financial-rsi-ux7684ux591aux5c42ux7ea7ux6027ux80fdux8bcaux65ad}{%
+\subsection{11. Financial RSI 的多层级性能诊断}\label{part-4-67-0001-financial-rsi-ux7684ux591aux5c42ux7ea7ux6027ux80fdux8bcaux65ad}}
+
+沿用此前的 Agent Version \(A_k\)，建议为每个版本同时记录三组指标。
+
+\hypertarget{part-4-67-0001-multi-level-performance-trajectory}{%
+\subsubsection{11.1 Multi-level Performance Trajectory}\label{part-4-67-0001-multi-level-performance-trajectory}}
+
+\textbf{Level 1 --- Prediction Performance}
+
+\bookgraphic{0.786}{part-4-67-0001-022-01}{}
+
+\textbf{Level 2 --- Trading Activity}
+
+\bookgraphic{0.786}{part-4-67-0001-022-02}{}
+
+\textbf{Level 3 --- Economic Performance}
+
+\bookgraphic{0.786}{part-4-67-0001-022-03}{合成研究示例：预测层 OOS 性能仍然改善，但经济绩效开始退化。换手率增加是值得调查的因素，不是已经确认的因果解释。}
+
+这种情况与普通的 Prediction Overfitting 并不相同。
+
+我们可以利用不同指标的变化模式建立初步诊断。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.44}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.52}}@{}}
+\toprule
+Observed Pattern & Candidate Explanation \\
+\midrule
+\endhead
+IS IC ↑，OOS IC ↓ & 预测模型过拟合 \\
+OOS IC ↑，OOS Net SR ↓ & 组合构建或执行问题 \\
+Gross SR ↑，Net SR ↓ & 成本或换手率问题 \\
+Return ↑，SR ↓ & 风险增长超过收益增长 \\
+SR ↑，MDD ↑ & 风险分布或路径性质发生变化 \\
+Raw SR ↑，Alpha ↓ & 收益可能来自额外风险暴露 \\
+Naive SR ↑，Adjusted SR ↓ & 自相关结构影响评价 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些都是候选诊断方向，而不是充分的因果证据。
+
+这也是 III-F 中 Failure Taxonomy 的金融领域细化。
+
+\hypertarget{part-4-67-0001-paired-evaluationux914dux5bf9ux8bc4ux4ef7}{%
+\subsubsection{11.2 Paired Evaluation（配对评价）}\label{part-4-67-0001-paired-evaluationux914dux5bf9ux8bc4ux4ef7}}
+
+假设我们希望判断某次 Revision 是否真正改善了经济绩效。
+
+两个相邻版本在相同市场时期产生的收益率为：
+\[Y_t^{[k]},
+\qquad
+Y_t^{[k-1]}.\]
+
+上标 \([k]\) 沿用 IV-C 中表示 Agent 版本的记号。
+
+定义收益差：
+\[d_t=
+Y_t^{[k]}-Y_t^{[k-1]}.\]
+
+那么：
+\[\mathbb E[d_t]
+=
+\mu_k-\mu_{k-1}.\]
+
+并且：
+\[\boxed{
+\operatorname{Var}(d_t)
+=
+\sigma_k^2+\sigma_{k-1}^2
+-
+2\operatorname{Cov}
+(Y_t^{[k]},Y_t^{[k-1]})
+}\]
+
+如果两个版本对同一市场冲击具有较强正相关性，那么配对比较可能显著降低收益差的估计误差。
+
+这与 IV-B 中的 Revision-level SNR 直接相关：
+\[\mathrm{SNR}_{\mathrm{revision},k}
+=
+\frac{d_k^2}{\operatorname{Var}(\eta_k)}.\]
+
+通过更合理的实验设计降低 Evaluation Noise，可能比单纯扩大 Agent 的搜索能力更有价值。
+
+不过，检验平均收益差不等于检验 Sharpe Ratio 差异。如果需要比较两个 Sharpe Ratio，应当联合考虑两个版本的均值、方差及协方差，或者对配对收益序列执行适当的 Block Bootstrap。
+
+\hypertarget{part-4-67-0001-research-practice-a-minimal-financial-evaluator}{%
+\subsection{12. Research Practice --- A Minimal Financial Evaluator}\label{part-4-67-0001-research-practice-a-minimal-financial-evaluator}}
+
+以下是一个简化的金融绩效评价函数。
+
+它可以作为未来 RSI Framework 中外部 Evaluator 的一个基础组件。
+
+\begin{verbatim}
+import numpy as np
+from scipy.stats import skew, kurtosis
+
+
+def evaluate_returns(
+    returns,
+    risk_free=0.0,
+    periods_per_year=252
+):
+    """
+    returns:
+        One-dimensional net simple returns.
+
+    risk_free:
+        Per-period risk-free return,
+        scalar or aligned array.
+
+    Annualization and Sharpe SE assume IID
+    observations and additive aggregation.
+    """
+
+    r = np.asarray(returns, dtype=float)
+
+    if r.ndim != 1 or len(r) < 4:
+        raise ValueError("Insufficient return observations")
+
+    if not np.all(np.isfinite(r)) or np.any(r <= -1):
+        raise ValueError("Invalid simple returns")
+
+    y = r - np.asarray(risk_free, dtype=float)
+
+    if y.shape != r.shape or not np.all(np.isfinite(y)):
+        raise ValueError("Invalid risk-free returns")
+
+    n = len(y)
+    mu = y.mean()
+    sigma = y.std(ddof=1)
+
+    if sigma <= 0:
+        raise ValueError("Zero excess-return volatility")
+
+    sr = mu / sigma
+    sr_annual = np.sqrt(periods_per_year) * sr
+
+    # Include initial wealth in drawdown calculation
+    wealth = np.concatenate([
+        [1.0],
+        np.cumprod(1 + r)
+    ])
+
+    peaks = np.maximum.accumulate(wealth)
+    drawdown = 1 - wealth / peaks
+
+    # IID Gaussian asymptotic standard error
+    se_normal = np.sqrt(
+        (1 + 0.5 * sr**2) / n
+    )
+
+    # IID non-Gaussian approximation
+    gamma3 = skew(y, bias=True)
+    gamma4 = kurtosis(
+        y,
+        fisher=False,
+        bias=True
+    )
+
+    v_sr = (
+        1
+        - gamma3 * sr
+        + (gamma4 - 1) * sr**2 / 4
+    )
+
+    se_non_normal = (
+        np.sqrt(v_sr / n)
+        if v_sr > 0
+        else np.nan
+    )
+
+    return {
+        "n_observations": n,
+        "cumulative_return": wealth[-1] - 1,
+        "mean_excess_return": mu,
+        "excess_return_volatility": sigma,
+        "sharpe_per_period": sr,
+        "sharpe_annualized_naive": sr_annual,
+        "maximum_drawdown": drawdown.max(),
+        "skewness": gamma3,
+        "kurtosis": gamma4,
+        "sharpe_se_normal_iid": se_normal,
+        "sharpe_se_non_normal_iid": se_non_normal
+    }
+\end{verbatim}
+
+这里刻意将年化 Sharpe 命名为：
+
+\begin{verbatim}
+sharpe_annualized_naive
+\end{verbatim}
+
+将标准误差命名为：
+
+\begin{verbatim}
+sharpe_se_non_normal_iid
+\end{verbatim}
+
+原因是我们不能让指标名称掩盖其成立条件。
+
+真正用于科研的 Financial Evaluator 还应当处理时间依赖、交易成本、不同版本的样本对齐、风险暴露，以及多重检验。
+
+该代码目前属于教学参考实现，未经过实际运行测试，也不是课题组的正式评价程序。
+
+\hypertarget{part-4-67-0001-research-hypothesis-sharpe-ratio-overoptimization}{%
+\subsection{13. Research Hypothesis --- Sharpe Ratio Overoptimization}\label{part-4-67-0001-research-hypothesis-sharpe-ratio-overoptimization}}
+
+我们现在已经拥有足够的知识提出一个新的候选研究机制。
+
+假设 Agent 在第 \(k\) 轮产生 \(m\) 个候选金融策略：
+\[A_k^{(1)},\ldots,A_k^{(m)}.\]
+
+每个候选策略具有真实 Sharpe Ratio：
+\[\mathrm{SR}(A_k^{(j)}),\]
+
+但 Agent 只能观察：
+\[\widehat{\mathrm{SR}}(A_k^{(j)})
+=
+\mathrm{SR}(A_k^{(j)})
++
+\varepsilon_k^{(j)}.\]
+
+如果采用 Greedy Selection：
+\[A_{k+1}
+=
+\arg\max_{A\in\mathcal C_k\cup\{A_k\}}
+\widehat{\mathrm{SR}}(A),\]
+
+那么 Agent 实际上是在优化一个具有抽样误差的统计估计量。
+
+考虑一个极端的 Null Model：所有候选策略的真实 Sharpe Ratio 都为零，并且其估计误差近似为相互独立的 Gaussian Variables。
+
+则经过 \(m\) 次搜索后，最高经验 Sharpe Ratio 的渐近规模约为：
+\[\boxed{
+\mathbb E\left[
+\max_{1\leq j\leq m}
+\widehat{\mathrm{SR}}_j
+\right]
+\approx
+\sqrt{\frac{2\log m}{n}}
+}\]
+
+这是结合 §5 中零真实 SR 的渐近方差，以及 II-C 中 Extreme Value Approximation 得到的简化结果。
+
+\textbf{Maximum Spurious Sharpe Ratio}
+
+假设全部候选策略的真实 Sharpe Ratio 均为零。
+
+Number of tested strategies\\
+\textbf{1,000}
+
+3（范围 1--5）
+
+Historical observation length\\
+\textbf{5 years}
+
+5（范围 1--20）
+
+True Population SR
+
+\textbf{0.00}
+
+Approximate Best Observed Annualized SR
+
+\textbf{1.66}
+
+采用 IID Gaussian 和独立候选误差的简化渐近模型。该 leading-order approximation 在候选较少时尤其可能高估实际期望最大值，不代表精确有限样本结果。
+
+这已经非常接近我们下一阶段要研究的 Deflated Sharpe Ratio。
+
+因为一个很高的 Sharpe Ratio 究竟意味着什么，不能脱离以下背景进行解释：
+\[\boxed{
+\text{Observed Performance}
++
+\text{Sample Size}
++
+\text{Search History}
+}\]
+
+如果不知道这个策略是从多少次尝试中筛选出来的，那么我们对于该策略统计可靠性的判断，就缺少了一项非常重要的信息。
+
+\hypertarget{part-4-67-0001-literature-index}{%
+\subsection{14. Literature Index}\label{part-4-67-0001-literature-index}}
+
+\textbf{P0 --- The Statistics of Sharpe Ratios}
+
+Andrew W. Lo · 2002 · Financial Analysts Journal, 58(4), 36--52
+
+本阶段最重要的论文。重点阅读 IID Returns、Non-IID Returns 和 Time Aggregation 部分。
+
+\href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{正式出版页面} · \href{https://doi.org/10.2469/faj.v58.n4.2453}{DOI: 10.2469/faj.v58.n4.2453}
+
+\textbf{P0 --- The Sharpe Ratio Efficient Frontier}
+
+David H. Bailey \& Marcos López de Prado · 2012 · Journal of Risk
+
+重点研究非正态收益分布、Sharpe Ratio 估计不确定性及 Probabilistic Sharpe Ratio。
+
+\href{https://ideas.repec.org/a/rsk/journ4/2223785.html}{出版记录} · \href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643}{SSRN 版本}
+
+两篇文献的出版记录均已核对。建议优先阅读 Lo 的论文，因为它将成为 IV-E 的直接数学基础。
+
+\hypertarget{part-4-67-0001-iv-d-conclusion-index}{%
+\subsection{15. IV-D --- Conclusion Index}\label{part-4-67-0001-iv-d-conclusion-index}}
+
+\hypertarget{part-4-67-0001-core-conclusions}{%
+\subsubsection{15.1 Core Conclusions}\label{part-4-67-0001-core-conclusions}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.70}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+D1 & Prediction Model 与 Portfolio Construction 是不同组件 & §1 \\
+D2 & 组合风险由整个协方差矩阵决定 & §1.3 \\
+D3 & 算术平均收益不等于复利增长率 & §2 \\
+D4 & 交易成本可以抵消预测能力提升 & §2.3 \\
+D5 & Sharpe Ratio 衡量单位波动对应的超额收益 & §3 \\
+D6 & Sharpe Ratio 在理想线性缩放下保持不变 & §3.3 \\
+D7 & Portfolio Optimization 可以独立引入过拟合 & §3.4 \\
+D8 & Sharpe Ratio 是具有抽样误差的统计估计量 & §4 \\
+D9 & Delta Method 可以推导非线性统计量的渐近分布 & §4.1 \\
+D10 & Gaussian Sharpe Ratio 具有明确的渐近方差公式 & §5 \\
+D11 & Skewness 和 Kurtosis 影响估计可靠性 & §6 \\
+D12 & 常规 Sharpe 年化依赖时间聚合及相关性假设 & §7 \\
+D13 & Maximum Drawdown 是路径依赖统计量 & §8 \\
+D14 & 高 IC 不保证高经济绩效 & §10 \\
+D15 & 配对评价可以降低部分版本比较误差 & §11.2 \\
+D16 & 大规模策略搜索可以产生虚假高 Sharpe Ratio & §13 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-67-0001-core-formula-sheet}{%
+\subsubsection{15.2 Core Formula Sheet}\label{part-4-67-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Portfolio Return and Risk}
+
+\[R_{t+1}
+=
+\boldsymbol w_t^\top\boldsymbol r_{t+1},\]
+
+\[\operatorname{Var}(R_{t+1}\mid\mathcal F_t)
+=
+\boldsymbol w_t^\top\Sigma_t\boldsymbol w_t.\]
+
+\textbf{Result 2 --- Sharpe Ratio}
+
+\[\mathrm{SR}=\frac{\mu}{\sigma}.\]
+
+\textbf{Result 3 --- Unconstrained Maximum Sharpe Ratio}
+
+\[\mathrm{SR}_{\max}
+=
+\sqrt{\boldsymbol\mu^\top\Sigma^{-1}\boldsymbol\mu}.\]
+
+\textbf{Result 4 --- Delta Method}
+
+\[\sqrt n(f(\hat{\boldsymbol\theta})-f(\boldsymbol\theta))
+\xrightarrow{d}
+\mathcal N(0,\nabla f^\top V\nabla f).\]
+
+\textbf{Result 5 --- Gaussian Sharpe Ratio Standard Error}
+
+\[\boxed{
+\operatorname{SE}(\widehat{\mathrm{SR}})
+\approx
+\sqrt{\frac{1+\mathrm{SR}^2/2}{n}}
+}\]
+
+\textbf{Result 6 --- Non-Gaussian Sharpe Ratio Standard Error}
+
+\[\boxed{
+\operatorname{SE}(\widehat{\mathrm{SR}})
+\approx
+\sqrt{
+\frac{
+1-\gamma_3\mathrm{SR}
++\frac{\gamma_4-1}{4}\mathrm{SR}^2
+}{n}
+}
+}\]
+
+\textbf{Result 7 --- Autocorrelation-adjusted Annualization}
+
+\[\boxed{
+\mathrm{SR}(q)
+=
+\frac{\sqrt q\,\mathrm{SR}(1)}
+{\sqrt{
+1+2\sum_{h=1}^{q-1}(1-h/q)\rho_h
+}}
+}\]
+
+\textbf{Result 8 --- Maximum Drawdown}
+
+\[\mathrm{MDD}
+=
+\max_{0\leq t\leq T}
+\left(
+1-\frac{W_t}{\max_{s\leq t}W_s}
+\right).\]
+
+\hypertarget{part-4-67-0001-proof-index}{%
+\subsubsection{15.3 Proof Index}\label{part-4-67-0001-proof-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.63}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}@{}}
+\toprule
+Proof & Mathematical Result & Location \\
+\midrule
+\endhead
+P1 & Portfolio Conditional Mean and Variance & §1.3 \\
+P2 & Arithmetic--Geometric Mean Inequality & §2.1 \\
+P3 & Volatility Drag Approximation & §2.2 \\
+P4 & Sharpe Ratio Scale Invariance & §3.3 \\
+P5 & Maximum Sharpe Ratio via Cauchy--Schwarz & §3.4 \\
+P6 & Multivariate Delta Method & §4.1 \\
+P7 & Gaussian Sharpe Ratio Asymptotic Variance & §5.2 \\
+P8 & Non-Gaussian Sharpe Ratio Asymptotic Variance & §6.2 \\
+P9 & Autocorrelation-adjusted Sharpe Ratio & §7.2 \\
+P10 & Same Sharpe but Different Drawdown & §8.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-67-0001-the-most-important-research-insight}{%
+\subsection{16. The Most Important Research Insight}\label{part-4-67-0001-the-most-important-research-insight}}
+
+到这里，我们可以进一步修正对于 Financial RSI 的理解。
+
+\textbf{Low Signal-to-Noise Financial Environment}
+
+真实收益信号较弱，估计不确定性较高
+
+↓ \textbf{Noisy Performance Estimator} \(\widehat{\mathrm{SR}}=\hat\mu/\hat\sigma\) ↓ \textbf{Repeated Search \& Selection}
+
+反复生成候选策略、评价并保留最高分版本
+
+↓ \textbf{Selection-induced Optimism}
+
+被保留版本的经验绩效可能系统性偏高
+
+↓ \textbf{Recursive Reinforcement}
+
+Memory、Reflection 与 Self-Modification 可能进一步强化偏差
+
+↓
+
+\[\widehat{\mathrm{SR}}_k^{\mathrm{IS}}\uparrow,\qquad\mathrm{SR}_k^{\mathrm{OOS}}\downarrow\]
+
+\textbf{Potential Generalization Decay}
+
+现在的问题已经不仅仅是：
+
+\begin{quote}
+Can the agent discover a profitable strategy?
+\end{quote}
+
+而是：
+
+\begin{quote}
+Can we distinguish a genuinely improved strategy from the statistical winner of an increasingly powerful search process?
+\end{quote}
+
+\textbf{Agent 找到的最优金融策略，可能只是有限历史样本中最幸运的统计估计量。}
+
+当然，这条机制链仍然需要实验验证。目前并未确认 X Program \#161 使用 Sharpe Ratio 作为主要 Objective Function，也未确认其任务一定涉及实际组合交易。因此，本阶段的评价体系应被视为候选研究工具，而不是对课题组现有系统的描述。
+
+\hypertarget{part-4-67-0001-next-iv-e-backtest-overfitting-pbo-deflated-sharpe-ratio}{%
+\subsection{Next --- IV-E: Backtest Overfitting, PBO \& Deflated Sharpe Ratio}\label{part-4-67-0001-next-iv-e-backtest-overfitting-pbo-deflated-sharpe-ratio}}
+
+IV-A --- Financial Time Series \& DGP
+
+IV-B --- Low SNR \& Predictability
+
+IV-C --- Financial Factors \& ML Models
+
+IV-D --- Returns, Sharpe Ratio \& Evaluation
+
+IV-E --- Backtest Overfitting, PBO \& DSR
+
+IV-F --- Market Regime \& Robustness
+
+IV-E 将是整个 Part IV 中与 X Program \#161 联系最紧密的一节。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.47}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.49}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Backtest Overfitting & 为什么优秀的历史回测可能没有预测价值？ \\
+Probabilistic Sharpe Ratio (PSR) & 观察到的 Sharpe 是否显著超过指定基准？ \\
+Deflated Sharpe Ratio (DSR) & 如何考虑大量策略搜索带来的绩效膨胀？ \\
+Probability of Backtest Overfitting (PBO) & IS 最优策略在 OOS 中退化的概率如何估计？ \\
+CSCV & 如何构造用于 PBO 估计的组合对称交叉验证？ \\
+Effective Number of Trials & 如何处理大量相关候选策略？ \\
+Adaptive Backtest Overfitting & 传统 PBO 和 DSR 能否直接应用于 RSI？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+最后一个问题尤其值得深入研究。
+
+传统 Backtest Overfitting 理论主要研究从大量候选策略中进行选择，而 RSI 不仅选择策略，还可能根据历史评价反馈不断改变\textbf{产生候选策略的机制本身}。
+
+这意味着我们即将进入一个非常有研究价值的交叉区域：
+\[\boxed{
+\text{Backtest Overfitting}
++
+\text{Adaptive Data Analysis}
++
+\text{Recursive Self-Improvement}
+}\]
+
+IV-E 不仅会介绍现有金融统计方法，还会分析这些方法在递归 Agent 环境下可能面临的理论局限。

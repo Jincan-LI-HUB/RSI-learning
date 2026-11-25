@@ -1,0 +1,1963 @@
+% Archive record 77, line 1.
+\hypertarget{part-4-77-0001-iv-f-market-regime-non-stationarity-robustness}{%
+\section{IV-F --- Market Regime, Non-stationarity \& Robustness}\label{part-4-77-0001-iv-f-market-regime-non-stationarity-robustness}}
+
+这是 Part IV 的最后一个模块。完成本节之后，我们就将结束基础理论部分，进入 Part V --- Literature \& Research Frontier。
+
+在此前的研究中，我们主要考虑了这样一种情况：即使真实 Data Generating Process 保持不变，Agent 也可能因为过拟合、选择偏差和自适应搜索而损害 OOS Performance。
+
+但真实金融市场存在另一个更加棘手的问题：
+
+\textbf{即使 Agent 没有过拟合历史数据，它所发现的规律也可能因为市场环境发生变化而失效。}
+
+这就需要区分两种不同的 Generalization Failure。
+
+\textbf{Overfitting}
+
+\bookgraphic{0.431}{part-4-77-0001-001-01}{真实规律没有变化，但模型学到了样本特有的噪声。}
+
+\textbf{Distribution Shift}
+
+\bookgraphic{0.431}{part-4-77-0001-001-02}{模型正确学习了历史规律，但目标环境中的规律已经发生变化。}
+
+概念示意。两种失败机制也可能同时发生。
+
+对于 X Program \#161，如果不能区分这两种情况，那么即使成功识别了 OOS Decay Onset，也可能对退化原因作出错误判断。
+
+\hypertarget{part-4-77-0001-learning-roadmap}{%
+\subsection{0. Learning Roadmap}\label{part-4-77-0001-learning-roadmap}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Market Regime & 如何描述不同的市场状态？ \\
+Structural Break & 如何理解 DGP 的结构性变化？ \\
+Hidden Markov Model & 如何推断不可直接观测的市场状态？ \\
+Parameter Instability & 为什么正确的历史模型也可能失效？ \\
+Robust Optimization & 如何降低对单一市场环境的依赖？ \\
+Decay Attribution & 如何区分过拟合与分布变化？ \\
+Controlled Experiment & 如何建立可验证的退化归因实验？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-77-0001-market-regimeux5e02ux573aux72b6ux6001}{%
+\subsection{1. Market Regime（市场状态）}\label{part-4-77-0001-market-regimeux5e02ux573aux72b6ux6001}}
+
+\hypertarget{part-4-77-0001-definition}{%
+\subsubsection{1.1 Definition}\label{part-4-77-0001-definition}}
+
+Market Regime 指金融市场在一段时期内表现出相对一致的统计特征或经济机制。
+
+常见的市场状态包括：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Regime & Potential Characteristics \\
+\midrule
+\endhead
+Bull Market & 正向价格趋势 \\
+Bear Market & 负向价格趋势 \\
+Sideways Market & 缺少明显方向性趋势 \\
+High-volatility Regime & 高波动、高不确定性 \\
+Low-volatility Regime & 较低波动 \\
+Liquidity Stress & 流动性下降、交易成本上升 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些分类不一定互斥。例如，Bull Market 可以同时处于 High-volatility Regime。
+
+更重要的是，Market Regime 并不一定能够通过肉眼观察价格走势图准确确定。它可以被建模为一个不可直接观测的随机状态。
+
+\hypertarget{part-4-77-0001-regime-dependent-data-generating-process}{%
+\subsubsection{1.2 Regime-dependent Data Generating Process}\label{part-4-77-0001-regime-dependent-data-generating-process}}
+
+沿用 IV-A、IV-B 中的金融预测模型：
+\[r_{t+1}=g(X_t)+\varepsilon_{t+1}.\]
+
+现在引入一个新的随机变量：
+\[Z_t\in\{1,2,\ldots,M\},\]
+
+表示时刻 \(t\) 所处的市场状态，\(M\) 表示状态数量。 注意：本节的 \(Z_t\) 专门表示 Regime，不再表示 IV-A 中的标准化创新项；后者如需使用，将明确另行定义。
+
+将 DGP 扩展为：
+\[\boxed{
+r_{t+1}
+=
+g_{Z_t}(X_t)+\varepsilon_{t+1}
+}\]
+
+其中：
+\[\mathbb E[\varepsilon_{t+1}\mid X_t,Z_t]=0.\]
+
+这意味着不同市场状态可以对应不同的预测函数：
+\[g_1,\quad g_2,\quad\ldots,\quad g_M.\]
+
+例如，同一个 Momentum Factor 在两个不同市场状态下可能分别满足：
+\[g_1(X_t)=0.1X_t,\]
+
+\[g_2(X_t)=-0.1X_t.\]
+
+\textbf{Regime 1 --- Momentum}
+
+\bookgraphic{0.326}{part-4-77-0001-003-01}{}
+
+\(\beta_1=+0.1\)
+
+\textbf{Regime 2 --- Reversal}
+
+\bookgraphic{0.326}{part-4-77-0001-003-02}{}
+
+\(\beta_2=-0.1\)
+
+假想预测关系。因子的信息来源没有变化，但其条件预测规律发生了反转。
+
+这就是 II-E 中 Concept Drift 的一种具体金融表现。
+
+假设 RSI Agent 在 Regime 1 中不断优化 Momentum-based Model，那么即使它已经学到了该状态下的 Bayes Optimal Predictor，也不保证这个模型在 Regime 2 中有效。
+
+\hypertarget{part-4-77-0001-structural-break-vs.-regime-switching}{%
+\subsection{2. Structural Break vs. Regime Switching}\label{part-4-77-0001-structural-break-vs.-regime-switching}}
+
+这两个概念都涉及统计规律的变化，但其数学结构有所区别。
+
+\hypertarget{part-4-77-0001-structural-breakux7ed3ux6784ux7a81ux53d8}{%
+\subsubsection{2.1 Structural Break（结构突变）}\label{part-4-77-0001-structural-breakux7ed3ux6784ux7a81ux53d8}}
+
+考虑一个简单的线性金融预测模型：
+\[r_{t+1}=\beta_tX_t+\varepsilon_{t+1}.\]
+
+假设在某个时刻 \(\tau\) 发生了结构性变化：
+\[\boxed{
+\beta_t=
+\begin{cases}
+\beta_1,&t\leq\tau,\\
+\beta_2,&t>\tau.
+\end{cases}
+}\]
+
+其中：
+\[\beta_1\neq\beta_2.\]
+
+这一变化可以来自市场制度、参与者结构、交易机制或者经济环境的改变。
+
+\hypertarget{part-4-77-0001-regime-switchingux72b6ux6001ux5207ux6362}{%
+\subsubsection{2.2 Regime Switching（状态切换）}\label{part-4-77-0001-regime-switchingux72b6ux6001ux5207ux6362}}
+
+与单次 Structural Break 不同，Regime Switching 允许市场在多个状态之间反复转换：
+\[\boxed{
+\beta_t=\beta_{Z_t}.
+}\]
+
+例如：
+\[Z_t:
+\quad
+1\rightarrow1\rightarrow2\rightarrow2
+\rightarrow1\rightarrow3\rightarrow1.\]
+
+\textbf{Structural Break}
+
+\bookgraphic{0.830}{part-4-77-0001-005-01}{参数在某个时刻发生相对持久的变化。}
+
+\textbf{Regime Switching}
+
+\bookgraphic{0.830}{part-4-77-0001-005-02}{参数随着市场状态的转换而反复改变。}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.49}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}@{}}
+\toprule
+Property & Structural Break & Regime Switching \\
+\midrule
+\endhead
+状态变化 & 一次或多次结构性突变 & 不同状态之间反复切换 \\
+核心对象 & Break Point & State Transition \\
+典型方法 & Chow Test、CUSUM、Change-point Detection & Markov Switching、HMM \\
+主要问题 & 规律什么时候改变？ & 当前处于哪个状态？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里需要回顾 III-F 中的 Change-point Detection。
+
+我们现在实际上面临两种不同的变点。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}@{}}
+\toprule
+Change Point & Time Axis & Interpretation \\
+\midrule
+\endhead
+Market Structural Break & 金融时间 \(t\) & 市场数据生成机制发生变化 \\
+RSI Performance Change Point & 递归迭代 \(k\) & Agent 的泛化性能趋势发生变化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{市场时间 \(t\) 与 RSI 迭代时间 \(k\) 是两个不同的时间维度。}
+
+这是整个 IV-F 中最重要的实验设计原则之一。
+
+如果第 10 轮 Agent 被评价在一个新的市场时期，而第 9 轮 Agent 被评价在旧市场时期，那么两个版本之间的性能变化就混合了 Agent Evolution 与 Market Evolution 的影响。
+
+为了诊断 Agent 本身的退化，原则上应当将不同 Agent Version 放在相同的 OOS Environment 中比较。
+
+\hypertarget{part-4-77-0001-markov-chain-and-hidden-markov-model}{%
+\subsection{3. Markov Chain and Hidden Markov Model}\label{part-4-77-0001-markov-chain-and-hidden-markov-model}}
+
+金融市场状态经常无法被直接观察。
+
+我们可以观察价格、成交量和收益率，但不能直接观察一个名为 High-volatility Regime 的真实变量。
+
+因此，自然需要引入 Hidden State Model。
+
+\hypertarget{part-4-77-0001-markov-chainux9a6cux5c14ux53efux592bux94fe}{%
+\subsubsection{3.1 Markov Chain（马尔可夫链）}\label{part-4-77-0001-markov-chainux9a6cux5c14ux53efux592bux94fe}}
+
+沿用市场状态变量：
+\[Z_t\in\{1,\ldots,M\}.\]
+
+假设其满足 First-order Markov Property：
+\[\boxed{
+\mathbb P(Z_{t+1}\mid Z_t,\ldots,Z_0)
+=
+\mathbb P(Z_{t+1}\mid Z_t)
+}\]
+
+即给定当前状态之后，更早的状态历史不再提供关于下一状态的额外信息。
+
+进一步假设 Transition Probability 不随时间变化，定义：
+\[p_{ij}
+=
+\mathbb P(Z_{t+1}=j\mid Z_t=i).\]
+
+于是可以构造 Transition Matrix：
+\[\boxed{
+\Pi=
+\begin{pmatrix}
+p_{11}&\cdots&p_{1M}\\
+\vdots&\ddots&\vdots\\
+p_{M1}&\cdots&p_{MM}
+\end{pmatrix}
+}\]
+
+其中：
+\[p_{ij}\geq0,
+\qquad
+\sum_{j=1}^{M}p_{ij}=1.\]
+
+\hypertarget{part-4-77-0001-two-state-example}{%
+\paragraph{Two-state Example}\label{part-4-77-0001-two-state-example}}
+
+假设市场只有两个状态：
+\[Z_t=
+\begin{cases}
+1,&\text{Low volatility},\\
+2,&\text{High volatility}.
+\end{cases}\]
+
+转移矩阵设为：
+\[\Pi=
+\begin{pmatrix}
+0.95&0.05\\
+0.10&0.90
+\end{pmatrix}.\]
+
+\bookgraphic{0.567}{part-4-77-0001-006-01}{假想市场状态模型。较大的对角元素意味着市场具有较强的状态持续性。}
+
+\hypertarget{part-4-77-0001-expected-regime-durationux72b6ux6001ux6301ux7eedux65f6ux95f4}{%
+\subsubsection{3.2 Expected Regime Duration（状态持续时间）}\label{part-4-77-0001-expected-regime-durationux72b6ux6001ux6301ux7eedux65f6ux95f4}}
+
+假设当前进入状态 \(i\)。
+
+定义随机变量 \(L_i\) 为本次连续停留在状态 \(i\) 的时期数量，包括进入状态的第一个时期。
+
+那么：
+\[\mathbb P(L_i=\ell)
+=
+p_{ii}^{\ell-1}(1-p_{ii}),
+\qquad \ell=1,2,\ldots\]
+
+你应该对这个分布非常熟悉。
+
+\[L_i\sim\operatorname{Geometric}(1-p_{ii}).\]
+
+因此，在 \(p_{ii}<1\) 时：
+\[\boxed{
+\mathbb E[L_i]=\frac1{1-p_{ii}}
+}\]
+
+对于上述转移矩阵：
+\[\mathbb E[L_1]=20,
+\qquad
+\mathbb E[L_2]=10.\]
+
+低波动状态平均持续 20 个时期，高波动状态平均持续 10 个时期。
+
+这就是 Probability 中 Geometric Distribution 在市场状态分析中的直接应用。
+
+\hypertarget{part-4-77-0001-stationary-distributionux5e73ux7a33ux5206ux5e03}{%
+\subsubsection{3.3 Stationary Distribution（平稳分布）}\label{part-4-77-0001-stationary-distributionux5e73ux7a33ux5206ux5e03}}
+
+定义：
+\[\boldsymbol\pi=(\pi_1,\ldots,\pi_M).\]
+
+如果：
+\[\boxed{
+\boldsymbol\pi=\boldsymbol\pi\Pi
+}\]
+
+且：
+\[\sum_{i=1}^{M}\pi_i=1,
+\qquad \pi_i\geq0,\]
+
+那么 \(\boldsymbol\pi\) 就是该 Markov Chain 的 Stationary Distribution。
+
+对于上述两状态模型：
+\[\begin{aligned}
+\pi_1&=0.95\pi_1+0.10\pi_2,\\
+\pi_1+\pi_2&=1.
+\end{aligned}\]
+
+求解得到：
+\[\boxed{
+\boldsymbol\pi=
+\left(\frac23,\frac13\right)
+}\]
+
+在这个不可约、非周期的有限状态 Markov Chain 中，长期处于两个市场状态的时间比例分别趋近于 \(2/3\) 和 \(1/3\)。
+
+\textbf{Market Regime Persistence Explorer}
+
+Low-volatility persistence \(p_{11}\)\\
+\textbf{0.95}
+
+0.95（范围 0.5--0.99）
+
+High-volatility persistence \(p_{22}\)\\
+\textbf{0.90}
+
+0.9（范围 0.5--0.99）
+
+Expected low-volatility duration
+
+\textbf{20.0}
+
+Periods
+
+Expected high-volatility duration
+
+\textbf{10.0}
+
+Periods
+
+\textbf{Stationary Regime Distribution}
+
+Low: 66.7\%
+
+High: 33.3\%
+
+根据两状态齐次 Markov Chain 的理论公式计算，并非实际市场状态估计。
+
+这里还有一个非常 Nontrivial 的结论：
+\[\boxed{
+\text{Regime Switching}
+\not\Rightarrow
+\text{Non-stationarity}.
+}\]
+
+如果 Markov Chain 从其平稳分布开始，且各状态下的观测生成机制保持不变，那么相应的 Hidden Markov Process 可以是严格平稳的。
+
+虽然条件分布随着隐藏状态发生变化，但整个随机过程的联合分布仍然可能保持时间平移不变。
+
+因此，研究时应当区分：
+
+\begin{itemize}
+\tightlist
+\item
+  市场状态在固定机制下发生转换；
+\item
+  状态转换概率本身发生改变；
+\item
+  状态内部的预测规律发生改变。
+\end{itemize}
+
+后两种才可能意味着更深层的数据生成机制不稳定。
+
+\hypertarget{part-4-77-0001-hidden-markov-model-hmm}{%
+\subsection{4. Hidden Markov Model (HMM)}\label{part-4-77-0001-hidden-markov-model-hmm}}
+
+Hamilton 在 1989 年发表于 \emph{Econometrica} 的经典研究中，将离散的 Markov Switching 机制用于描述经济时间序列的状态变化，并通过统计过滤方法推断不可直接观察的经济状态。
+
+\href{https://www.academia.edu/787023/A_new_approach_to_the_economic_analysis_of_nonstationary_time_series_and_the_business_cycle}{来源 1} \href{https://ideas.repec.org/a/ecm/emetrp/v57y1989i2p357-84.html}{来源 2}
+
+\hypertarget{part-4-77-0001-model-architecture}{%
+\subsubsection{4.1 Model Architecture}\label{part-4-77-0001-model-architecture}}
+
+HMM 包含两个随机过程：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.27}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}@{}}
+\toprule
+Process & Notation & Observable? \\
+\midrule
+\endhead
+Hidden State & \(Z_t\) & No \\
+Observation & \(O_t\) & Yes \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里新定义的 \(O_t\) 表示时刻 \(t\) 已经能够获得的市场观测，例如当期收益率、波动率或流动性指标。
+
+\bookgraphic{0.611}{part-4-77-0001-009-01}{基础 HMM 的依赖结构。隐藏状态决定当期观测的条件分布，同时影响下一期隐藏状态。}
+
+例如，我们可以建立 Gaussian Emission Model：
+\[O_t\mid Z_t=i
+\sim
+\mathcal N(\mu_i,\sigma_i^2).\]
+
+对不同状态使用不同的均值和方差。
+
+假设低波动状态具有：
+\[\mu_1=0,\qquad\sigma_1=0.01,\]
+
+而高波动状态具有：
+\[\mu_2=0,\qquad\sigma_2=0.04.\]
+
+\bookgraphic{0.544}{part-4-77-0001-010-01}{}
+
+Low volatility
+
+High volatility
+
+假想条件概率密度。极端收益观测可以为高波动状态提供更强的统计证据。
+
+\hypertarget{part-4-77-0001-filtering-ux5982ux4f55ux63a8ux65adux5f53ux524dux72b6ux6001}{%
+\subsubsection{4.2 Filtering --- 如何推断当前状态？}\label{part-4-77-0001-filtering-ux5982ux4f55ux63a8ux65adux5f53ux524dux72b6ux6001}}
+
+令：
+\[a_t(i)
+=
+\mathbb P(Z_t=i\mid O_{1:t}).\]
+
+其中 \(O_{1:t}\) 表示截至时刻 \(t\) 的观测历史。
+
+在基础 HMM 的条件独立假设下，状态估计可以分成两个步骤。
+
+\textbf{Step 1 --- Prediction}
+
+利用 Law of Total Probability：
+\[\boxed{
+a_{t|t-1}(j)
+=
+\sum_{i=1}^{M}p_{ij}a_{t-1}(i)
+}\]
+
+这表示在观察到 \(O_t\) 之前，对当前市场状态的预测概率。
+
+\textbf{Step 2 --- Bayesian Update}
+
+定义状态 \(j\) 对应的观测条件密度为：
+\[f_j(o)=f_{O_t\mid Z_t=j}(o).\]
+
+观察到 \(O_t\) 后，根据 Bayes' Theorem：
+\[\boxed{
+a_t(j)
+=
+\frac{
+f_j(O_t)a_{t|t-1}(j)
+}{
+\sum_{\ell=1}^{M}
+f_\ell(O_t)a_{t|t-1}(\ell)
+}
+}\]
+
+然后继续下一轮状态预测和更新。
+
+\[\text{Prior}
+\longrightarrow
+\text{Observation}
+\longrightarrow
+\text{Posterior}
+\longrightarrow
+\text{Next Prior}.\]
+
+这实际上就是我们此前在 Probability 中学习的 Bayesian Updating 在时间序列中的递归应用。
+
+\hypertarget{part-4-77-0001-filtering-vs.-smoothingux4e00ux4e2aux4e25ux91cdux7684ux6570ux636eux6cc4ux6f0fux98ceux9669}{%
+\subsubsection{4.3 Filtering vs. Smoothing：一个严重的数据泄漏风险}\label{part-4-77-0001-filtering-vs.-smoothingux4e00ux4e2aux4e25ux91cdux7684ux6570ux636eux6cc4ux6f0fux98ceux9669}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}@{}}
+\toprule
+Inference Method & Mathematical Object & Available in Real Time? \\
+\midrule
+\endhead
+Prediction & \(\mathbb P(Z_{t+1}\mid O_{1:t})\) & Yes \\
+Filtering & \(\mathbb P(Z_t\mid O_{1:t})\) & Yes \\
+Smoothing & \(\mathbb P(Z_t\mid O_{1:T})\) & No，当 \(T>t\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Filtering}
+
+\bookgraphic{0.830}{part-4-77-0001-011-01}{仅利用当前及过去的信息。}
+
+\textbf{Smoothing}
+
+\bookgraphic{0.830}{part-4-77-0001-011-02}{使用未来观测来重新估计过去的隐藏状态。}
+
+Smoothing 本身是合法的统计分析方法，可以帮助研究者事后识别历史市场状态。
+
+但是，如果 Agent 将 Smoothed Regime Label 用作当时的预测特征，就会引入 Look-ahead Bias。
+
+还需要注意，即便使用 Filtering，如果 HMM 参数是利用完整历史数据估计的，也可能间接使用未来信息。
+
+因此，真实的 OOS Evaluation 需要同时保证：
+\[\boxed{
+\text{Causal State Inference}
++
+\text{Causal Parameter Estimation}
+}\]
+
+这可能是 Regime-aware Financial Agent 中最值得审计的 Data Leakage 风险之一。
+
+\hypertarget{part-4-77-0001-parameter-instabilityux53c2ux6570ux4e0dux7a33ux5b9aux6027}{%
+\subsection{5. Parameter Instability（参数不稳定性）}\label{part-4-77-0001-parameter-instabilityux53c2ux6570ux4e0dux7a33ux5b9aux6027}}
+
+这是整个 IV-F 最重要的数学部分。
+
+我们现在证明：\textbf{即使模型完全没有估计误差，历史环境中的最优模型也可能在新环境中严重失效。}
+
+\hypertarget{part-4-77-0001-two-environment-linear-model}{%
+\subsubsection{5.1 Two-environment Linear Model}\label{part-4-77-0001-two-environment-linear-model}}
+
+沿用 IV-B 中的线性 DGP：
+\[r_{t+1}=\beta X_t+\varepsilon_{t+1}.\]
+
+现在定义两个不同的环境分布 \(P\) 和 \(Q\)。
+
+在 Source Environment \(P\) 中：
+\[r_{t+1}=\beta_PX_t+\varepsilon_{t+1}.\]
+
+在 Target Environment \(Q\) 中：
+\[r_{t+1}=\beta_QX_t+\varepsilon_{t+1}.\]
+
+假设两个环境均满足：
+\[X_t\sim\mathcal N(0,1),\]
+
+\[\varepsilon_{t+1}
+\sim\mathcal N(0,\sigma_\varepsilon^2),\]
+
+且两者相互独立。
+
+唯一发生变化的是回归系数。
+
+因此，这是一个受控的 Concept Drift Model。
+
+\hypertarget{part-4-77-0001-theorem-exact-risk-under-parameter-shift}{%
+\subsubsection{5.2 Theorem --- Exact Risk under Parameter Shift}\label{part-4-77-0001-theorem-exact-risk-under-parameter-shift}}
+
+假设预测模型为：
+\[h_\theta(X_t)=\theta X_t.\]
+
+其中 \(\theta\) 表示预测器使用的系数，不一定等于真实 DGP 中的 \(\beta_P\) 或 \(\beta_Q\)。
+
+在环境 \(P\) 中：
+\[\begin{aligned}
+R_P(h_\theta)
+&=\mathbb E_P[
+(r_{t+1}-\theta X_t)^2
+]\\
+&=\mathbb E_P[
+((\beta_P-\theta)X_t+\varepsilon_{t+1})^2
+]\\
+&=(\beta_P-\theta)^2+\sigma_\varepsilon^2.
+\end{aligned}\]
+
+同理：
+\[R_Q(h_\theta)
+=
+(\beta_Q-\theta)^2+\sigma_\varepsilon^2.\]
+
+因此：
+\[\boxed{
+\begin{aligned}
+R_P(h_\theta)
+&=\sigma_\varepsilon^2+(\theta-\beta_P)^2,\\
+R_Q(h_\theta)
+&=\sigma_\varepsilon^2+(\theta-\beta_Q)^2.
+\end{aligned}
+}\]
+
+现在假设 Agent 已经完美学习了 Source Environment：
+\[\theta=\beta_P.\]
+
+那么：
+\[R_P(h_{\beta_P})=\sigma_\varepsilon^2,\]
+
+但在 Target Environment 中：
+\[R_Q(h_{\beta_P})
+=
+\sigma_\varepsilon^2+(\beta_Q-\beta_P)^2.\]
+
+最终：
+\[\boxed{
+R_Q(h_{\beta_P})-R_P(h_{\beta_P})
+=
+(\beta_Q-\beta_P)^2
+}\]
+
+\(\square\)
+
+这里没有有限样本估计误差，没有 Feature Selection Bias，也没有 Adaptive Overfitting。
+
+性能下降完全来自真实预测规律的变化。
+
+\textbf{Parameter Instability Explorer}
+
+固定噪声方差为 1，特征方差为 1。所有风险均为精确 Population MSE。
+
+Source coefficient \(\beta_P\)\\
+\textbf{0.10}
+
+0.1（范围 -0.5--0.5）
+
+Target coefficient \(\beta_Q\)\\
+\textbf{-0.10}
+
+-0.1（范围 -0.5--0.5）
+
+Model coefficient \(\theta\)\\
+\textbf{0.10}
+
+0.1（范围 -0.5--0.5）
+
+\bookgraphic{0.471}{part-4-77-0001-012-01}{}
+
+Source Risk
+
+\textbf{1.0000}
+
+Target Risk
+
+\textbf{1.0400}
+
+Source Excess Risk
+
+\textbf{0.0000}
+
+Target Excess Risk
+
+\textbf{0.0400}
+
+bp = -0.5
+
+\bookgraphic{0.471}{part-4-77-0001-012-state-01}{}
+
+你可以将模型系数设置为 Source-optimal Coefficient，然后改变 \(\beta_Q\)。
+
+模型在 Source Environment 中始终保持最优，但 Target Risk 可以不断增加。
+
+这说明即使 RSI 成功地消除了历史环境中的 Estimation Error，也不能自动消除 Distribution Shift 所产生的风险。
+
+\hypertarget{part-4-77-0001-a-nontrivial-example-generalization-decay-without-overfitting}{%
+\subsubsection{5.3 A Nontrivial Example --- Generalization Decay without Overfitting}\label{part-4-77-0001-a-nontrivial-example-generalization-decay-without-overfitting}}
+
+假设：
+\[\beta_P=0.1,
+\qquad
+\beta_Q=-0.1,
+\qquad
+\sigma_\varepsilon^2=1.\]
+
+设 Agent 随着迭代逐渐逼近 Source-optimal Model：
+\[\theta_k\longrightarrow\beta_P.\]
+
+我们刻意假设 Agent 在每一轮都使用精确的 Source Population Risk，而不是有限样本的经验风险。
+
+因此不存在通常意义上的历史样本过拟合。
+
+\bookgraphic{0.786}{part-4-77-0001-013-01}{}
+
+根据精确风险公式构造的理论轨迹。模型系数从 −0.02 逐步提高至 0.10；MSE 越低越好。
+
+在这个过程中：
+\[R_P(h_{\theta_k})\downarrow,\]
+
+\[R_Q(h_{\theta_k})\uparrow.\]
+
+因此，\textbf{持续的 Source Improvement 与持续的 Target Decay 可以同时出现，即使系统没有发生 Statistical Overfitting。}
+
+这种现象可以称为 Source Specialization：系统越来越适合源环境，却越来越不适合目标环境。
+
+如果早期改进能够同时降低两个环境的风险，而后期逐渐转向源环境特有的预测规律，那么就可能形成完整的 Better, Then Worse 轨迹。
+
+这为 X Program \#161 提供了另一个必须检验的候选机制。
+
+\hypertarget{part-4-77-0001-regime-mixture-and-predictability}{%
+\subsection{6. Regime Mixture and Predictability}\label{part-4-77-0001-regime-mixture-and-predictability}}
+
+市场环境变化并不一定意味着每个状态内部的预测规律都发生了变化。
+
+仅仅改变不同市场状态所占的比例，也可能使总体预测关系改变。
+
+\hypertarget{part-4-77-0001-mixture-distribution}{%
+\subsubsection{6.1 Mixture Distribution}\label{part-4-77-0001-mixture-distribution}}
+
+假设有两个 Regime：
+\[\begin{aligned}
+Z_t=1:\quad&r_{t+1}=\beta_1X_t+\varepsilon_{t+1},\\
+Z_t=2:\quad&r_{t+1}=\beta_2X_t+\varepsilon_{t+1}.
+\end{aligned}\]
+
+令：
+\[\mathbb P(Z_t=1)=p,
+\qquad
+\mathbb P(Z_t=2)=1-p.\]
+
+假设 \(Z_t\) 与 \(X_t\) 独立，而研究者只能观察 \(X_t\)，不能直接观察 \(Z_t\)。
+
+根据 Law of Total Expectation：
+\[\begin{aligned}
+\mathbb E[r_{t+1}\mid X_t]
+={}&
+p\beta_1X_t\\
+&+(1-p)\beta_2X_t.
+\end{aligned}\]
+
+所以：
+\[\boxed{
+g(X_t)
+=
+[p\beta_1+(1-p)\beta_2]X_t
+}\]
+
+定义有效的总体回归系数：
+\[\boxed{
+\beta_{\mathrm{mix}}
+=
+p\beta_1+(1-p)\beta_2
+}\]
+
+假设：
+\[\beta_1=0.1,\qquad
+\beta_2=-0.1.\]
+
+那么：
+\[\beta_{\mathrm{mix}}=0.2p-0.1.\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Regime 1 Proportion \(p\) & Effective Coefficient \\
+\midrule
+\endhead
+100\% & 0.10 \\
+90\% & 0.08 \\
+75\% & 0.05 \\
+50\% & 0 \\
+25\% & −0.05 \\
+10\% & −0.08 \\
+0\% & −0.10 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+两种状态内部的规律完全没有改变，但总体预测系数可以从正变负。
+
+当两种状态等比例出现时：
+\[\mathbb E[r_{t+1}\mid X_t]=0.\]
+
+此时，如果研究者无法识别市场状态，单纯观察 \(X_t\) 就无法获得条件均值预测优势。
+
+\hypertarget{part-4-77-0001-the-value-of-regime-information}{%
+\subsubsection{6.2 The Value of Regime Information}\label{part-4-77-0001-the-value-of-regime-information}}
+
+现在回顾 IV-B 中的 Information-set Expansion。
+
+定义两个信息集合：
+\[\mathcal F=\sigma(X_t),\]
+
+\[\mathcal G=\sigma(X_t,Z_t).\]
+
+因为：
+\[\mathcal F\subseteq\mathcal G,\]
+
+所以：
+\[R_{\mathcal G}^*\leq R_{\mathcal F}^*.\]
+
+对于可以观察真实 Regime 的预测器：
+\[g_{\mathcal G}(X_t,Z_t)=\beta_{Z_t}X_t.\]
+
+其最优风险为：
+\[R_{\mathcal G}^*=\sigma_\varepsilon^2.\]
+
+而无法观察 Regime 的预测器使用：
+\[g_{\mathcal F}(X_t)=\beta_{\mathrm{mix}}X_t.\]
+
+其最优风险为：
+\[R_{\mathcal F}^*
+=
+\sigma_\varepsilon^2+
+\operatorname{Var}(\beta_{Z_t}),\]
+
+其中仍假设 \(Z_t\) 与 \(X_t\) 独立，且 \(\mathbb E[X_t^2]=1\)。
+
+由于：
+\[\operatorname{Var}(\beta_{Z_t})
+=
+p(1-p)(\beta_1-\beta_2)^2,\]
+
+最终得到：
+\[\boxed{
+R_{\mathcal F}^*-R_{\mathcal G}^*
+=
+p(1-p)(\beta_1-\beta_2)^2
+}\]
+
+这给出了正确获知市场状态所能带来的理论预测价值。
+
+\textbf{Regime Information \& Predictability}
+
+两个市场状态的回归系数分别固定为 +0.1 和 −0.1，噪声方差为 1。
+
+Proportion of Regime 1\\
+\textbf{50\%}
+
+0.5（范围 0--1）
+
+Effective Coefficient
+
+\textbf{0.000}
+
+Value of Perfect Regime Information
+
+\textbf{0.0100}
+
+MSE reduction
+
+\bookgraphic{0.544}{part-4-77-0001-015-01}{精确理论结果：状态比例越均衡，且状态间预测规律差异越大，正确获知状态的价值可能越高。}
+
+mix = 1
+
+\bookgraphic{0.544}{part-4-77-0001-015-state-01}{}
+
+这也是为什么 Regime-aware Prediction 在理论上可能非常有价值。
+
+不过，现实中的 HMM 只能估计市场状态概率，并不能保证获得真实的 \(Z_t\)。上述结果描述的是 Perfect Regime Information 的理想价值，而不是实际 HMM 一定能够实现的性能提升。
+
+\hypertarget{part-4-77-0001-robust-optimizationux9c81ux68d2ux4f18ux5316}{%
+\subsection{7. Robust Optimization（鲁棒优化）}\label{part-4-77-0001-robust-optimizationux9c81ux68d2ux4f18ux5316}}
+
+如果金融规律随市场状态变化，那么一个自然的研究方向是：
+
+\textbf{不再单纯寻找某个历史环境中表现最好的模型，而是寻找能够在多种环境中保持相对稳定表现的模型。}
+
+\hypertarget{part-4-77-0001-average-risk-optimization}{%
+\subsubsection{7.1 Average-risk Optimization}\label{part-4-77-0001-average-risk-optimization}}
+
+假设有 \(M\) 个不同的市场环境：
+\[P_1,P_2,\ldots,P_M.\]
+
+普通的平均风险优化可以写为：
+\[\boxed{
+h_{\mathrm{avg}}^*
+=
+\arg\min_{h\in\mathcal H}
+\sum_{j=1}^{M}w_jR_{P_j}(h)
+}\]
+
+其中：
+\[w_j\geq0,\qquad
+\sum_{j=1}^{M}w_j=1.\]
+
+如果训练数据中某种市场状态出现得特别频繁，那么经验平均风险自然会更加重视该状态。
+
+问题在于：历史市场状态比例不一定等于未来市场状态比例。
+
+\hypertarget{part-4-77-0001-worst-group-risk-minimization}{%
+\subsubsection{7.2 Worst-group Risk Minimization}\label{part-4-77-0001-worst-group-risk-minimization}}
+
+另一种思路是直接优化表现最差的市场环境：
+\[\boxed{
+h_{\mathrm{robust}}^*
+=
+\arg\min_{h\in\mathcal H}
+\max_{1\leq j\leq M}
+R_{P_j}(h)
+}\]
+
+这与 Group Distributionally Robust Optimization（Group DRO）的基本思想一致。
+
+Sagawa 等人在 ICLR 2020 的研究中进一步指出，单纯降低训练集的 Worst-group Loss，并不保证具有良好的 Worst-group Generalization；模型正则化依然具有重要作用。
+
+\href{https://arxiv.org/abs/1911.08731}{来源 1} \href{https://mlanthology.org/iclr/2020/sagawa2020iclr-distributionally/}{来源 2}
+
+这一点与我们的 RSI 研究高度相关：即使 Agent 不再优化平均得分，而是改为优化最差市场状态的得分，它仍然可能对有限的 Group-level Evaluation 发生过拟合。
+
+\hypertarget{part-4-77-0001-mathematical-example-average-optimal-vs.-robust-optimal}{%
+\subsubsection{7.3 Mathematical Example --- Average-optimal vs. Robust-optimal}\label{part-4-77-0001-mathematical-example-average-optimal-vs.-robust-optimal}}
+
+继续使用 §5 中的两个市场环境：
+\[\beta_1=0.1,\qquad
+\beta_2=-0.1,
+\qquad
+\sigma_\varepsilon^2=1.\]
+
+对于预测器：
+\[h_\theta(X_t)=\theta X_t,\]
+
+两个环境的风险分别为：
+\[R_1(\theta)=1+(\theta-0.1)^2,\]
+
+\[R_2(\theta)=1+(\theta+0.1)^2.\]
+
+假设历史数据中 Regime 1 占 90\%，Regime 2 占 10\%。
+
+\hypertarget{part-4-77-0001-average-risk-solution}{%
+\paragraph{Average-risk Solution}\label{part-4-77-0001-average-risk-solution}}
+
+\[\theta_{\mathrm{avg}}^*
+=
+\arg\min_\theta
+[0.9R_1(\theta)+0.1R_2(\theta)].\]
+
+根据前面的 Mixture Model：
+\[\boxed{
+\theta_{\mathrm{avg}}^*=0.08
+}\]
+
+\hypertarget{part-4-77-0001-worst-case-solution}{%
+\paragraph{Worst-case Solution}\label{part-4-77-0001-worst-case-solution}}
+
+\[\theta_{\mathrm{robust}}^*
+=
+\arg\min_\theta
+\max\{R_1(\theta),R_2(\theta)\}.\]
+
+由于两个环境的风险函数关于零对称，最优解位于两个风险曲线的交点：
+\[R_1(\theta)=R_2(\theta).\]
+
+即：
+\[(\theta-0.1)^2=(\theta+0.1)^2.\]
+
+所以：
+\[\boxed{
+\theta_{\mathrm{robust}}^*=0
+}\]
+
+\textbf{Average-risk vs. Worst-case Optimization}
+
+\bookgraphic{0.439}{part-4-77-0001-017-01}{}
+
+Average risk
+
+Worst-case risk
+
+Individual risks
+
+根据上述风险函数绘制的理论结果，两种优化目标对应不同的最优解。
+
+\hypertarget{part-4-77-0001-performance-comparison}{%
+\paragraph{Performance Comparison}\label{part-4-77-0001-performance-comparison}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}@{}}
+\toprule
+Metric & Average-optimal & Robust-optimal \\
+\midrule
+\endhead
+Model coefficient & 0.08 & 0 \\
+Regime 1 MSE & 1.0004 & 1.0100 \\
+Regime 2 MSE & 1.0324 & 1.0100 \\
+Historical average MSE & \textbf{1.0036} & 1.0100 \\
+Worst-case MSE & 1.0324 & \textbf{1.0100} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+Robust Model 牺牲了一部分历史平均表现，换取了较低的最坏情形风险。
+
+这正是 Robustness--Performance Trade-off。
+
+但在这个特殊例子中，Robust-optimal Predictor 甚至完全放弃了方向性预测信号。因此，鲁棒性并不意味着获得了更强的预测能力，而可能意味着避免了对某个不稳定规律的过度依赖。
+
+\hypertarget{part-4-77-0001-distributionally-robust-optimization-dro}{%
+\subsubsection{7.4 Distributionally Robust Optimization (DRO)}\label{part-4-77-0001-distributionally-robust-optimization-dro}}
+
+Worst-group Optimization 可以进一步推广。
+
+假设我们无法确定未来市场分布 \(Q\)，但认为它属于某个合理的分布集合：
+\[Q\in\mathcal U(P).\]
+
+这里新定义的 \(\mathcal U(P)\) 称为 Ambiguity Set，表示围绕参考分布 \(P\) 构造的可能目标分布集合。
+
+那么：
+\[\boxed{
+h_{\mathrm{DRO}}^*
+=
+\arg\min_{h\in\mathcal H}
+\sup_{Q\in\mathcal U(P)}
+R_Q(h)
+}\]
+
+它不再假设未来分布一定等于历史分布，而是试图控制一组可能环境中的最坏风险。
+
+如果 Ambiguity Set 仅包含历史分布：
+\[\mathcal U(P)=\{P\},\]
+
+就恢复普通 Population Risk Minimization。
+
+如果 Ambiguity Set 很大，模型则可能变得过度保守。
+
+因此，DRO 的核心问题并不是盲目扩大鲁棒性，而是如何构造具有合理统计和经济含义的 Ambiguity Set。
+
+对于目前的研究准备，掌握 Worst-group Optimization 即可。Wasserstein DRO、\(f\)-divergence DRO 等更高级的方法可以留到实际需要时再学习。
+
+\hypertarget{part-4-77-0001-robustness-oriented-rsi}{%
+\subsection{8. Robustness-oriented RSI}\label{part-4-77-0001-robustness-oriented-rsi}}
+
+现在将上述思想推广到 Agent Selection。
+
+此前 III-D 中的 Greedy Selection 为：
+\[A_{k+1}
+=
+\arg\max_{A\in\mathcal C_k\cup\{A_k\}}
+\widehat J_{\mathrm{IS}}(A).\]
+
+如果开发环境包含多个市场状态，可以为每个 Agent 构造一个 Performance Vector：
+\[\boldsymbol S(A)
+=
+\begin{pmatrix}
+S_1(A)\\
+S_2(A)\\
+\vdots\\
+S_M(A)
+\end{pmatrix}.\]
+
+这里 \(S_j(A)\) 表示 Agent 在第 \(j\) 个开发环境中的得分，Score 越高越好。
+
+\hypertarget{part-4-77-0001-three-candidate-selection-objectives}{%
+\subsubsection{8.1 Three Candidate Selection Objectives}\label{part-4-77-0001-three-candidate-selection-objectives}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}@{}}
+\toprule
+Objective & Mathematical Form & Motivation \\
+\midrule
+\endhead
+Average Performance & \(\sum_jw_jS_j(A)\) & 整体表现 \\
+Worst-group Performance & \(\min_j S_j(A)\) & 限制最差环境下的失败 \\
+Stability-penalized Performance & \(\overline S(A)-\lambda s_S(A)\) & 惩罚跨环境性能波动 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 \(s_S(A)\) 表示跨环境得分的标准差。
+
+考虑以下三个假想候选 Agent：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.16}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Agent & Regime 1 & Regime 2 & Regime 3 & Regime 4 \\
+\midrule
+\endhead
+A & 0.95 & 0.90 & 0.85 & 0.10 \\
+B & 0.72 & 0.70 & 0.68 & 0.66 \\
+C & 0.80 & 0.75 & 0.65 & 0.45 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\bookgraphic{0.723}{part-4-77-0001-018-01}{}
+
+如果采用不同的 Objective Function，我们可能得到完全不同的 Agent Selection。
+
+\textbf{Robust Agent Selection Explorer}
+
+\[U(A)=\overline S(A)-\lambda s_S(A)\]
+
+Stability penalty \(\lambda\)\\
+\textbf{0.30}
+
+0.3（范围 0--2）
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.29}}@{}}
+\toprule
+Agent & Mean & Worst & Utility \\
+\midrule
+\endhead
+\textbf{A} & 0.700 & 0.100 & 0.596 \\
+\textbf{B} & 0.690 & 0.660 & 0.683 \\
+\textbf{C} & 0.663 & 0.450 & 0.622 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Selected Agent: B}
+
+等权重假想实验，使用四个环境得分的总体标准差。所有结果根据上表计算。
+
+这里的 \(\lambda\) 不仅仅是一个数学参数，它实际上决定了 Agent Evolution 的方向。
+
+如果使用纯平均得分，系统可能不断向某些容易获得高分的市场环境集中。如果引入 Stability Penalty，系统可能更倾向于保留跨环境表现稳定的修改。
+
+但 \(\lambda\) 本身也属于 Hyperparameter，不能利用最终 OOS Test 反复调节，否则会产生 Researcher-level Overfitting。
+
+\hypertarget{part-4-77-0001-rolling-window-robustness}{%
+\subsubsection{8.2 Rolling-window Robustness}\label{part-4-77-0001-rolling-window-robustness}}
+
+在真实金融研究中，我们不一定能够准确划分 Market Regime。
+
+一种更加直接的方法，是利用多个时间窗口评价模型的稳定性。 设：
+\[D_1,D_2,\ldots,D_M\]
+
+表示多个开发评价窗口。
+
+然后记录：
+\[\widehat J_{D_1}(A_k),\ldots,
+\widehat J_{D_M}(A_k).\]
+
+Giacomini 和 Rossi 在 2010 年发表的 \emph{Forecast Comparisons in Unstable Environments} 中，强调研究模型之间的局部相对预测表现及其完整时间轨迹，而不是仅仅比较全样本平均表现。
+
+\href{https://onlinelibrary.wiley.com/doi/full/10.1002/jae.1177}{来源 1}
+
+这与我们当前研究方向有一个很自然的联系。
+
+我们不仅应该研究 Agent 在不同迭代版本上的性能变化，还应该研究同一 Agent 在不同市场时期的性能变化。
+
+\hypertarget{part-4-77-0001-two-dimensional-performance-surfaceux4e8cux7ef4ux6027ux80fdux66f2ux9762}{%
+\subsection{9. Two-dimensional Performance Surface（二维性能曲面）}\label{part-4-77-0001-two-dimensional-performance-surfaceux4e8cux7ef4ux6027ux80fdux66f2ux9762}}
+
+这是 IV-F 中我认为最值得实际应用到 X Program 的研究工具。
+
+此前 III-F 主要使用一维轨迹：
+\[S_0^{\mathrm{OOS}},\ldots,S_K^{\mathrm{OOS}}.\]
+
+但现在可以进一步定义：
+\[\boxed{
+S_{k,j}^{\mathrm{OOS}}
+=
+\widehat J_{D_j^{\mathrm{OOS}}}(A_k)
+}\]
+
+其中：
+
+\(k\) 表示 Agent Iteration，\(j\) 表示 Market Evaluation Window。
+
+这样，原本的一维 Performance Curve 就扩展为二维 Performance Matrix：
+\[\mathbf S^{\mathrm{OOS}}
+=
+\begin{pmatrix}
+S_{0,1}&\cdots&S_{0,M}\\
+S_{1,1}&\cdots&S_{1,M}\\
+\vdots&\ddots&\vdots\\
+S_{K,1}&\cdots&S_{K,M}
+\end{pmatrix}.\]
+
+\textbf{RSI Version × Market Environment}
+
+\bookgraphic{0.353}{part-4-77-0001-021-01}{}
+
+Lower performance
+
+Higher performance
+
+假想性能矩阵。后期 Agent 在 Trend Environment 中持续改善，却在其他市场环境中逐渐退化。
+
+如果只计算所有市场环境的平均得分，就可能掩盖重要的性能分化。
+
+根据这个矩阵，可以定义三个指标。
+
+\hypertarget{part-4-77-0001-metric-1-mean-oos-performance}{%
+\paragraph{Metric 1 --- Mean OOS Performance}\label{part-4-77-0001-metric-1-mean-oos-performance}}
+
+\[\bar S_k^{\mathrm{OOS}}
+=
+\frac1M\sum_{j=1}^{M}S_{k,j}^{\mathrm{OOS}}.\]
+
+\hypertarget{part-4-77-0001-metric-2-worst-environment-performance}{%
+\paragraph{Metric 2 --- Worst-environment Performance}\label{part-4-77-0001-metric-2-worst-environment-performance}}
+
+\[S_{k,\mathrm{worst}}^{\mathrm{OOS}}
+=
+\min_jS_{k,j}^{\mathrm{OOS}}.\]
+
+\hypertarget{part-4-77-0001-metric-3-cross-environment-dispersion}{%
+\paragraph{Metric 3 --- Cross-environment Dispersion}\label{part-4-77-0001-metric-3-cross-environment-dispersion}}
+
+\[V_k^{\mathrm{env}}
+=
+\frac1M
+\sum_{j=1}^{M}
+(S_{k,j}^{\mathrm{OOS}}-\bar S_k^{\mathrm{OOS}})^2.\]
+
+将上述三个指标放在同一张图中：
+
+\bookgraphic{0.723}{part-4-77-0001-022-01}{}
+
+\bookgraphic{0.786}{part-4-77-0001-023-01}{}
+
+根据上述假想性能矩阵计算。跨环境性能差异不断扩大，提示系统可能逐渐集中于某个特定市场环境。
+
+这种分析能够帮助我们区分：
+
+\textbf{Agent 是否整体失去了预测能力，还是逐渐变成了一个只擅长特定市场环境的 Specialist？}
+
+对于 RSI 的 Revision Diagnosis，这两种解释对应的干预机制并不相同。
+
+\hypertarget{part-4-77-0001-decay-attribution-ux533aux5206ux8fc7ux62dfux5408ux4e0eux5206ux5e03ux53d8ux5316}{%
+\subsection{10. Decay Attribution --- 区分过拟合与分布变化}\label{part-4-77-0001-decay-attribution-ux533aux5206ux8fc7ux62dfux5408ux4e0eux5206ux5e03ux53d8ux5316}}
+
+现在正式回到 II-E 中的核心数学分解。
+
+\hypertarget{part-4-77-0001-risk-decomposition}{%
+\subsubsection{10.1 Risk Decomposition}\label{part-4-77-0001-risk-decomposition}}
+
+设 \(P\) 为 Source Distribution，\(Q\) 为 Target Distribution，\(D_n\) 为来自源环境的开发数据。
+
+对于 Agent 对应的预测器 \(h_k\)：
+\[\boxed{
+\begin{aligned}
+R_Q(h_k)-\widehat R_n(h_k)
+={}&
+\underbrace{
+R_P(h_k)-\widehat R_n(h_k)
+}_{\text{Generalization Gap}}\\
+&+
+\underbrace{
+R_Q(h_k)-R_P(h_k)
+}_{\text{Distribution Shift Penalty}}
+\end{aligned}
+}\]
+
+第一个部分描述 Source Environment 内部的经验风险与总体风险差异。
+
+第二个部分描述同一模型在两个环境中的总体风险差异。
+
+为了方便讨论，定义：
+\[G_k^P
+=
+R_P(h_k)-\widehat R_n(h_k),\]
+
+\[B_k^{P\rightarrow Q}
+=
+R_Q(h_k)-R_P(h_k).\]
+
+于是：
+\[\boxed{
+R_Q(h_k)
+=
+\widehat R_n(h_k)
++
+G_k^P
++
+B_k^{P\rightarrow Q}
+}\]
+
+注意，这里的 \(B_k^{P\rightarrow Q}\) 专门表示分布变化引起的风险差，不是 III-C 中用于表示真实能力收益的 \(B_k\)。
+
+并且两个差值均为 Signed Quantity，并不一定为正。
+
+\hypertarget{part-4-77-0001-revision-level-decomposition}{%
+\subsubsection{10.2 Revision-level Decomposition}\label{part-4-77-0001-revision-level-decomposition}}
+
+定义相邻版本之间的变化：
+\[\Delta_kR_Q
+=
+R_Q(h_k)-R_Q(h_{k-1}).\]
+
+其他风险及差值也采用相同的差分定义。
+
+那么：
+\[\boxed{
+\Delta_kR_Q
+=
+\Delta_k\widehat R_n
++
+\Delta_kG^P
++
+\Delta_kB^{P\rightarrow Q}
+}\]
+
+这给出了一个非常有解释力的判据。
+
+假设第 \(k\) 次 Revision 改善了经验表现：
+\[\Delta_k\widehat R_n<0.\]
+
+但同时：
+\[\Delta_kR_Q>0.\]
+
+那么必然有：
+\[\boxed{
+\Delta_kG^P
++
+\Delta_kB^{P\rightarrow Q}
+>
+-\Delta_k\widehat R_n
+}\]
+
+即：源环境中的泛化差距变化，以及对分布变化的敏感性变化，其合计影响超过了经验风险下降带来的收益。
+
+这是一条严格的代数关系，但并不直接提供因果归因。
+
+\hypertarget{part-4-77-0001-numerical-attribution-example}{%
+\subsubsection{10.3 Numerical Attribution Example}\label{part-4-77-0001-numerical-attribution-example}}
+
+假设 Agent \(A_k\) 相对于上一个版本出现以下变化：
+
+\textbf{Revision-level Risk Attribution}
+
+\bookgraphic{0.453}{part-4-77-0001-025-01}{假想风险变化：经验 MSE 改善 0.010，但源环境泛化差距扩大 0.018，分布变化风险差增加 0.012，最终目标风险增加 0.020。}
+
+数学上：
+\[-0.010+0.018+0.012=0.020.\]
+
+这种分解比单纯报告：
+\[\mathrm{IS}\uparrow,\qquad\mathrm{OOS}\downarrow\]
+
+更有解释力。
+
+然而，在真实金融研究中，\(R_P(h_k)\) 和 \(R_Q(h_k)\) 都是未知总体量。
+
+因此，我们无法仅凭两条经验性能曲线精确识别三个分量。实际研究需要独立的 Source-like Evaluation、Target Evaluation 以及额外的识别假设。
+
+\hypertarget{part-4-77-0001-research-practice-controlled-decay-attribution}{%
+\subsection{11. Research Practice --- Controlled Decay Attribution}\label{part-4-77-0001-research-practice-controlled-decay-attribution}}
+
+本阶段最推荐的实验设计，是建立一个同时能够控制 SNR 和 Distribution Shift 的 Synthetic Financial Environment。
+
+\hypertarget{part-4-77-0001-experimental-architecture}{%
+\subsubsection{11.1 Experimental Architecture}\label{part-4-77-0001-experimental-architecture}}
+
+沿用 IV-B 中的线性 Synthetic DGP：
+\[\boldsymbol X_t\sim
+\mathcal N(\boldsymbol0,I_p),\]
+
+\[\varepsilon_{t+1}\sim\mathcal N(0,1).\]
+
+源环境：
+\[r_{t+1}^{P}
+=
+\boldsymbol\beta_P^\top\boldsymbol X_t
++\varepsilon_{t+1}.\]
+
+目标环境：
+\[r_{t+1}^{Q}
+=
+\boldsymbol\beta_Q^\top\boldsymbol X_t
++\varepsilon_{t+1}.\]
+
+定义 Distribution Shift Magnitude：
+\[\boxed{
+\delta_{\mathrm{shift}}
+=
+\|\boldsymbol\beta_Q-\boldsymbol\beta_P\|_2
+}\]
+
+同时：
+\[\mathrm{SNR}_P=\|\boldsymbol\beta_P\|_2^2.\]
+
+如果希望独立改变 Shift Magnitude，而保持源环境与目标环境的 SNR 相同，可以旋转系数向量的方向，同时保持其范数不变。
+
+例如，令两个有效特征对应的系数为：
+\[\boldsymbol\beta_P=
+\sqrt{\mathrm{SNR}}
+\begin{pmatrix}1\\0\end{pmatrix},\]
+
+\[\boldsymbol\beta_Q=
+\sqrt{\mathrm{SNR}}
+\begin{pmatrix}\cos\varphi\\\sin\varphi\end{pmatrix}.\]
+
+其中新定义的 \(\varphi\) 表示两个预测规律之间的夹角。
+
+那么：
+\[\|\boldsymbol\beta_P\|_2^2
+=
+\|\boldsymbol\beta_Q\|_2^2
+=
+\mathrm{SNR}.\]
+
+进一步：
+\[\begin{aligned}
+\delta_{\mathrm{shift}}^2
+&=
+\|\boldsymbol\beta_Q-\boldsymbol\beta_P\|_2^2\\
+&=
+2\mathrm{SNR}(1-\cos\varphi).
+\end{aligned}\]
+
+所以：
+\[\boxed{
+\delta_{\mathrm{shift}}^2
+=
+2\mathrm{SNR}(1-\cos\varphi)
+}\]
+
+\textbf{Controlled Concept Drift Explorer}
+
+Fixed task-level SNR 0.001 / 0.01 / 0.1 / 1
+
+Concept rotation \(\varphi\)\\
+\textbf{60°}
+
+60（范围 0--180）
+
+\bookgraphic{0.461}{part-4-77-0001-026-01}{}
+
+Source \& Target optimal R²
+
+\textbf{0.990\%}
+
+Shift-induced excess MSE
+
+\textbf{0.0100}
+
+两个环境具有完全相同的理论预测上限，但最优预测方向可能不同。箭头长度经过归一化展示。
+
+angle = 180
+
+\bookgraphic{0.461}{part-4-77-0001-026-state-01}{}
+
+这个构造很有研究价值，因为它将两个此前可能混杂的变量分离出来：
+\[\underbrace{\mathrm{SNR}}_{\text{Task Difficulty}}
+\qquad\text{和}\qquad
+\underbrace{\varphi}_{\text{Environment Shift}}.\]
+
+它们可以分别控制。
+
+\hypertarget{part-4-77-0001-two-factor-experiment}{%
+\subsubsection{11.2 Two-factor Experiment}\label{part-4-77-0001-two-factor-experiment}}
+
+建议首先设置一个 \(2\times2\) 的 Factorial Experiment。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.43}}@{}}
+\toprule
+Group & Search Process & Distribution Shift \\
+\midrule
+\endhead
+A & Non-adaptive & No \\
+B & Adaptive & No \\
+C & Non-adaptive & Yes \\
+D & Adaptive & Yes \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+统一样本量、初始模型、候选空间及可比较的评价预算。
+
+假设以 Peak-to-Final Population Performance Decay 作为输出变量 \(Y\)。
+
+可以构建：
+\[Y=
+\alpha+\beta_Ax_A+\beta_Sx_S
++\beta_{AS}x_Ax_S+\eta,\]
+
+其中：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.68}}@{}}
+\toprule
+Variable & Definition \\
+\midrule
+\endhead
+\(x_A\) & 是否允许 Adaptive Search \\
+\(x_S\) & 是否存在 Distribution Shift \\
+\(\beta_A\) & 无分布变化条件下，自适应搜索的效应 \\
+\(\beta_S\) & 非自适应条件下，分布变化的效应 \\
+\(\beta_{AS}\) & 两种机制的交互效应 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+例如，假设得到以下实验结果：
+
+\bookgraphic{0.786}{part-4-77-0001-027-01}{}
+
+完全假想的实验结果，用于说明交互效应的计算。
+
+那么：
+\[\beta_A=0.04-0.01=0.03,\]
+
+\[\beta_S=0.05-0.01=0.04,\]
+
+而交互效应为：
+\[\begin{aligned}
+\beta_{AS}
+&=0.13-0.04-0.05+0.01\\
+&=0.05.
+\end{aligned}\]
+
+即：
+\[\boxed{\beta_{AS}=0.05}\]
+
+假想结果意味着，自适应搜索与分布变化共同出现时，可能产生超出两者独立效应之和的性能退化。
+
+这就提出了一个更深入的 Research Hypothesis：
+
+\begin{quote}
+Adaptive optimization may not only overfit the development data, but also amplify the agent's sensitivity to distribution shift.
+\end{quote}
+
+当然，这个假设需要重复实验、置信区间以及合理的实验控制来验证。
+
+进一步可以增加第三种 Search Process，即允许 Self-modification 的 RSI Optimizer，从而区分普通 Adaptive Search 和真正的 Recursive Optimization。
+
+\hypertarget{part-4-77-0001-practical-mitigation-framework}{%
+\subsection{12. Practical Mitigation Framework}\label{part-4-77-0001-practical-mitigation-framework}}
+
+现在可以统一整理金融环境中的主要鲁棒性干预方法。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}@{}}
+\toprule
+Mitigation & Mechanism & Main Limitation \\
+\midrule
+\endhead
+Rolling Training Window & 降低过时信息的影响 & 减少可用样本 \\
+Exponential Time Weighting & 更重视近期观测 & 可能过度适应近期噪声 \\
+Regime-aware Models & 根据市场状态调整预测 & 状态估计不确定性 \\
+Multi-window Validation & 检查跨时期泛化 & 仍可能发生自适应过拟合 \\
+Worst-group Optimization & 限制最差状态风险 & 可能过度保守 \\
+Regularization & 降低模型对微弱信号的依赖 & 可能牺牲有效信号 \\
+Ensemble Methods & 降低对单一模型的依赖 & 候选模型可能高度相关 \\
+Stress Testing & 检验异常环境下的表现 & 不保证覆盖所有未来环境 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里最重要的原则是：
+
+\textbf{Robustness Mechanism 自身也必须接受独立的 Generalization Evaluation。}
+
+如果我们根据同一批 OOS 数据不断选择最佳鲁棒性方法，那么 Robust Optimization 本身就会成为新的过拟合来源。
+
+\hypertarget{part-4-77-0001-literature-index}{%
+\subsection{13. Literature Index}\label{part-4-77-0001-literature-index}}
+
+本阶段推荐三篇具有不同研究侧重的文献。
+
+\textbf{P0 --- Forecast Comparisons in Unstable Environments}
+
+Raffaella Giacomini \& Barbara Rossi · 2010 · Journal of Applied Econometrics, 25(4), 595--620
+
+与我们的研究目标联系最直接。重点理解 Local Forecasting Performance，以及为什么全样本平均表现可能掩盖模型在不同时间段的性能变化。
+
+\href{https://doi.org/10.1002/jae.1177}{DOI: 10.1002/jae.1177} \href{https://onlinelibrary.wiley.com/doi/full/10.1002/jae.1177}{来源 1}
+
+\textbf{P1 --- A New Approach to the Economic Analysis of Nonstationary Time Series and the Business Cycle}
+
+James D. Hamilton · 1989 · Econometrica, 57(2), 357--384
+
+Markov-switching 时间序列模型的经典研究。现阶段重点理解隐藏状态、状态转换与统计过滤，不需要深入完整的参数估计算法。
+
+\href{https://doi.org/10.2307/1912559}{DOI: 10.2307/1912559} \href{https://ideas.repec.org/a/ecm/emetrp/v57y1989i2p357-84.html}{来源 1}
+
+\textbf{P1 --- Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization}
+
+Sagawa et al. · ICLR 2020
+
+重点理解 Average Performance 与 Worst-group Generalization 之间的区别，以及为什么鲁棒优化仍需要正则化。
+
+\href{https://arxiv.org/abs/1911.08731}{arXiv:1911.08731} \href{https://arxiv.org/abs/1911.08731}{来源 1} \href{https://mlanthology.org/iclr/2020/sagawa2020iclr-distributionally/}{来源 2}
+
+本次已检索核对上述文献的基本出版信息及研究摘要，但没有逐篇完成全文审阅。
+
+\hypertarget{part-4-77-0001-iv-f-conclusion-index}{%
+\subsection{14. IV-F --- Conclusion Index}\label{part-4-77-0001-iv-f-conclusion-index}}
+
+\hypertarget{part-4-77-0001-core-conclusions}{%
+\subsubsection{14.1 Core Conclusions}\label{part-4-77-0001-core-conclusions}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.71}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+F1 & Overfitting 与 Distribution Shift 是不同的失败机制 & §1 \\
+F2 & Market Structural Break 与 RSI Change Point 属于不同时间维度 & §2 \\
+F3 & Markov Chain 可以描述市场状态的持续与转换 & §3 \\
+F4 & Regime Switching 不必然意味着 Non-stationarity & §3.3 \\
+F5 & HMM 可以通过 Bayesian Updating 推断隐藏状态 & §4 \\
+F6 & Smoothing 用于实时预测可能造成 Look-ahead Bias & §4.3 \\
+F7 & 即使模型完全没有估计误差，也可能因环境变化而退化 & §5 \\
+F8 & 市场状态比例变化可以改变总体预测规律 & §6.1 \\
+F9 & 新增市场状态信息具有可量化的理论预测价值 & §6.2 \\
+F10 & Robust Optimization 可能需要牺牲部分平均性能 & §7 \\
+F11 & Robust Objective Function 会改变 Agent Evolution 的方向 & §8 \\
+F12 & 二维性能矩阵能够揭示跨环境性能分化 & §9 \\
+F13 & Generalization Gap 与 Distribution Shift 可以进行风险分解 & §10 \\
+F14 & 保持 SNR 不变时，可以独立控制预测规律变化的程度 & §11 \\
+F15 & Adaptive Search 与 Distribution Shift 可能存在交互效应 & §11.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-77-0001-core-formula-sheet}{%
+\subsubsection{14.2 Core Formula Sheet}\label{part-4-77-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Markov Transition Matrix}
+
+\[p_{ij}=\mathbb P(Z_{t+1}=j\mid Z_t=i).\]
+
+\textbf{Result 2 --- Expected Regime Duration}
+
+\[\boxed{
+\mathbb E[L_i]=\frac1{1-p_{ii}}
+}\]
+
+\textbf{Result 3 --- Stationary Distribution}
+
+\[\boldsymbol\pi=\boldsymbol\pi\Pi.\]
+
+\textbf{Result 4 --- HMM Filtering}
+
+\[a_{t|t-1}(j)=\sum_i p_{ij}a_{t-1}(i),\]
+
+\[a_t(j)
+=
+\frac{f_j(O_t)a_{t|t-1}(j)}
+{\sum_\ell f_\ell(O_t)a_{t|t-1}(\ell)}.\]
+
+\textbf{Result 5 --- Parameter-shift Risk}
+
+\[\boxed{
+R_Q(h_{\beta_P})-R_P(h_{\beta_P})
+=
+(\beta_Q-\beta_P)^2
+}\]
+
+\textbf{Result 6 --- Mixture Coefficient}
+
+\[\beta_{\mathrm{mix}}
+=
+p\beta_1+(1-p)\beta_2.\]
+
+\textbf{Result 7 --- Value of Perfect Regime Information}
+
+\[\boxed{
+R_{\mathcal F}^*-R_{\mathcal G}^*
+=
+p(1-p)(\beta_1-\beta_2)^2
+}\]
+
+\textbf{Result 8 --- Distributionally Robust Optimization}
+
+\[h_{\mathrm{DRO}}^*
+=
+\arg\min_h
+\sup_{Q\in\mathcal U(P)}R_Q(h).\]
+
+\textbf{Result 9 --- Revision-level Decay Attribution}
+
+\[\boxed{
+\Delta_kR_Q
+=
+\Delta_k\widehat R_n
++
+\Delta_kG^P
++
+\Delta_kB^{P\rightarrow Q}
+}\]
+
+\textbf{Result 10 --- Controlled Concept Drift}
+
+\[\boxed{
+\delta_{\mathrm{shift}}^2
+=
+2\mathrm{SNR}(1-\cos\varphi)
+}\]
+
+\hypertarget{part-4-77-0001-proof-index}{%
+\subsubsection{14.3 Proof Index}\label{part-4-77-0001-proof-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.59}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.21}}@{}}
+\toprule
+Proof & Mathematical Result & Location \\
+\midrule
+\endhead
+P1 & Regime Duration 的几何分布 & §3.2 \\
+P2 & 两状态 Markov Chain 的平稳分布 & §3.3 \\
+P3 & HMM 的 Bayesian Filtering & §4.2 \\
+P4 & Parameter Shift 下的精确预测风险 & §5.2 \\
+P5 & Regime Mixture 的总体回归系数 & §6.1 \\
+P6 & 市场状态信息的理论价值 & §6.2 \\
+P7 & Average-optimal 与 Robust-optimal 解 & §7.3 \\
+P8 & Revision-level Risk Decomposition & §10.2 \\
+P9 & 固定 SNR 的 Concept Rotation & §11.1 \\
+P10 & Factorial Interaction Effect & §11.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-77-0001-part-iv-consolidated-conclusion}{%
+\subsection{Part IV --- Consolidated Conclusion}\label{part-4-77-0001-part-iv-consolidated-conclusion}}
+
+至此，我们完成了整个 Part IV。
+
+\hypertarget{part-4-77-0001-core-knowledge-map}{%
+\subsection{15. Core Knowledge Map}\label{part-4-77-0001-core-knowledge-map}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.46}}@{}}
+\toprule
+Module & Fundamental Question & Key Knowledge \\
+\midrule
+\endhead
+IV-A & 金融数据具有怎样的统计性质？ & Time Series、Heavy Tails、GARCH、ESS \\
+IV-B & 金融数据究竟包含多少可预测信息？ & SNR、Bayes Risk、Optimal \(R^2\) \\
+IV-C & Financial Agent 在优化什么？ & Factors、IC、Regularization、Model Search \\
+IV-D & 如何评价金融预测的经济价值？ & Portfolio Risk、Sharpe、Delta Method \\
+IV-E & 如何判断优秀回测是否可信？ & PSR、DSR、PBO、CSCV \\
+IV-F & 历史规律为什么可能在未来失效？ & Regime Switching、Concept Drift、DRO \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-77-0001-part-iv-most-important-mathematical-results}{%
+\subsection{16. Part IV --- Most Important Mathematical Results}\label{part-4-77-0001-part-iv-most-important-mathematical-results}}
+
+以下是我建议你在第二轮复习时优先掌握的八个结果。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+Mathematical Result & Core Significance & Index \\
+\midrule
+\endhead
+\(n_{\mathrm{eff}}\approx n(1-\phi)/(1+\phi)\) & 时间依赖影响统计精度 & IV-A \\
+\(R_{\mathrm{optimal}}^2=\mathrm{SNR}/(1+\mathrm{SNR})\) & 信息集合决定预测上限 & IV-B \\
+\(\operatorname{SE}(\hat\beta)\approx\sigma_\varepsilon/\sqrt n\) & 低 SNR 导致信号难以识别 & IV-B \\
+Ridge Closed-form Estimator & 正则化与估计稳定性 & IV-C \\
+Sharpe Ratio Asymptotic Variance & 金融绩效本身具有抽样误差 & IV-D \\
+\(\mathbb P(M_m\leq x)=\Phi(x)^m\) & 大规模搜索改变绩效分布 & IV-E \\
+PBO \& CSCV & 诊断策略选择的可靠性 & IV-E \\
+Risk Decomposition & 区分源环境泛化问题与分布变化 & IV-F \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中，第一、第三项是特定模型条件下的近似结果，其余公式和方法也需要遵守此前各节给出的适用条件。
+
+\hypertarget{part-4-77-0001-unified-research-hypotheses-part-ii-iii-iv}{%
+\subsection{17. Unified Research Hypotheses --- Part II + III + IV}\label{part-4-77-0001-unified-research-hypotheses-part-ii-iii-iv}}
+
+到这里，我们终于具备了从三个学科角度解释整个 X Program \#161 的基础。
+
+\textbf{Statistical Learning}
+
+Part II
+
+Finite-sample Error
+
+Selection Bias
+
+Adaptive Overfitting
+
+\textbf{Agentic AI}
+
+Part III
+
+Recursive Search
+
+Memory \& Feedback
+
+Self-Modification
+
+\textbf{Financial Statistics --- Part IV}
+
+Low SNR · Temporal Dependence · Heavy Tails · Distribution Shift
+
+↓
+
+\textbf{Recursive Optimization under Statistical Uncertainty}
+
+↓
+
+\bookgraphic{0.573}{part-4-77-0001-030-01}{统一研究假设示意，并非实际实验结果。}
+
+\textbf{Detection}
+
+When?
+
+\textbf{Diagnosis}
+
+Why?
+
+\textbf{Mitigation}
+
+How?
+
+现在，我们已经可以提出六个相互关联但又能够分别检验的 Research Hypotheses。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.84}}@{}}
+\toprule
+ID & Research Hypothesis \\
+\midrule
+\endhead
+H1 & Low Task-level SNR 会增加识别真实模型改进的困难。 \\
+H2 & 更大的搜索预算可能增加 Selection-induced Optimism。 \\
+H3 & Adaptive Feedback 可能加剧开发数据的过度适应。 \\
+H4 & Recursive Self-modification 可能进一步放大统计偏差。 \\
+H5 & RSI 可能逐渐形成针对特定市场环境的过度专业化。 \\
+H6 & 对搜索、反馈、模型复杂度和跨环境稳定性进行约束，可能缓解 OOS Decay。 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些都是 Candidate Hypotheses，而不是我们已经证明的研究结论。
+
+尤其是 H4，它才真正涉及 RSI 相对于普通 Adaptive Optimization 的额外影响。
+
+\hypertarget{part-4-77-0001-foundation-knowledge-self-assessment}{%
+\subsection{18. Foundation Knowledge --- Self-assessment}\label{part-4-77-0001-foundation-knowledge-self-assessment}}
+
+在进入文献研究之前，可以使用下面的清单检查自己的理解程度。
+
+\textbf{Research Foundation Checklist}
+
+\begin{itemize}
+\item
+  能够解释 ERM、Generalization Gap 和 Selection Bias
+\item
+  能够区分普通过拟合、Adaptive Overfitting 与 Data Leakage
+\item
+  理解 Agent Harness、Meta-optimization 与严格 RSI 的区别
+\item
+  理解如何保存完整搜索历史并识别 Performance Change Point
+\item
+  能够推导 SNR 与 Optimal Population R² 的关系
+\item
+  理解 IC、Rank IC 和金融预测模型的评价方式
+\item
+  理解 Sharpe Ratio 的估计误差及年化条件
+\item
+  理解 PSR、DSR、PBO 和 CSCV 的区别
+\item
+  能够区分市场分布变化与 Agent 自身的性能退化
+\item
+  能够设计受控实验验证具体 Failure Mechanism
+\end{itemize}
+
+并不需要现在就能够默写所有公式。第一轮学习的目标，是能够理解这些概念之间的逻辑关系，并且知道当实际研究遇到某类问题时，应当去哪里寻找相应的方法。
+
+目前我们仍然没有取得课题组的实际 Framework、Dataset 和 Evaluation Protocol。上述理论模型、合成实验和诊断体系均属于科研准备材料，不代表课题组已经确定采用这些方法。
+
+\Needspace{.34\textheight}
+\hypertarget{part-4-77-0001-next-part-v-literature-research-frontier}{%
+\subsection{Next --- Part V: Literature \& Research Frontier}\label{part-4-77-0001-next-part-v-literature-research-frontier}}
+
+\hypertarget{part-4-77-0001-part-v-learning-roadmap}{%
+\subsection{Part V --- Learning Roadmap}\label{part-4-77-0001-part-v-learning-roadmap}}
+
+下一部分将改变此前的学习方式。我们不再以系统学习新理论为主，而是正式进入 Research-oriented Literature Review。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.62}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Section & Topic & Priority \\
+\midrule
+\endhead
+V-A & Supervisor \& Research Group Landscape & P0 \\
+V-B & Recursive Self-Improvement Literature & P0 \\
+V-C & Adaptive Data Analysis \& Generalization Literature & P0 \\
+V-D & Financial AI \& Backtest Overfitting Literature & P0 \\
+V-E & Research Gap \& Open Problems & P0 \\
+V-F & Research Questions \& Hypothesis Formulation & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-77-0001-ux4e0bux4e00ux9636ux6bb5v-a-supervisor-research-group-landscape}{%
+\paragraph{下一阶段：V-A --- Supervisor \& Research Group Landscape}\label{part-4-77-0001-ux4e0bux4e00ux9636ux6bb5v-a-supervisor-research-group-landscape}}
+
+我们将开始系统研究褚晓文教授及其课题组的公开研究资料，包括：
+
+\begin{itemize}
+\tightlist
+\item
+  Research Interests 与主要研究方向；
+\item
+  近年来发表的代表性论文；
+\item
+  与 AI Agents、Financial AI、自动化研究相关的研究成果；
+\item
+  课题组已有研究与 X Program \#161 之间能够确认的联系；
+\item
+  适合与导师或博士生讨论的具体学术问题。
+\end{itemize}
+
+需要严格区分课题组已经发表的研究成果、其他研究团队的相关成果，以及我们自行提出的研究设想。
+
+\textbf{Part I--IV 解决的是我们能否理解这个研究问题；Part V 将解决这个研究问题在现有学术体系中究竟处于什么位置。}

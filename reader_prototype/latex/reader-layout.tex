@@ -1,0 +1,73 @@
+\usepackage[a4paper,hmargin=20mm,top=20mm,bottom=21mm,headheight=12pt,headsep=8pt,footskip=22pt]{geometry}
+\usepackage{fontspec,xeCJK,amsmath,unicode-math}
+\usepackage{xcolor,graphicx,booktabs,longtable,array,calc,caption,titlesec,fancyhdr,enumitem,needspace}
+\usepackage[unicode,hidelinks]{hyperref}
+\usepackage{bookmark}
+\input{\ReaderPaletteFile}
+
+\setmainfont{STIXTwoText}[
+  Extension=.otf,UprightFont=*-Regular,BoldFont=*-Bold,
+  ItalicFont=*-Italic,BoldItalicFont=*-BoldItalic]
+\setmathfont{STIXTwoMath-Regular.otf}
+\setCJKmainfont{SimSun}[BoldFont=SimHei,ItalicFont=KaiTi]
+\setCJKsansfont{SimHei}
+\xeCJKsetup{PunctStyle=banjiao,CJKecglue={\hskip .15em plus .05em minus .04em}}
+
+\makeatletter
+\renewcommand{\normalsize}{%
+  \@setfontsize\normalsize{10}{12.2}%
+  \abovedisplayskip=3.6pt plus .6pt minus .6pt
+  \belowdisplayskip=\abovedisplayskip
+  \abovedisplayshortskip=3pt plus .5pt
+  \belowdisplayshortskip=3.4pt plus .5pt}
+\makeatother
+\AtBeginDocument{\normalsize\color{black!94}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt plus 0.4pt minus 0.3pt}
+\setlength{\emergencystretch}{1em}
+\widowpenalty=500
+\clubpenalty=500
+\displaywidowpenalty=300
+\interdisplaylinepenalty=1000
+\raggedbottom
+
+\setcounter{secnumdepth}{0}
+\titleformat{\section}{\fontsize{14}{16.5}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\fontsize{11.5}{13.5}\selectfont\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{11pt plus 1pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt plus 1pt}{3pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 1pt}{2pt}
+\setlist[itemize]{leftmargin=2.5em,itemsep=0pt,topsep=2pt,parsep=0pt}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\DeclareCaptionFont{bookcaption}{\fontsize{8.7}{10.5}\selectfont}
+\captionsetup{font=bookcaption,labelfont=bf,labelsep=quad,hypcap=false,
+  justification=raggedright,singlelinecheck=false,skip=3pt}
+\captionsetup[table]{position=top}
+\renewcommand{\arraystretch}{1.08}
+\setlength{\LTpre}{3pt}
+\setlength{\LTpost}{3pt}
+\setlength{\LTcapwidth}{.69\textwidth}
+\newenvironment{readertable}{\par\begingroup\fontsize{9.2}{11.1}\selectfont}{\endgroup}
+% Keep each illustration with its own caption. TeX may break between figures,
+% tables and prose without a section-sized reservation.
+\newenvironment{readerfigure}[1]
+  {\par\addvspace{3pt}\noindent\hfill\begin{minipage}{#1\linewidth}\centering\fontsize{9}{10.7}\selectfont}
+  {\end{minipage}\hfill\mbox{}\par\addvspace{3pt}}
+\newcommand{\figuretitle}[1]{\par{\bfseries #1}\par\vspace{1pt}}
+\newcommand{\legendmark}[1]{\textcolor{#1}{\rule[.3ex]{1.1em}{1pt}}}
+\newcommand{\legenddash}[1]{\textcolor{#1}{\rule[.3ex]{.46em}{1pt}\hspace{.16em}\rule[.3ex]{.46em}{1pt}}}
+
+\newcommand{\runningfont}{\fontsize{8}{9.6}\selectfont\color{black!75}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\runningfont 科研准备学习路线}
+\fancyhead[R]{\runningfont IV-A\enspace Financial Time Series}
+\fancyfoot[R]{\runningfont\thepage}
+\renewcommand{\headrulewidth}{0.25pt}
+
+\hypersetup{pdftitle={科研准备学习路线},
+  pdfsubject={IV-A Financial Time Series \& Data Generating Process},pdflang={zh-CN}}

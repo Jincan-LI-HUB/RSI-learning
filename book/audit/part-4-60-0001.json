@@ -1,0 +1,177 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 60,
+    "first_line": 1,
+    "last_line": 1889,
+    "chapter": "part-4-60-0001",
+    "chosen_title": "IV-B — Low Signal-to-Noise Ratio & Predictability",
+    "tables": 13,
+    "source_sha256": "1dadc7177ea4e173521e7abba36fabf1b9296bc4b13350082948454490f475be",
+    "source_math": 156,
+    "matched_math": 156
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 60,
+      "line": 69,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 113,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 404,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 554,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 770,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 797,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 807,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 854,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 938,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 958,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1058,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1172,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1364,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1366,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1437,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1483,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1693,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1695,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1829,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 60,
+      "line": 1866,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

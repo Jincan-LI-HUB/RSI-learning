@@ -1,0 +1,465 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 44,
+    "first_line": 1,
+    "last_line": 1078,
+    "chapter": "part-3-44-0001",
+    "chosen_title": "III-E — Automated Research Agents and Real-world RSI Systems",
+    "tables": 18,
+    "source_sha256": "d451b89c87f2e4b7b9c818ba344cf9cc0670533307baec12a1adc4d4e6aa3cbb",
+    "source_math": 33,
+    "matched_math": 33
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 44,
+      "line": 7,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 40,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 74,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 91,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 110,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 132,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 134,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 183,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 207,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 224,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 246,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 292,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 313,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 345,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 354,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 372,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 394,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 423,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 431,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 449,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 477,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 489,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 530,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 534,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 549,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 566,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 581,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 603,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 638,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 654,
+      "component": "text",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 672,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 680,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 702,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 732,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 784,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 799,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 831,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 831,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 831,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 832,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 832,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 833,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 834,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 834,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 835,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 835,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 836,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 836,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 836,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 837,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 839,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 847,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 881,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 913,
+      "component": "row",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 947,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 44,
+      "line": 1055,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

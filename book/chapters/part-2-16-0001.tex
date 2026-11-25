@@ -1,0 +1,1113 @@
+% Archive record 16, line 1.
+\hypertarget{part-2-16-0001-ii-c-model-selection-bias-and-multiple-testing}{%
+\section{II-C --- Model Selection Bias and Multiple Testing}\label{part-2-16-0001-ii-c-model-selection-bias-and-multiple-testing}}
+
+上一阶段 II-B，我们建立了有限假设空间下的 Uniform Generalization Bound：
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\leq
+\sqrt{\frac{\log(2M/\alpha)}{2n}}.\]
+
+这个结论回答的是：\textbf{在有限样本下，模型评估误差最大可能有多大？}
+
+但我们尚未充分解释另一个问题：为什么 Model Selection 会使评估误差产生系统性的方向偏差？
+
+本阶段将从概率论和统计推断两个角度分析这个问题。对于此前已经证明过的结论，我们只进行简要回顾，重点推进新的内容。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.57}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Section & Topics & Progress \\
+\midrule
+\endhead
+II-A & Risk and Generalization & 已完成 \\
+II-B & Concentration Inequalities & 已完成 \\
+\textbf{II-C} & \textbf{Model Selection Bias \& Multiple Testing} & \textbf{当前} \\
+II-D & Adaptive Overfitting \& Holdout Reuse & 待学习 \\
+II-E & Data Leakage \& Distribution Shift & 待学习 \\
+II-F & Time-Series Validation \& Backtesting & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-16-0001-research-motivation}{%
+\subsection{1. Research Motivation}\label{part-2-16-0001-research-motivation}}
+
+假设我们已经构建了一个 RSI Agent，每一轮产生若干候选版本，并按照 IS Score 选择最优版本。
+
+从优化角度来看，这是完全合理的操作。
+
+但从统计学角度来看，我们正在执行两个不同的过程：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Estimation}：估计每个 Agent 的真实性能；
+\item
+  \textbf{Selection}：利用估计结果决定保留哪个 Agent。
+\end{itemize}
+
+问题在于，Selection 会改变最终估计量的统计性质。
+
+这种现象不仅存在于 AI Agent 中，也广泛存在于 Hyperparameter Tuning、Scientific Discovery、Financial Factor Mining 和 Quantitative Strategy Selection 中。
+
+本阶段的知识结构如下：
+
+\textbf{Evaluation Noise}
+
+每一个候选模型的性能估计都存在随机误差
+
+↓ \textbf{Model Selection}
+
+根据观察得分选择最优模型
+
+↓ \textbf{Winner's Curse}
+
+获胜模型的观察表现容易被高估
+
+↓ \textbf{Multiple Testing}
+
+大量比较增加发现虚假规律的概率
+
+↓ \textbf{Data Snooping}
+
+反复搜索有限的金融数据，产生虚假研究成果
+
+↓ \textbf{Statistical Corrections}
+
+控制虚假发现与错误接受的风险
+
+其中，Winner's Curse 和 Multiple Testing 是同一类统计问题的两种表现形式：前者更关注被选中对象的估计偏差，后者更关注大量统计决策中出现错误的概率。
+
+\hypertarget{part-2-16-0001-model-selection-bias}{%
+\subsection{2. Model Selection Bias}\label{part-2-16-0001-model-selection-bias}}
+
+\hypertarget{part-2-16-0001-ux57faux672cux6570ux5b66ux6846ux67b6}{%
+\subsubsection{2.1 基本数学框架}\label{part-2-16-0001-ux57faux672cux6570ux5b66ux6846ux67b6}}
+
+沿用 II-A、II-B 的 Risk Notation。
+
+设固定的候选模型集合为：
+\[\mathcal H=\{h_1,\ldots,h_M\}.\]
+
+对任意候选模型 \(h_j\)，定义：
+\[\widehat R_n(h_j)
+=
+R(h_j)+\varepsilon_j,\]
+
+其中 \(\varepsilon_j\) 为评估误差，并假设：
+\[\mathbb E[\varepsilon_j]=0.\]
+
+我们选择经验风险最低的模型：
+\[\hat h_n=
+\arg\min_{h\in\mathcal H}\widehat R_n(h).\]
+
+真正的最优模型则是：
+\[h^*=
+\arg\min_{h\in\mathcal H}R(h).\]
+
+需要区分三个不同的量：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Quantity & Meaning \\
+\midrule
+\endhead
+\(\widehat R_n(\hat h_n)\) & 被选中模型的观察风险 \\
+\(R(\hat h_n)\) & 被选中模型的真实风险 \\
+\(R(h^*)\) & 假设空间中最优的真实风险 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+它们之间存在一个非常重要的期望关系。
+
+\hypertarget{part-2-16-0001-theorem-optimistic-selection-bias}{%
+\subsubsection{2.2 Theorem --- Optimistic Selection Bias}\label{part-2-16-0001-theorem-optimistic-selection-bias}}
+
+在固定有限假设空间、各候选模型的风险估计无偏且可积的条件下：
+\[\boxed{
+\mathbb E[\widehat R_n(\hat h_n)]
+\leq
+R(h^*)
+\leq
+\mathbb E[R(\hat h_n)]
+}\]
+
+因此：
+\[\boxed{
+\mathbb E[G_n(\hat h_n)]
+=
+\mathbb E[R(\hat h_n)-\widehat R_n(\hat h_n)]
+\geq0
+}\]
+
+即使所有单独的模型评估都是无偏的，经过 ERM 选择之后，最终模型的经验风险仍然可能被系统性低估。
+
+注意，这里不要求所有模型具有相同的 Population Risk，也不要求不同模型的评估误差相互独立。
+
+\hypertarget{part-2-16-0001-proofux53efux8df3ux8fc7}{%
+\paragraph{Proof（可跳过）}\label{part-2-16-0001-proofux53efux8df3ux8fc7}}
+
+根据 ERM 的定义：
+\[\widehat R_n(\hat h_n)
+\leq
+\widehat R_n(h^*).\]
+
+两边取期望：
+\[\mathbb E[\widehat R_n(\hat h_n)]
+\leq
+\mathbb E[\widehat R_n(h^*)]
+=
+R(h^*).\]
+
+另一方面，由 Population Risk Minimizer 的定义：
+\[R(h^*)\leq R(\hat h_n).\]
+
+因此：
+\[R(h^*)\leq\mathbb E[R(\hat h_n)].\]
+
+合并即得结论。
+
+\[\hfill\blacksquare\]
+
+\hypertarget{part-2-16-0001-research-implication}{%
+\paragraph{Research Implication}\label{part-2-16-0001-research-implication}}
+
+这个结论比 Part I 中假设所有候选模型真实性能相同的结论更加一般。
+
+它表明，即使 Agent 的确能够生成一些更好的模型，最终报告的 IS Performance 仍然可能高估真实改进程度。
+
+Cawley 和 Talbot 在 2010 年的研究中发现，模型选择阶段的过拟合所产生的影响，在其实验中甚至可以与不同机器学习算法之间的性能差异处于相近量级。
+
+\href{https://www.jmlr.org/beta/papers/v11/cawley10a.html}{来源 1}
+
+\hypertarget{part-2-16-0001-winners-curse-and-order-statistics}{%
+\subsection{3. Winner's Curse and Order Statistics}\label{part-2-16-0001-winners-curse-and-order-statistics}}
+
+\hypertarget{part-2-16-0001-winners-curseux8d62ux5bb6ux8bc5ux5492}{%
+\subsubsection{3.1 Winner's Curse（赢家诅咒）}\label{part-2-16-0001-winners-curseux8d62ux5bb6ux8bc5ux5492}}
+
+Winner's Curse 在当前语境下指的是：\textbf{被选为最优的对象，往往也是受到了有利随机误差影响的对象。}
+
+假设五个 Agent 的得分如下，Score 越高越好。
+
+假想数据
+
+\textbf{Agent A}
+
+True
+
+0.60
+
+Observed
+
+0.62
+
+\textbf{Agent B}
+
+True
+
+0.65
+
+Observed
+
+0.59
+
+\textbf{Agent C}
+
+True
+
+0.70
+
+Observed
+
+0.73
+
+\textbf{Agent D}
+
+Selected
+
+True
+
+0.62
+
+Observed
+
+0.81
+
+\textbf{Agent E}
+
+True
+
+0.68
+
+Observed
+
+0.65
+
+True Best
+
+\textbf{Agent C}
+
+True Score = 0.70
+
+Observed Best
+
+\textbf{Agent D}
+
+True Score = 0.62
+
+这里同时出现了两个问题：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.58}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Problem & Value \\
+\midrule
+\endhead
+Performance Overestimation & \(0.81-0.62=0.19\) \\
+Selection Regret & \(0.70-0.62=0.08\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+前者衡量我们对获胜模型的高估程度，后者衡量错误选择造成的真实性能损失。
+
+\textbf{Winner's Curse 不一定造成 Selection Regret，但它可能使错误选择更容易发生。}
+
+\hypertarget{part-2-16-0001-order-statisticsux6b21ux5e8fux7edfux8ba1ux91cf}{%
+\subsubsection{3.2 Order Statistics（次序统计量）}\label{part-2-16-0001-order-statisticsux6b21ux5e8fux7edfux8ba1ux91cf}}
+
+为了分析最优观察得分，我们需要引入 Order Statistics。 设：
+\[X_1,\ldots,X_M\overset{\mathrm{i.i.d.}}{\sim}F,\]
+
+其中 \(F\) 为共同的 CDF。
+
+将样本从小到大排列：
+\[X_{(1)}\leq X_{(2)}
+\leq\cdots\leq X_{(M)}.\]
+
+其中：
+\[X_{(1)}=\min_j X_j,
+\qquad
+X_{(M)}=\max_j X_j.\]
+
+对于最大次序统计量：
+\[\boxed{
+F_{X_{(M)}}(x)=F(x)^M
+}\]
+
+对于最小次序统计量：
+\[\boxed{
+F_{X_{(1)}}(x)=1-[1-F(x)]^M
+}\]
+
+证明非常直接。例如：
+\[\begin{aligned}
+\mathbb P(X_{(M)}\leq x)
+&=\mathbb P(X_1\leq x,\ldots,X_M\leq x)\\
+&=\prod_{j=1}^{M}\mathbb P(X_j\leq x)\\
+&=F(x)^M.
+\end{aligned}\]
+
+这意味着，即使每一次评估结果都来自完全相同的分布，最优观察结果的分布仍然会随着搜索次数发生变化。
+
+\textbf{Distribution of the Maximum}
+
+假设 \(X_j\sim\mathcal N(0,1)\)，相互独立。
+
+Number of candidates \(M\)\\
+\textbf{100}
+
+2（范围 0--4）
+
+\bookgraphic{0.531}{part-2-16-0001-004-01}{}
+
+Individual score
+
+Maximum of 100 scores
+
+至少一个候选得分超过 2 个标准差的概率
+
+\textbf{89.99\%}
+
+\[\mathbb P(X_{(M)}>2)=1-\Phi(2)^M\]
+
+logM = 4
+
+\bookgraphic{0.531}{part-2-16-0001-004-state-01}{}
+
+这就是为什么一个搜索能力很强的 Agent，即使面对完全不存在有效信号的环境，也可能找到看起来非常优秀的结果。
+
+Part I 中介绍过的 Gaussian Maximum 渐近结论：
+\[\mathbb E[X_{(M)}]
+\sim\sqrt{2\log M}\]
+
+正是 Order Statistics 与 Extreme Value Theory 的进一步联系。
+
+\hypertarget{part-2-16-0001-selection-regret-ux9009ux62e9ux9519ux8befux6a21ux578bux7684ux6982ux7387}{%
+\subsection{4. Selection Regret --- 选择错误模型的概率}\label{part-2-16-0001-selection-regret-ux9009ux62e9ux9519ux8befux6a21ux578bux7684ux6982ux7387}}
+
+这一部分是新的数学内容，它比单纯分析 Selection Bias 更接近本课题所关心的真实 OOS Performance Decay。
+
+\hypertarget{part-2-16-0001-two-model-selection-problem}{%
+\subsubsection{4.1 Two-model Selection Problem}\label{part-2-16-0001-two-model-selection-problem}}
+
+假设我们只有两个候选模型 \(h_1,h_2\)，且：
+\[R(h_1)<R(h_2).\]
+
+定义真实性能差距：
+\[\Delta=R(h_2)-R(h_1)>0.\]
+
+假设它们的经验风险分别为：
+\[\begin{aligned}
+\widehat R_n(h_1)&=R(h_1)+\varepsilon_1,\\
+\widehat R_n(h_2)&=R(h_2)+\varepsilon_2,
+\end{aligned}\]
+
+并假设：
+\[\varepsilon_1,\varepsilon_2
+\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(0,\sigma^2).\]
+
+我们想知道，Agent 错误地选择 \(h_2\) 的概率有多大。
+
+\hypertarget{part-2-16-0001-key-result}{%
+\subsubsection{4.2 Key Result}\label{part-2-16-0001-key-result}}
+
+错误选择发生于：
+\[\widehat R_n(h_2)<\widehat R_n(h_1).\]
+
+等价于：
+\[\varepsilon_1-\varepsilon_2>\Delta.\]
+
+根据 Normal Distribution 的性质：
+\[\varepsilon_1-\varepsilon_2
+\sim\mathcal N(0,2\sigma^2).\]
+
+因此：
+\[\boxed{
+\mathbb P(\text{Wrong Selection})
+=
+\Phi\left(-\frac{\Delta}{\sqrt2\sigma}\right)
+}\]
+
+其中 \(\Phi\) 是标准正态分布的 CDF。
+
+\textbf{Wrong Model Selection Probability}
+
+True Risk Difference \(\Delta\)\\
+\textbf{0.050}
+
+0.05（范围 0--0.3）
+
+Evaluation Noise \(\sigma\)\\
+\textbf{0.100}
+
+0.1（范围 0.01--0.3）
+
+Wrong Selection
+
+\textbf{36.18\%}
+
+Expected Selection Regret
+
+\textbf{0.0181}
+
+Correct selection
+
+Wrong selection
+
+\[\mathbb P(\text{Wrong Selection})=\Phi\left(-\frac{\Delta}{\sqrt{2}\sigma}\right)\]
+
+当 \(\Delta=0\) 时两个模型真实性能相同，不存在严格意义上的错误选择；此时显示的是选中第二个模型的概率。
+
+\hypertarget{part-2-16-0001-research-implications}{%
+\subsubsection{4.3 Research Implications}\label{part-2-16-0001-research-implications}}
+
+上述结果有一个十分重要的含义：
+
+决定选择可靠性的并不仅仅是评估误差的绝对大小，而是 \textbf{真实性能差距与评估噪声之间的相对大小}。
+
+\[\boxed{
+\text{Selection Reliability}
+\quad\text{depends on}\quad
+\frac{\Delta}{\sigma}
+}\]
+
+如果真实改进非常微弱，而评估噪声很大，那么即使 Agent 能够提出合理的修改方案，Evaluator 也可能无法可靠地区分好坏。
+
+这直接联系到金融场景中的 Low Signal-to-Noise Ratio。
+
+一个值得研究的假设是：RSI 在早期通常还有较明显的改进空间，而到了后期，真正有效的改进越来越小，评估噪声却没有同步下降。
+
+\bookgraphic{0.786}{part-2-16-0001-006-01}{}
+
+研究假设示意：随着 RSI 进行，真实边际收益逐渐降低，但 Evaluation Noise 保持不变。
+
+这就给出了 Better, Then Worse 的一个候选解释：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Early Stage --- Signal-dominated Optimization}：真实性能差距较大，正确选择相对容易。
+\item
+  \textbf{Late Stage --- Noise-dominated Optimization}：真实边际收益较小，评估噪声可能主导版本选择。
+\end{itemize}
+
+需要强调，这只是一个可检验的 Research Hypothesis，并非已经证明 RSI 后期必然退化。
+
+此外，真实 Agent 的评估误差通常具有相关性。如果两个误差联合正态、方差相同且相关系数为 \(\rho\)，则上述结论可以推广为：
+\[\mathbb P(\text{Wrong Selection})
+=
+\Phi\left(
+-\frac{\Delta}{\sigma\sqrt{2(1-\rho)}}
+\right),
+\qquad \rho<1.\]
+
+这里也体现出了为什么在同一批样本上进行 \textbf{Paired Evaluation（配对评估）} 可能具有统计优势。
+
+\hypertarget{part-2-16-0001-multiple-hypothesis-testing}{%
+\subsection{5. Multiple Hypothesis Testing}\label{part-2-16-0001-multiple-hypothesis-testing}}
+
+现在我们从模型选择转向 Statistical Inference。
+
+\hypertarget{part-2-16-0001-single-hypothesis-testing}{%
+\subsubsection{5.1 Single Hypothesis Testing}\label{part-2-16-0001-single-hypothesis-testing}}
+
+假设我们希望检验某个 Revision 是否真正改善了 Agent 的真实性能。
+
+设第 \(k\) 轮的真实风险改善量为：
+\[d_k=R(A_k)-R(A_{k+1}).\]
+
+建立假设：
+\[\begin{cases}
+H_0:d_k\leq0,\\
+H_1:d_k>0.
+\end{cases}\]
+
+如果 Significance Level 为：
+\[\alpha=0.05,\]
+
+那么在有效检验的条件下，我们能够控制 Type I Error：
+\[\mathbb P(\text{Reject }H_0\mid H_0)
+\leq0.05.\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}@{}}
+\toprule
+Statistical Decision & \(H_0\) True & \(H_0\) False \\
+\midrule
+\endhead
+Reject \(H_0\) & Type I Error & True Positive \\
+Fail to Reject \(H_0\) & True Negative & Type II Error \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对于 RSI：
+
+\begin{itemize}
+\tightlist
+\item
+  Type I Error：接受实际上无效或有害的修改；
+\item
+  Type II Error：错过实际上具有改进价值的修改。
+\end{itemize}
+
+但是，上述对应关系假设 Agent 使用显著性检验作为 Revision Acceptance Rule。
+
+\hypertarget{part-2-16-0001-multiple-testing-problem}{%
+\subsubsection{5.2 Multiple Testing Problem}\label{part-2-16-0001-multiple-testing-problem}}
+
+假设 Agent 产生了 \(M\) 个候选修改，分别进行检验：
+\[H_{0,1},H_{0,2},\ldots,H_{0,M}.\]
+
+假设所有 Null Hypotheses 都成立，而且各检验独立，实际 Type I Error 均为 \(\alpha\)。
+
+那么至少出现一次 False Positive 的概率为：
+\[\begin{aligned}
+\mathbb P(\text{At least one false positive})
+&=1-\mathbb P(\text{No false positives})\\
+&=1-(1-\alpha)^M.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+\mathbb P(\text{At least one false positive})
+=
+1-(1-\alpha)^M
+}\]
+
+\textbf{Multiple Testing Problem}
+
+假设所有 Null Hypotheses 均成立，检验相互独立。
+
+Number of tests \(M\)\\
+\textbf{100}
+
+100（范围 1--200） Individual Significance Level 1\% / 5\% / 10\%
+
+At least one false positive
+
+\textbf{99.41\%}
+
+Expected false positives
+
+\textbf{5.00}
+
+\bookgraphic{0.544}{part-2-16-0001-008-01}{}
+
+tests = 200
+
+\bookgraphic{0.544}{part-2-16-0001-008-state-01}{}
+
+假设 Agent 执行了 100 次实验，所有修改实际上都没有任何提升。
+
+在上述独立性假设下，即使每一次检验都满足 5\% 的显著性标准，最终至少发现一个所谓的「显著改进」的概率仍然高达约 99.4\%。
+
+这与 §3 的 Order Statistics 实际上具有非常相似的数学结构：
+\[\begin{aligned}
+\mathbb P(X_{(M)}>x)&=1-F(x)^M,\\
+\mathbb P(\text{False Positive})&=1-(1-\alpha)^M.
+\end{aligned}\]
+
+两者都在描述：\textbf{随着尝试次数增加，至少出现一个极端事件的概率如何变化。}
+
+\hypertarget{part-2-16-0001-multiple-testing-corrections}{%
+\subsection{6. Multiple Testing Corrections}\label{part-2-16-0001-multiple-testing-corrections}}
+
+为了控制大量检验产生的错误，我们需要定义不同的 Error Rate。
+
+\hypertarget{part-2-16-0001-fwer-and-fdr}{%
+\subsubsection{6.1 FWER and FDR}\label{part-2-16-0001-fwer-and-fdr}}
+
+设 \(V\) 为 False Rejections 的数量，\(U\) 为所有 Rejections 的数量。
+
+定义 \textbf{Family-Wise Error Rate (FWER)}：
+\[\boxed{
+\mathrm{FWER}=\mathbb P(V\geq1)
+}\]
+
+定义 \textbf{False Discovery Rate (FDR)}：
+\[\boxed{
+\mathrm{FDR}
+=
+\mathbb E\left[\frac{V}{\max(U,1)}\right]
+}\]
+
+两者关注的是不同的研究目标。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.41}}@{}}
+\toprule
+& FWER & FDR \\
+\midrule
+\endhead
+控制对象 & 至少犯一次 Type I Error 的概率 & 被拒绝假设中虚假发现比例的期望 \\
+保守程度 & 通常较高 & 通常较低 \\
+适用场景 & 少量关键决策 & 大规模探索性研究 \\
+代表性方法 & Bonferroni、Holm & Benjamini--Hochberg \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Illustration of False Discoveries}
+
+18 true discoveries
+
+2 false discoveries
+
+30 non-rejections
+
+Family-wise error occurred?
+
+\textbf{Yes}
+
+Realized False Discovery Proportion
+
+\textbf{10\%}
+
+FWER 和 FDR 都是针对重复实验定义的总体统计量，单次实验只能观察是否发生错误以及 FDP。
+
+\hypertarget{part-2-16-0001-bonferroni-correction}{%
+\subsubsection{6.2 Bonferroni Correction}\label{part-2-16-0001-bonferroni-correction}}
+
+Bonferroni Correction 的思想非常简单。
+
+我们希望控制：
+\[\mathrm{FWER}\leq\alpha.\]
+
+那么对每一个假设使用新的显著性阈值：
+\[\boxed{
+\alpha_{\mathrm{individual}}=\frac{\alpha}{M}
+}\]
+
+由 Union Bound：
+\[\begin{aligned}
+\mathbb P(V\geq1)
+&\leq\sum_{j\in I_0}
+\mathbb P(\text{Reject }H_{0,j})\\
+&\leq |I_0|\frac{\alpha}{M}\\
+&\leq\alpha,
+\end{aligned}\]
+
+其中 \(I_0\) 表示所有真实 Null Hypotheses 的索引集合。
+
+这个证明与 II-B 中的 Uniform Generalization Bound 几乎是相同的数学思想。
+
+例如，总体显著性水平为 0.05 时：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Number of Tests \(M\) & Individual Threshold \\
+\midrule
+\endhead
+1 & 0.05 \\
+10 & 0.005 \\
+100 & 0.0005 \\
+1,000 & 0.00005 \\
+10,000 & 0.000005 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{优点：} 不要求不同检验相互独立，只要求各个真实零假设对应的检验有效。
+
+\textbf{缺点：} 当检验数量非常大时，可能过于保守，使大量真实改进无法被识别，即 Statistical Power 降低。
+
+\hypertarget{part-2-16-0001-benjaminihochberg-procedure-bh}{%
+\subsubsection{6.3 Benjamini--Hochberg Procedure (BH)}\label{part-2-16-0001-benjaminihochberg-procedure-bh}}
+
+如果我们关注的不是完全避免任何一次错误，而是控制虚假发现的比例，就可以考虑 FDR Control。
+
+给定 \(M\) 个 p-values，将其升序排列：
+\[p_{(1)}\leq p_{(2)}
+\leq\cdots\leq p_{(M)}.\]
+
+给定目标 FDR 水平 \(q\)，寻找最大的 \(j\)，满足：
+\[\boxed{
+p_{(j)}\leq\frac{j}{M}q
+}\]
+
+记该索引为 \(j^*\)，然后拒绝：
+\[H_{0,(1)},\ldots,H_{0,(j^*)}.\]
+
+若不存在满足条件的索引，则不拒绝任何假设。
+
+\textbf{Benjamini--Hochberg Step-up Procedure}
+
+示例：10 个固定假设，目标 FDR = 0.05。
+
+\bookgraphic{0.487}{part-2-16-0001-010-01}{}
+
+Rejected
+
+BH threshold
+
+Bonferroni threshold
+
+Bonferroni discoveries
+
+\textbf{2}
+
+BH discoveries
+
+\textbf{4}
+
+Benjamini 和 Hochberg 于 1995 年提出该方法，并在独立检验统计量等条件下证明了 FDR Control。后续研究将其推广到了某些依赖结构。
+
+\href{https://academic.oup.com/jrsssb/article/57/1/289/7035855?login=false}{来源 1}
+
+目前只需要理解其基本思想，不需要掌握完整证明。
+
+\hypertarget{part-2-16-0001-ux5bf9-rsi-ux7684ux610fux4e49}{%
+\subsubsection{6.4 对 RSI 的意义}\label{part-2-16-0001-ux5bf9-rsi-ux7684ux610fux4e49}}
+
+我们可以考虑在 Revision Acceptance 中引入 Multiple Testing Correction。
+
+不过，这里存在两个根本限制。
+
+第一，控制 False Discoveries 不等于保证 OOS Performance 持续增长。检验的统计目标与真正的研究目标仍然可能不完全一致。
+
+第二，Bonferroni 和 BH 均需要有效的 p-values。如果 Agent 根据同一数据集的历史反馈不断生成新假设，那么普通检验产生的 p-values 本身可能已经失去了统计有效性。
+
+\textbf{Multiple Testing Correction 不能自动修复 Adaptive Overfitting。}
+
+这就是下一阶段 II-D 需要重点解决的问题。
+
+\hypertarget{part-2-16-0001-data-snooping-in-financial-research}{%
+\subsection{7. Data Snooping in Financial Research}\label{part-2-16-0001-data-snooping-in-financial-research}}
+
+\hypertarget{part-2-16-0001-ux4ec0ux4e48ux662f-data-snooping}{%
+\subsubsection{7.1 什么是 Data Snooping？}\label{part-2-16-0001-ux4ec0ux4e48ux662f-data-snooping}}
+
+Data Snooping 指的是研究人员反复利用同一批数据进行假设生成、模型选择和统计推断，使最终发现的可靠性受到影响。
+
+假设一个金融研究 Agent 搜索：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}@{}}
+\toprule
+Search Dimension & Candidate Count \\
+\midrule
+\endhead
+Technical Indicators & 20 \\
+Lookback Windows & 10 \\
+Trading Thresholds & 15 \\
+Model Families & 5 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+如果采用完整组合搜索，那么候选策略数量达到：
+\[M=20\times10\times15\times5=15,000.\]
+
+即使每种策略都具有相同的真实预测能力，我们仍然可能从中选出历史表现极其优秀的策略。
+
+而实际报告中，研究者可能只展示最优策略，没有报告此前失败的 14,999 次实验。
+
+此时，我们仅凭最终策略的 Sharpe Ratio 或显著性水平，已经很难判断其真实性能。
+
+这个问题在 RSI 中尤其重要，因为 Agent 可能自主生成越来越多的实验，而不一定显式报告完整的搜索历史。
+
+\hypertarget{part-2-16-0001-whites-reality-check}{%
+\subsubsection{7.2 White's Reality Check}\label{part-2-16-0001-whites-reality-check}}
+
+Halbert White 在 2000 年发表的 \emph{A Reality Check for Data Snooping} 中提出了针对模型搜索的统计检验框架。
+
+\href{https://onlinelibrary.wiley.com/doi/10.1111/1468-0262.00152}{来源 1}
+
+它的核心不是检验：
+
+\begin{quote}
+某一个事先固定的策略是否优于 Baseline？
+\end{quote}
+
+而是检验：
+
+\begin{quote}
+在整个被搜索的策略集合中，最优策略是否真的优于 Baseline，还是仅仅来自大量搜索产生的随机优势？
+\end{quote}
+
+设 \(d_j\) 为第 \(j\) 个策略相对于基准模型的真实期望性能改善量。
+
+可以构建总体假设：
+\[\begin{cases}
+H_0:\max_{1\leq j\leq M}d_j\leq0,\\
+H_1:\max_{1\leq j\leq M}d_j>0.
+\end{cases}\]
+
+其统计量可以采用类似如下的形式：
+\[T_n=\max_{1\leq j\leq M}
+\sqrt n\,\bar d_j,\]
+
+其中 \(\bar d_j\) 为第 \(j\) 个策略在有限样本上的平均性能改善量。
+
+通过适当的 Bootstrap 方法估计经过中心化的最大统计量的零假设分布，从而将搜索带来的影响纳入检验。在金融时间序列中，重采样还需要考虑时间依赖性。
+
+暂时不需要深入 White's Reality Check 的完整算法，重点理解这种研究思想：
+
+\textbf{Evaluation Protocol 应当评价整个搜索与选择过程，而不仅仅评价最终获胜的模型。}
+
+\hypertarget{part-2-16-0001-research-connections-ux5982ux4f55ux5e94ux7528ux4e8e-x-program-161}{%
+\subsection{8. Research Connections --- 如何应用于 X Program \#161？}\label{part-2-16-0001-research-connections-ux5982ux4f55ux5e94ux7528ux4e8e-x-program-161}}
+
+\hypertarget{part-2-16-0001-ux4ece-iteration-count-ux8f6cux5411-search-history}{%
+\subsubsection{8.1 从 Iteration Count 转向 Search History}\label{part-2-16-0001-ux4ece-iteration-count-ux8f6cux5411-search-history}}
+
+假设有两个 RSI 系统。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.56}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Variable & Agent A & Agent B \\
+\midrule
+\endhead
+RSI Iterations & 20 & 20 \\
+Candidates per Iteration & 5 & 100 \\
+Total Candidate Evaluations & 100 & 2,000 \\
+Accepted Revisions & 20 & 20 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+虽然两个 Agent 的 RSI Iterations 完全相同，但它们实际经历的 Model Selection Pressure 很可能不同。
+
+因此，仅仅记录被接受的 20 个版本是不够的。
+
+建议课题研究中尽可能保存以下字段：
+
+\begin{verbatim}
+run_id
+iteration
+candidate_id
+parent_version_id
+revision_type
+candidate_is_score
+incumbent_is_score
+accepted
+evaluation_query_count
+evaluation_sample_size
+random_seed
+\end{verbatim}
+
+OOS Scores 则应该通过独立的外部评估程序保存，避免反馈给 Agent。
+
+这套日志结构可以帮助研究人员区分：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.57}}@{}}
+\toprule
+Research Variable & Meaning \\
+\midrule
+\endhead
+Iteration Depth & 递归演化的深度 \\
+Search Breadth & 每轮候选搜索的宽度 \\
+Total Search Budget & 总评估次数 \\
+Selection Pressure & 选择机制对较高观察得分的偏好 \\
+Acceptance Rate & 修改被接受的比例 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 Selection Pressure 并没有唯一的标准量化方式，需要根据具体选择算法定义。
+
+\hypertarget{part-2-16-0001-ux4e00ux4e2aux5019ux9009ux5b9eux9a8cux9694ux79bb-search-budget-ux7684ux5f71ux54cd}{%
+\subsubsection{8.2 一个候选实验：隔离 Search Budget 的影响}\label{part-2-16-0001-ux4e00ux4e2aux5019ux9009ux5b9eux9a8cux9694ux79bb-search-budget-ux7684ux5f71ux54cd}}
+
+我们可以先在不使用 LLM 的情况下进行实验。
+
+设定所有候选策略的真实性能完全相同，改变候选数量 \(M\)：
+\[M\in\{1,10,100,1000,10000\}.\]
+
+对于每一个 \(M\)，进行大量独立 Monte Carlo Replications，记录：
+
+\begin{itemize}
+\tightlist
+\item
+  被选中模型的 IS Score；
+\item
+  被选中模型在独立数据上的 OOS Score；
+\item
+  Selection Bias；
+\item
+  Generalization Gap。
+\end{itemize}
+
+预期结果如下：
+
+\bookgraphic{0.786}{part-2-16-0001-013-01}{}
+
+理论近似示意：真实得分为 0.5，独立 Gaussian Evaluation Error 的标准差为 0.1。并非实际运行的实验结果。
+
+这个实验只能复现 \textbf{Score Inflation}。
+
+随后，我们可以引入真实性能不同的候选模型，例如混合 Robust Models 与 Noise-sensitive Models，观察搜索预算扩大是否会使：
+\[R(\hat h_n)-R(h^*)\]
+
+增加。
+
+如果可以复现真实的性能损失，就可以进一步引入 Adaptive Search 和 RSI。
+
+这样做的科研意义是：逐步判断哪些现象仅通过普通 Model Selection 就能解释，哪些现象需要引入 Recursive Self-Improvement 才能解释。
+
+\hypertarget{part-2-16-0001-literature-index}{%
+\subsection{9. Literature Index}\label{part-2-16-0001-literature-index}}
+
+本阶段涉及的四篇核心论文均为已经发表的同行评审论文。我核对了其正式出版记录。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}@{}}
+\toprule
+Priority & Paper & Research Connection \\
+\midrule
+\endhead
+P0 & Cawley \& Talbot (2010) & Model Selection Overfitting \\
+P1 & Benjamini \& Hochberg (1995) & False Discovery Rate \\
+P1 & White (2000) & Data Snooping \\
+P2 & Harvey, Liu \& Zhu (2016) & Financial Factor Mining \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Cawley, G. C. \& Talbot, N. L. C. (2010).} On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation. \emph{Journal of Machine Learning Research}, 11, 2079--2107. \href{https://www.jmlr.org/papers/v11/cawley10a.html}{正式出版页面}。
+
+\textbf{Benjamini, Y. \& Hochberg, Y. (1995).} Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing. \emph{Journal of the Royal Statistical Society: Series B}, 57(1), 289--300. \href{https://doi.org/10.1111/j.2517-6161.1995.tb02031.x}{DOI}。
+
+\textbf{White, H. (2000).} A Reality Check for Data Snooping. \emph{Econometrica}, 68(5), 1097--1126. \href{https://doi.org/10.1111/1468-0262.00152}{DOI}。
+
+\textbf{Harvey, C. R., Liu, Y. \& Zhu, H. (2016).} \ldots{} and the Cross-Section of Expected Returns. \emph{The Review of Financial Studies}, 29(1), 5--68. 该论文研究大规模金融因子检验以及传统统计显著性标准的局限。 \href{https://doi.org/10.1093/rfs/hhv059}{DOI}。
+
+\href{https://www.jmlr.org/beta/papers/v11/cawley10a.html}{来源 1} \href{https://academic.oup.com/jrsssb/article/57/1/289/7035855?login=false}{来源 2} \href{https://onlinelibrary.wiley.com/doi/10.1111/1468-0262.00152}{来源 3} \href{https://academic.oup.com/rfs/article-abstract/29/1/5/1843824}{来源 4}
+
+现阶段优先阅读第一篇即可。其他论文等进入 Part IV、Part V 时再深入。
+
+\hypertarget{part-2-16-0001-ii-c-conclusion-index}{%
+\subsection{10. II-C --- Conclusion Index}\label{part-2-16-0001-ii-c-conclusion-index}}
+
+\hypertarget{part-2-16-0001-ux6838ux5fc3ux7ed3ux8bba}{%
+\subsubsection{10.1 核心结论}\label{part-2-16-0001-ux6838ux5fc3ux7ed3ux8bba}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.70}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Result & Index \\
+\midrule
+\endhead
+C1 & 无偏的模型评估不保证无偏的模型选择 & §2 \\
+C2 & Winner's Curse 与 Selection Regret 是不同概念 & §3.1 \\
+C3 & 最大观察值的分布随搜索次数发生变化 & §3.2 \\
+C4 & 错误选择概率取决于真实性能差距与评估噪声的相对大小 & §4 \\
+C5 & 多重检验会增加出现 False Positive 的概率 & §5 \\
+C6 & FWER 与 FDR 控制不同的统计错误 & §6.1 \\
+C7 & Bonferroni Correction 通过 Union Bound 控制 FWER & §6.2 \\
+C8 & BH Procedure 控制 FDR & §6.3 \\
+C9 & Data Snooping 要求评价完整搜索过程 & §7 \\
+C10 & RSI Iterations 不等于 Total Search Budget & §8 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-16-0001-core-formula-sheet}{%
+\subsubsection{10.2 Core Formula Sheet}\label{part-2-16-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Optimistic Selection Bias}
+
+\[\boxed{
+\mathbb E[\widehat R_n(\hat h_n)]
+\leq R(h^*)
+\leq\mathbb E[R(\hat h_n)]
+}\]
+
+\textbf{Result 2 --- Maximum Order Statistic}
+
+\[\boxed{
+F_{X_{(M)}}(x)=F(x)^M
+}\]
+
+\textbf{Result 3 --- Wrong Selection Probability}
+
+\[\boxed{
+\mathbb P(\text{Wrong Selection})
+=
+\Phi\left(-\frac{\Delta}{\sqrt2\sigma}\right)
+}\]
+
+\textbf{Result 4 --- Multiple Testing}
+
+\[\boxed{
+\mathrm{FWER}=1-(1-\alpha)^M
+}\]
+
+\textbf{Result 5 --- Bonferroni Correction}
+
+\[\boxed{
+\alpha_{\mathrm{individual}}=\frac{\alpha}{M}
+}\]
+
+\textbf{Result 6 --- Benjamini--Hochberg Procedure}
+
+\[\boxed{
+j^*
+=
+\max\left\{
+j:p_{(j)}\leq\frac{j}{M}q
+\right\}
+}\]
+
+其中 Result 2--4 均需要相应的分布或独立性假设，Result 5 需要有效的单次检验，Result 6 的 FDR 保证需要相应的 p-value 有效性及依赖结构条件。
+
+\hypertarget{part-2-16-0001-knowledge-checklist}{%
+\subsubsection{10.3 Knowledge Checklist}\label{part-2-16-0001-knowledge-checklist}}
+
+\textbf{II-C --- Knowledge Review}
+
+\begin{itemize}
+\item
+  理解 Optimistic Selection Bias 的一般性结论
+\item
+  区分 Winner's Curse 与 Selection Regret
+\item
+  理解 Order Statistics 与 Search Budget 的关系
+\item
+  理解真实性能差距与评估噪声如何影响选择可靠性
+\item
+  理解 Multiple Testing Problem
+\item
+  区分 FWER 与 FDR
+\item
+  理解 Bonferroni 与 BH 的基本思想
+\item
+  理解金融 Data Snooping 与完整搜索历史的重要性
+\end{itemize}
+
+\hypertarget{part-2-16-0001-next-ii-d-adaptive-overfitting-and-holdout-reuse}{%
+\subsection{Next --- II-D: Adaptive Overfitting and Holdout Reuse}\label{part-2-16-0001-next-ii-d-adaptive-overfitting-and-holdout-reuse}}
+
+II-A --- Risk and Generalization
+
+II-B --- Concentration Inequalities
+
+II-C --- Model Selection Bias \& Multiple Testing
+
+II-D --- Adaptive Overfitting \& Holdout Reuse
+
+II-E --- Data Leakage \& Distribution Shift
+
+II-F --- Time-Series Validation \& Backtesting
+
+接下来的 II-D 是整个 Part II 中与 RSI 特性最直接相关的部分。
+
+此前的理论主要分析的是：
+\[\underbrace{
+h_1,h_2,\ldots,h_M
+}_{\text{Fixed Candidates}}
+\xrightarrow{\text{Evaluation}}
+\hat h_n.\]
+
+而 RSI 真正的困难在于：
+\[h_1
+\xrightarrow{\text{Feedback}}
+h_2
+\xrightarrow{\text{Feedback}}
+h_3
+\xrightarrow{\text{Feedback}}
+\cdots\]
+
+在第二种结构中，后续的 Hypothesis 本身依赖于此前的 Evaluation Results。
+
+因此我们将进入 Adaptive Data Analysis，重点研究 Information Leakage、Adaptive Queries、Holdout Reuse，以及 Dwork 等人提出的 Reusable Holdout。
+
+\textbf{II-A 至 II-C 所讨论的问题，即使没有 AI Agent 也会发生；II-D 则开始重点处理自适应反馈机制所带来的额外统计困难。}

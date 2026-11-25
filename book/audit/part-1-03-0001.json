@@ -1,0 +1,161 @@
+{
+  "chapter": {
+    "part": 1,
+    "message": 3,
+    "first_line": 1,
+    "last_line": 1546,
+    "chapter": "part-1-03-0001",
+    "chosen_title": "研究问题初探",
+    "tables": 13,
+    "source_sha256": "f9509da64f069c9b7b9e8d69c053c0eae02ece402770aff79a719b70c4ba0190",
+    "source_math": 100,
+    "matched_math": 100
+  },
+  "components": [
+    {
+      "part": 1,
+      "message": 3,
+      "line": 17,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 25,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 140,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 241,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 323,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 470,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 701,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 824,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 868,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 888,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 914,
+      "component": "row",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 975,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1029,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1083,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1140,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 3
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1223,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1322,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 3,
+      "line": 1390,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

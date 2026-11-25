@@ -1,0 +1,217 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 71,
+    "first_line": 1,
+    "last_line": 1964,
+    "chapter": "part-4-71-0001",
+    "chosen_title": "IV-E — Backtest Overfitting, PBO & Deflated Sharpe Ratio",
+    "tables": 17,
+    "source_sha256": "270a4113a478d21e22296547452f3ae2271be79b1e4b5c967b23041412ade644",
+    "source_math": 141,
+    "matched_math": 141
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 71,
+      "line": 86,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 167,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 221,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 335,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 359,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 430,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 484,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 551,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 599,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 784,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 886,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 926,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 995,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1068,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1122,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1136,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1203,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1362,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1379,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1478,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1642,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1681,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1723,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1879,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 71,
+      "line": 1920,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

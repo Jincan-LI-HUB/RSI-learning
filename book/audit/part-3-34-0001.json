@@ -1,0 +1,184 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 34,
+    "first_line": 1,
+    "last_line": 1090,
+    "chapter": "part-3-34-0001",
+    "chosen_title": "III-B — Tools, Memory, Planning & Reflection",
+    "tables": 14,
+    "source_sha256": "769c661b43a82eed20543b5b365792fe381d9c56b678eec47d1f564ac00ab3fc",
+    "source_math": 45,
+    "matched_math": 45
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 34,
+      "line": 28,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 173,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 302,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 406,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 431,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 433,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 473,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 554,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 558,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 586,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 588,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 629,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 659,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 695,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 735,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 737,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 765,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 863,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 941,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 1024,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 34,
+      "line": 1061,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

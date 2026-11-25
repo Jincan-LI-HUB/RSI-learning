@@ -1,0 +1,113 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 31,
+    "first_line": 1,
+    "last_line": 860,
+    "chapter": "part-3-31-0001",
+    "chosen_title": "III-A — LLM Agent Architecture & Agent Harness",
+    "tables": 11,
+    "source_sha256": "60d7a350cba9be0db3e964348951eba31476d033a8c59a52e8c0d70dd1ce8182",
+    "source_math": 59,
+    "matched_math": 59
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 31,
+      "line": 41,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 119,
+      "component": "box",
+      "state": "converted",
+      "graphics": 3
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 184,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 216,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 392,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 406,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 571,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 597,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 697,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 744,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 836,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 31,
+      "line": 860,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

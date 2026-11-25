@@ -1,0 +1,1626 @@
+% Archive record 60, line 1.
+\hypertarget{part-4-60-0001-iv-b-low-signal-to-noise-ratio-predictability}{%
+\section{IV-B --- Low Signal-to-Noise Ratio \& Predictability}\label{part-4-60-0001-iv-b-low-signal-to-noise-ratio-predictability}}
+
+这是 Part IV 中理论优先级最高的一节，也是整个 X Program \#161 研究动机的核心组成部分。
+
+上一阶段 IV-A 介绍了金融数据的基本统计性质，但还有一个更加本质的问题：
+
+\textbf{假设我们拥有一个能力极强的 AI Research Agent，并且允许它不断改进自身，它究竟能够在多大程度上提高金融预测能力？}
+
+这里需要区分两种完全不同的限制：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}@{}}
+\toprule
+Limitation & 含义 & 能否通过 RSI 改善？ \\
+\midrule
+\endhead
+Computational Limitation & 搜索能力不足、模型不够复杂 & 可能 \\
+Statistical Limitation & 有限数据导致估计误差 & 可能缓解 \\
+Information Limitation & 已知信息本身不足以预测未来 & 固定信息集合下无法突破 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+前两个问题主要涉及我们在 Part II 和 Part III 中学习的知识。
+
+第三个问题，就是本阶段研究的重点。
+
+我们将利用 Conditional Expectation、Law of Total Variance、Regression 和 Hypothesis Testing，建立一套关于金融可预测性的数学框架。
+
+\hypertarget{part-4-60-0001-signal-and-noiseux4fe1ux53f7ux4e0eux566aux58f0}{%
+\subsection{1. Signal and Noise（信号与噪声）}\label{part-4-60-0001-signal-and-noiseux4fe1ux53f7ux4e0eux566aux58f0}}
+
+\hypertarget{part-4-60-0001-financial-data-generating-process}{%
+\subsubsection{1.1 Financial Data Generating Process}\label{part-4-60-0001-financial-data-generating-process}}
+
+沿用此前的记号：
+\[\boxed{
+r_{t+1}=g(X_t)+\varepsilon_{t+1}
+}\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(r_{t+1}\)：下一期收益率；
+\item
+  \(X_t\)：时刻 \(t\) 可以获得的特征；
+\item
+  \(g(X_t)\)：收益率中能够通过这些特征预测的部分；
+\item
+  \(\varepsilon_{t+1}\)：无法通过这些特征预测的随机成分。
+\end{itemize}
+
+为了使这种分解具有明确的数学含义，我们定义：
+\[g(X_t)
+=
+\mathbb E[r_{t+1}\mid X_t].\]
+
+于是：
+\[\boxed{
+\mathbb E[\varepsilon_{t+1}\mid X_t]=0.
+}\]
+
+如果 \(X_t\) 还充分包含了预测条件均值所需的历史信息，那么也可以进一步得到：
+\[g(X_t)=
+\mathbb E[r_{t+1}\mid\mathcal F_t].\]
+
+但后者需要额外的信息充分性条件，并非自动成立。
+
+\textbf{Signal--Noise Decomposition}
+
+\bookgraphic{0.386}{part-4-60-0001-001-01}{}
+
+\[r_{t+1}=\underbrace{g(X_t)}_{\text{Signal}}+\underbrace{\varepsilon_{t+1}}_{\text{Noise}}\]
+
+合成教学示意，三幅图采用相同纵轴尺度。现实中只能观察到收益率，真实 Signal 通常是未知的。
+
+金融预测的困难在于：我们观察到的并不是 Signal 本身，而是被大量 Noise 覆盖后的结果。
+
+\hypertarget{part-4-60-0001-signal-to-noise-ratio-snr}{%
+\subsubsection{1.2 Signal-to-Noise Ratio (SNR)}\label{part-4-60-0001-signal-to-noise-ratio-snr}}
+
+在有限二阶矩的条件下，我们定义方差信噪比：
+\[\boxed{
+\mathrm{SNR}
+=
+\frac{\operatorname{Var}(g(X_t))}
+{\operatorname{Var}(\varepsilon_{t+1})}
+}\]
+
+其中假设噪声方差大于零。
+
+SNR 衡量的是可预测成分相对于不可预测成分的波动强度。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}@{}}
+\toprule
+SNR & Signal : Noise Variance & Interpretation \\
+\midrule
+\endhead
+10 & 10 : 1 & Signal-dominated \\
+1 & 1 : 1 & 两者方差相同 \\
+0.1 & 1 : 10 & Noise-dominated \\
+0.01 & 1 : 100 & Very low SNR \\
+0.001 & 1 : 1,000 & Extremely low SNR \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里使用的是方差之比，而不是标准差之比。不同学科可能采用其他 SNR 定义，后续所有推导均以本节定义为准。
+
+\textbf{Signal-to-Noise Ratio Explorer}
+
+Log-scale SNR\\
+\textbf{0.01}
+
+-2（范围 -3--1）
+
+Predictable variance
+
+\textbf{0.99\%}
+
+Unpredictable variance
+
+\textbf{99.01\%}
+
+假设 Signal 与 Noise 正交。滑块描述理论方差分解，不代表实际市场估计。
+
+当 SNR 为 0.01 时，约 99\% 的收益率方差无法通过给定的特征集合解释。
+
+这是否意味着所有预测模型的 \(R^2\) 都不可能超过约 1\%？
+
+在相应的数学条件下，答案确实如此。
+
+下面我们正式证明。
+
+\hypertarget{part-4-60-0001-law-of-total-variance-ux53efux9884ux6d4bux6027ux5206ux89e3}{%
+\subsection{2. Law of Total Variance --- 可预测性分解}\label{part-4-60-0001-law-of-total-variance-ux53efux9884ux6d4bux6027ux5206ux89e3}}
+
+\hypertarget{part-4-60-0001-signal-ux4e0e-noise-ux4e3aux4ec0ux4e48ux6b63ux4ea4}{%
+\subsubsection{2.1 Signal 与 Noise 为什么正交？}\label{part-4-60-0001-signal-ux4e0e-noise-ux4e3aux4ec0ux4e48ux6b63ux4ea4}}
+
+我们已知：
+\[\varepsilon_{t+1}
+=
+r_{t+1}-g(X_t),\]
+
+以及：
+\[\mathbb E[\varepsilon_{t+1}\mid X_t]=0.\]
+
+根据 Law of Total Expectation：
+\[\mathbb E[\varepsilon_{t+1}]
+=
+\mathbb E[
+\mathbb E[\varepsilon_{t+1}\mid X_t]
+]
+=0.\]
+
+因此：
+\[\begin{aligned}
+&\operatorname{Cov}(g(X_t),\varepsilon_{t+1})\\
+&=\mathbb E[g(X_t)\varepsilon_{t+1}]\\
+&=\mathbb E\left[
+g(X_t)\mathbb E[\varepsilon_{t+1}\mid X_t]
+\right]\\
+&=0.
+\end{aligned}\]
+
+所以：
+\[\boxed{
+\operatorname{Cov}(g(X_t),\varepsilon_{t+1})=0.
+}\]
+
+注意这里得到的是 Orthogonality，而不是 Independence。误差的条件方差仍然可以依赖 \(X_t\)。
+
+\hypertarget{part-4-60-0001-variance-decomposition}{%
+\subsubsection{2.2 Variance Decomposition}\label{part-4-60-0001-variance-decomposition}}
+
+利用 Law of Total Variance：
+\[\begin{aligned}
+\operatorname{Var}(r_{t+1})
+={}&
+\operatorname{Var}\left(
+\mathbb E[r_{t+1}\mid X_t]
+\right)\\
+&+
+\mathbb E\left[
+\operatorname{Var}(r_{t+1}\mid X_t)
+\right].
+\end{aligned}\]
+
+又因为：
+\[g(X_t)=\mathbb E[r_{t+1}\mid X_t],\]
+
+以及：
+\[\operatorname{Var}(\varepsilon_{t+1})
+=
+\mathbb E[
+\operatorname{Var}(r_{t+1}\mid X_t)
+],\]
+
+所以：
+\[\boxed{
+\operatorname{Var}(r_{t+1})
+=
+\underbrace{
+\operatorname{Var}(g(X_t))
+}_{\text{Explained Variance}}
++
+\underbrace{
+\operatorname{Var}(\varepsilon_{t+1})
+}_{\text{Unexplained Variance}}
+}\]
+
+这就是我们此前在 Probability 中学习的 Law of Total Variance 在 Statistical Learning 中的实际应用。
+
+它告诉我们，收益率总方差可以被严格分解为两部分：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Component & Meaning \\
+\midrule
+\endhead
+Explained Variance & 给定信息能够解释的收益率变化 \\
+Unexplained Variance & 给定信息之后仍然存在的随机变化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中第二部分构成了平方损失预测问题中的 Irreducible Error。
+
+\hypertarget{part-4-60-0001-bayes-optimal-predictorux8d1dux53f6ux65afux6700ux4f18ux9884ux6d4bux5668}{%
+\subsection{3. Bayes Optimal Predictor（贝叶斯最优预测器）}\label{part-4-60-0001-bayes-optimal-predictorux8d1dux53f6ux65afux6700ux4f18ux9884ux6d4bux5668}}
+
+这是本阶段第一个核心数学定理。
+
+假设我们使用 Squared Loss 评价预测模型：
+\[\ell(h(X_t),r_{t+1})
+=
+(r_{t+1}-h(X_t))^2.\]
+
+定义 Population Risk：
+\[R(h)
+=
+\mathbb E[(r_{t+1}-h(X_t))^2].\]
+
+那么，在所有具有有限二阶矩、仅依赖于 \(X_t\) 的预测函数中，哪一个函数能够使 Population Risk 最小？
+
+\hypertarget{part-4-60-0001-theorem-optimal-prediction-under-squared-loss}{%
+\subsubsection{3.1 Theorem --- Optimal Prediction under Squared Loss}\label{part-4-60-0001-theorem-optimal-prediction-under-squared-loss}}
+
+假设 \(r_{t+1}\) 具有有限二阶矩，则：
+\[\boxed{
+h^*(X_t)
+=
+\mathbb E[r_{t+1}\mid X_t]
+=
+g(X_t)
+}\]
+
+即 Conditional Expectation 是平方损失下的 Bayes Optimal Predictor。
+
+\hypertarget{part-4-60-0001-proof}{%
+\subsubsection{3.2 Proof}\label{part-4-60-0001-proof}}
+
+由于：
+\[r_{t+1}=g(X_t)+\varepsilon_{t+1},\]
+
+所以：
+\[\begin{aligned}
+R(h)
+&=\mathbb E[(r_{t+1}-h(X_t))^2]\\
+&=\mathbb E[
+(g(X_t)-h(X_t)+\varepsilon_{t+1})^2
+]\\
+&=\mathbb E[(g(X_t)-h(X_t))^2]\\
+&\quad+2\mathbb E[
+(g(X_t)-h(X_t))\varepsilon_{t+1}
+]\\
+&\quad+\mathbb E[\varepsilon_{t+1}^2].
+\end{aligned}\]
+
+现在处理 Cross Term。
+
+\[\begin{aligned}
+&\mathbb E[
+(g(X_t)-h(X_t))\varepsilon_{t+1}
+]\\
+&=\mathbb E\left[
+(g(X_t)-h(X_t))
+\mathbb E[\varepsilon_{t+1}\mid X_t]
+\right]\\
+&=0.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+R(h)
+=
+\mathbb E[(g(X_t)-h(X_t))^2]
++
+\mathbb E[\varepsilon_{t+1}^2].
+}\]
+
+由于第一项非负：
+\[R(h)\geq\mathbb E[\varepsilon_{t+1}^2].\]
+
+当且仅当：
+\[h(X_t)=g(X_t)\quad\text{a.s.}\]
+
+时达到等号。 所以：
+\[\boxed{
+h^*(X_t)
+=
+g(X_t)
+=
+\mathbb E[r_{t+1}\mid X_t].
+}\]
+
+\(\square\)
+
+\hypertarget{part-4-60-0001-reducible-error-vs.-irreducible-error}{%
+\subsubsection{3.3 Reducible Error vs. Irreducible Error}\label{part-4-60-0001-reducible-error-vs.-irreducible-error}}
+
+上述定理实际上给出了一个非常重要的 Error Decomposition：
+\[\boxed{
+R(h)
+=
+\underbrace{
+\mathbb E[(g(X_t)-h(X_t))^2]
+}_{\text{Reducible Error}}
++
+\underbrace{
+\mathbb E[\varepsilon_{t+1}^2]
+}_{\text{Irreducible Error}}
+}\]
+
+\textbf{Theoretical Prediction Limit}
+
+\bookgraphic{0.453}{part-4-60-0001-003-01}{理论下界示意。蓝线表示理想情况下模型逐渐接近条件期望的过程，并非实际训练或 RSI 轨迹。}
+
+对于 RSI，这个结论具有非常直接的意义。
+
+无论 Agent 如何修改模型结构、增加计算资源、扩大搜索范围，只要预测使用的信息集合不变，就无法突破：
+\[\boxed{
+R_{\min}
+=
+\mathbb E[
+\operatorname{Var}(r_{t+1}\mid X_t)
+].
+}\]
+
+如果 Agent 已经接近这一理论下界，那么继续优化所能够获得的真实收益就非常有限。
+
+但是，经验得分仍然可能通过过拟合继续改善。
+
+这就形成了 Better, Then Worse 的一种潜在机制。
+
+\hypertarget{part-4-60-0001-signal-to-noise-ratio-and-optimal-r2}{%
+\subsection{\texorpdfstring{4. Signal-to-Noise Ratio and Optimal \(R^2\)}{4. Signal-to-Noise Ratio and Optimal R\^{}2}}\label{part-4-60-0001-signal-to-noise-ratio-and-optimal-r2}}
+
+现在正式推导上一阶段预告的公式。
+
+\hypertarget{part-4-60-0001-population-r2}{%
+\subsubsection{\texorpdfstring{4.1 Population \(R^2\)}{4.1 Population R\^{}2}}\label{part-4-60-0001-population-r2}}
+
+定义 Population Coefficient of Determination：
+\[R^2(h)
+=
+1-
+\frac{
+\mathbb E[(r_{t+1}-h(X_t))^2]
+}{
+\operatorname{Var}(r_{t+1})
+}.\]
+
+这里假设：
+\[0<\operatorname{Var}(r_{t+1})<\infty.\]
+
+其 Baseline 是使用总体均值进行预测的 Constant Predictor：
+\[h_0(X_t)=\mathbb E[r_{t+1}].\]
+
+因此，\(R^2(h)\) 描述模型相对于总体均值预测器减少了多少比例的平方预测误差。
+
+注意，一般模型的 Population \(R^2\) 可以为负值。
+
+\hypertarget{part-4-60-0001-theorem-maximum-achievable-population-r2}{%
+\subsubsection{\texorpdfstring{4.2 Theorem --- Maximum Achievable Population \(R^2\)}{4.2 Theorem --- Maximum Achievable Population R\^{}2}}\label{part-4-60-0001-theorem-maximum-achievable-population-r2}}
+
+由 §3：
+\[h^*(X_t)=g(X_t).\]
+
+因此：
+\[\begin{aligned}
+R_{\mathrm{optimal}}^2
+&=
+1-
+\frac{
+\mathbb E[(r_{t+1}-g(X_t))^2]
+}{
+\operatorname{Var}(r_{t+1})
+}\\
+&=
+1-
+\frac{
+\operatorname{Var}(\varepsilon_{t+1})
+}{
+\operatorname{Var}(r_{t+1})
+}.
+\end{aligned}\]
+
+根据 §2 中的 Law of Total Variance：
+\[\operatorname{Var}(r_{t+1})
+=
+\operatorname{Var}(g(X_t))
++
+\operatorname{Var}(\varepsilon_{t+1}).\]
+
+所以：
+\[\begin{aligned}
+R_{\mathrm{optimal}}^2
+&=
+\frac{
+\operatorname{Var}(g(X_t))
+}{
+\operatorname{Var}(g(X_t))
++
+\operatorname{Var}(\varepsilon_{t+1})
+}\\
+&=
+\frac{
+\frac{\operatorname{Var}(g(X_t))}
+{\operatorname{Var}(\varepsilon_{t+1})}
+}{
+1+
+\frac{\operatorname{Var}(g(X_t))}
+{\operatorname{Var}(\varepsilon_{t+1})}
+}.
+\end{aligned}\]
+
+代入 SNR 的定义，最终得到：
+\[\boxed{
+R_{\mathrm{optimal}}^2
+=
+\frac{\mathrm{SNR}}{1+\mathrm{SNR}}
+}\]
+
+\(\square\)
+
+\textbf{Signal-to-Noise Ratio vs. Optimal Predictability}
+
+\bookgraphic{0.441}{part-4-60-0001-004-01}{}
+
+Signal-to-noise ratio\\
+\textbf{0.0100}
+
+-2（范围 -3--1）
+
+Maximum Population R²
+
+\textbf{0.990\%}
+
+Irreducible variance proportion
+
+\textbf{99.010\%}
+
+logSNR = 1
+
+\bookgraphic{0.441}{part-4-60-0001-004-state-01}{}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.26}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.70}}@{}}
+\toprule
+SNR & Maximum Population \(R^2\) \\
+\midrule
+\endhead
+0.001 & 0.0999\% \\
+0.01 & 0.9901\% \\
+0.05 & 4.7619\% \\
+0.1 & 9.0909\% \\
+1 & 50.0000\% \\
+10 & 90.9091\% \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+当 SNR 非常小时，根据 Taylor Expansion：
+\[\frac{\mathrm{SNR}}{1+\mathrm{SNR}}
+=
+\mathrm{SNR}-\mathrm{SNR}^2
++O(\mathrm{SNR}^3).\]
+
+因此：
+\[\boxed{
+R_{\mathrm{optimal}}^2
+\approx\mathrm{SNR},
+\qquad \mathrm{SNR}\ll1.
+}\]
+
+\hypertarget{part-4-60-0001-research-implications}{%
+\subsubsection{4.3 Research Implications}\label{part-4-60-0001-research-implications}}
+
+假设在某个 Synthetic Financial Environment 中，我们人为设定：
+\[\mathrm{SNR}=0.01.\]
+
+那么无论使用：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Model & Theoretical Population \(R^2\) Upper Bound \\
+\midrule
+\endhead
+Linear Regression & 0.9901\% \\
+Random Forest & 0.9901\% \\
+XGBoost & 0.9901\% \\
+Neural Network & 0.9901\% \\
+无限轮 RSI & 0.9901\% \\
+Bayes Optimal Predictor & 0.9901\%（达到上界） \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+前五项是共同上界，而不是这些模型一定能够达到的实际性能。
+
+这是因为理论上限由 Information Set 与 DGP 决定，而不是由 Model Architecture 决定。
+
+如果 Agent 在开发数据中不断获得远高于这一上界的经验 \(R^2\)，就有充分理由调查其统计有效性。
+
+但需要注意，有限样本的 OOS \(R^2\) 也可能因为抽样波动而超过总体理论上界，并不因此自动构成 Data Leakage。
+
+\hypertarget{part-4-60-0001-can-more-information-increase-predictability}{%
+\subsection{5. Can More Information Increase Predictability?}\label{part-4-60-0001-can-more-information-increase-predictability}}
+
+前面的定理似乎产生了一个问题：
+
+如果理论预测上限无法突破，那么 Feature Engineering、Alternative Data 和 Tool Expansion 的意义又是什么？
+
+这里必须明确区分 \textbf{更好的信息} 与 \textbf{更好的信息处理方式}。
+
+\hypertarget{part-4-60-0001-information-set-expansion}{%
+\subsubsection{5.1 Information-set Expansion}\label{part-4-60-0001-information-set-expansion}}
+
+假设我们有两个信息集合：
+\[\mathcal F\subseteq\mathcal G.\]
+
+其中 \(\mathcal G\) 包含 \(\mathcal F\) 的全部信息，以及一些额外信息。
+
+定义对应的最优预测器：
+\[g_{\mathcal F}
+=
+\mathbb E[r_{t+1}\mid\mathcal F],\]
+
+\[g_{\mathcal G}
+=
+\mathbb E[r_{t+1}\mid\mathcal G].\]
+
+那么在平方损失下：
+\[\boxed{
+R^*_{\mathcal G}
+\leq R^*_{\mathcal F}.
+}\]
+
+即更多信息不会使理论最优预测风险增加。
+
+\hypertarget{part-4-60-0001-proof-1}{%
+\subsubsection{5.2 Proof}\label{part-4-60-0001-proof-1}}
+
+利用 Conditional Expectation 的 Orthogonal Projection 性质：
+\[\begin{aligned}
+&\mathbb E[(r_{t+1}-g_{\mathcal F})^2]\\
+&=
+\mathbb E[(r_{t+1}-g_{\mathcal G})^2]
++
+\mathbb E[(g_{\mathcal G}-g_{\mathcal F})^2].
+\end{aligned}\]
+
+所以：
+\[\boxed{
+R^*_{\mathcal F}-R^*_{\mathcal G}
+=
+\mathbb E[(g_{\mathcal G}-g_{\mathcal F})^2]
+\geq0.
+}\]
+
+\(\square\)
+
+这个等式甚至给出了新增信息的理论价值。
+
+如果：
+\[g_{\mathcal G}=g_{\mathcal F}\quad\text{a.s.},\]
+
+那么新增信息对于条件均值预测没有任何额外贡献。
+
+\hypertarget{part-4-60-0001-feature-engineering-vs.-information-acquisition}{%
+\subsubsection{5.3 Feature Engineering vs. Information Acquisition}\label{part-4-60-0001-feature-engineering-vs.-information-acquisition}}
+
+考虑以下三种 RSI Revision。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}@{}}
+\toprule
+Revision & Information Set & Potential Benefit \\
+\midrule
+\endhead
+将 \(X_t\) 输入更复杂的神经网络 & 不变 & 更好地逼近真实预测函数 \\
+增加 \(X_t^2\)、交互项或其他确定性变换 & 不变 & 更有效地表示已有信息 \\
+新增当时可获得且具有预测价值的数据 & 扩大 & 可能提高理论预测上限 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+如果新特征满足：
+\[W_t=f(X_t),\]
+
+那么：
+\[\sigma(X_t,W_t)=\sigma(X_t).\]
+
+因此：
+\[\boxed{
+\mathbb E[r_{t+1}\mid X_t,W_t]
+=
+\mathbb E[r_{t+1}\mid X_t].
+}\]
+
+也就是说，将现有特征进行任意确定性变换，并不会凭空创造新的统计信息。
+
+但是，这不意味着 Feature Engineering 没有价值。它仍然能够帮助有限复杂度的模型，更有效地利用已经存在的信息。
+
+\bookgraphic{0.453}{part-4-60-0001-005-01}{更强的模型可以帮助系统接近原有理论上限；具有新增预测信息的数据则可能提高理论上限。曲线为概念示意。}
+
+这是 Revision Classification 中非常值得加入的一项区分：某次修改究竟是在改善 Representation，还是在扩展真正的 Information Set？
+
+两者可能具有完全不同的泛化潜力。
+
+\hypertarget{part-4-60-0001-why-is-financial-predictability-usually-difficult}{%
+\subsection{6. Why Is Financial Predictability Usually Difficult?}\label{part-4-60-0001-why-is-financial-predictability-usually-difficult}}
+
+\hypertarget{part-4-60-0001-efficient-market-hypothesis-emh}{%
+\subsubsection{6.1 Efficient Market Hypothesis (EMH)}\label{part-4-60-0001-efficient-market-hypothesis-emh}}
+
+Efficient Market Hypothesis 是金融学中解释资产价格信息反映机制的经典理论框架。
+
+Eugene Fama 在 1970 年发表的综述中，系统整理了市场效率的不同检验形式，并在 1991 年进一步讨论了该理论的经验检验问题。
+
+\href{https://doi.org/10.1111/j.1540-6261.1970.tb00518.x}{来源 1} \href{https://onlinelibrary.wiley.com/doi/full/10.1111/j.1540-6261.1991.tb04636.x}{来源 2}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Form & Information Set \\
+\midrule
+\endhead
+Weak Form & 历史价格与交易信息 \\
+Semi-strong Form & 所有公开可获得的信息 \\
+Strong Form & 包括私人信息在内的信息 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其基本经济学思想是：如果某种可利用的价格规律被市场参与者发现，他们的交易行为可能使该规律逐渐减弱。
+
+\textbf{Predictable Market Pattern} ↓ \textbf{Discovery by Market Participants} ↓ \textbf{Trading and Competition} ↓ \textbf{Price Adjustment} ↓ \textbf{Potential Signal Decay}
+
+一种经济机制解释，不代表所有市场信号都会以相同方式消失。
+
+\hypertarget{part-4-60-0001-emh-ux4e0dux7b49ux4e8eux6536ux76caux7387ux5b8cux5168ux4e0dux53efux9884ux6d4b}{%
+\subsubsection{6.2 EMH 不等于收益率完全不可预测}\label{part-4-60-0001-emh-ux4e0dux7b49ux4e8eux6536ux76caux7387ux5b8cux5168ux4e0dux53efux9884ux6d4b}}
+
+这是一个必须避免的误解。
+
+市场有效并不严格意味着：
+\[\mathbb E[r_{t+1}\mid\mathcal F_t]=0.\]
+
+资产收益率可能包含随时间变化的 Risk Premium，也可能受到风险暴露、交易成本和市场摩擦的影响。 因此：
+\[\boxed{
+\text{Market Efficiency}
+\neq
+\text{Zero Return Predictability}
+}\]
+
+更准确地说，EMH 涉及信息是否被合理反映在价格中，以及投资者能否利用信息获得超出适当风险调整基准的收益。
+
+这还涉及 Joint Hypothesis Problem：检验市场效率时，通常也在同时检验所采用的资产定价模型是否正确。
+
+对于当前课题，我们不需要证明 EMH 成立，只需要理解它为金融弱可预测性及 Signal Decay 提供了一种重要的经济学解释。
+
+\hypertarget{part-4-60-0001-real-empirical-evidence}{%
+\subsubsection{6.3 Real Empirical Evidence}\label{part-4-60-0001-real-empirical-evidence}}
+
+这里有两篇非常值得对照阅读的金融论文。
+
+\textbf{Welch \& Goyal (2008) --- Equity Premium Prediction}
+
+该研究重新检验了大量曾经被学术文献提出的股票市场风险溢价预测变量，发现许多预测模型的样本外表现较差，难以稳定超越当时可获得的历史均值预测基准。 \href{https://doi.org/10.1093/RFS/HHM014}{来源 1} \href{https://www.nber.org/papers/w10483}{来源 2}
+
+重要性：历史上被认为有效的预测关系，未必具有可靠的样本外预测能力。
+
+\textbf{Gu, Kelly \& Xiu (2020) --- Empirical Asset Pricing via Machine Learning}
+
+这项研究比较了多种机器学习资产收益预测方法，并报告了非线性模型带来的样本外预测改善。 \href{https://academic.oup.com/rfs/article/33/5/2223/5758276}{来源 1}
+
+\textbf{Monthly Stock-level OOS R²}
+
+Benchmark linear model
+
+\begin{verbatim}
+      **0.16%**
+\end{verbatim}
+
+Elastic Net (900+ predictors)
+
+\begin{verbatim}
+      **0.11%**
+\end{verbatim}
+
+Trees / Neural Networks (lower)
+
+\begin{verbatim}
+      **0.33%**
+\end{verbatim}
+
+Trees / Neural Networks (upper)
+
+\begin{verbatim}
+      **0.40%**
+\end{verbatim}
+
+论文报告的部分结果，以零收益预测为 \(R^2_{\mathrm{OOS}}\) 基准。树模型和神经网络以论文报告的区间上下界表示。 \href{https://doi.org/10.1093/rfs/hhaa009}{来源 1}
+
+这里最值得注意的是：即使具有研究价值的金融预测模型，样本外 \(R^2\) 也可能远低于我们在普通机器学习任务中所熟悉的数值。
+
+但是，这两篇论文研究的预测对象、数据集和 Benchmark 并不相同，不能直接比较其得分。
+
+尤其是 Gu、Kelly 和 Xiu 的实证 OOS \(R^2\) 采用了不同于 §4 的总体均值基准，因此不能直接将其代入我们的理论公式反推出真实 SNR。
+
+\hypertarget{part-4-60-0001-low-snr-and-statistical-power}{%
+\subsection{7. Low SNR and Statistical Power}\label{part-4-60-0001-low-snr-and-statistical-power}}
+
+本节开始将 Financial Predictability 与 II-C 中的 Model Selection Bias 直接联系起来。
+
+\hypertarget{part-4-60-0001-low-snr-linear-regression}{%
+\subsubsection{7.1 Low-SNR Linear Regression}\label{part-4-60-0001-low-snr-linear-regression}}
+
+构造一个最简单的金融预测模型：
+\[r_{t+1}
+=
+\beta X_t+\varepsilon_{t+1},\]
+
+其中：
+\[X_t\sim\mathcal N(0,1),\]
+
+\[\varepsilon_{t+1}
+\sim\mathcal N(0,\sigma_\varepsilon^2),\]
+
+并假设两者独立。
+
+那么：
+\[g(X_t)=\beta X_t,\]
+
+\[\operatorname{Var}(g(X_t))=\beta^2.\]
+
+因此：
+\[\boxed{
+\mathrm{SNR}
+=
+\frac{\beta^2}{\sigma_\varepsilon^2}.
+}\]
+
+\textbf{High SNR}
+
+\bookgraphic{0.302}{part-4-60-0001-009-01}{β = 1，σ = 1}
+
+SNR = 1
+
+\textbf{Low SNR}
+
+\bookgraphic{0.302}{part-4-60-0001-009-02}{β = 0.1，σ = 1}
+
+SNR = 0.01
+
+合成散点示意，两个面板使用相同尺度。在低 SNR 情况下，真实回归关系很容易被噪声掩盖。
+
+\hypertarget{part-4-60-0001-how-much-data-do-we-need}{%
+\subsubsection{7.2 How Much Data Do We Need?}\label{part-4-60-0001-how-much-data-do-we-need}}
+
+假设我们拥有 \(n\) 个 IID 观测值，并且已知截距为零。
+
+OLS Estimator 为：
+\[\hat\beta
+=
+\frac{\sum_{i=1}^nX_ir_i}
+{\sum_{i=1}^nX_i^2}.\]
+
+代入 DGP：
+\[\hat\beta-\beta
+=
+\frac{\sum_{i=1}^nX_i\varepsilon_i}
+{\sum_{i=1}^nX_i^2}.\]
+
+于是，在给定全部 \(X_i\) 的条件下：
+\[\operatorname{Var}(\hat\beta\mid X_1,\ldots,X_n)
+=
+\frac{\sigma_\varepsilon^2}
+{\sum_{i=1}^nX_i^2}.\]
+
+由 LLN：
+\[\frac1n\sum_{i=1}^nX_i^2
+\xrightarrow{\mathrm{a.s.}}1.\]
+
+当 \(n\) 足够大时：
+\[\operatorname{SE}(\hat\beta)
+\approx
+\frac{\sigma_\varepsilon}{\sqrt n}.\]
+
+所以真实回归系数相对于估计误差的强度约为：
+\[\begin{aligned}
+\frac{|\beta|}{\operatorname{SE}(\hat\beta)}
+&\approx
+\frac{|\beta|\sqrt n}{\sigma_\varepsilon}\\
+&=\sqrt{n\cdot\mathrm{SNR}}.
+\end{aligned}\]
+
+最终得到：
+\[\boxed{
+\frac{|\beta|}{\operatorname{SE}(\hat\beta)}
+\approx
+\sqrt{n\cdot\mathrm{SNR}}
+}\]
+
+这个关系非常值得记住。
+
+SNR 减少为原来的十分之一，为了维持相同的统计识别能力，样本量大约需要增加十倍。
+
+\hypertarget{part-4-60-0001-sample-complexity-under-low-snr}{%
+\subsubsection{7.3 Sample Complexity under Low SNR}\label{part-4-60-0001-sample-complexity-under-low-snr}}
+
+考虑双侧显著性水平为 5\%、Statistical Power 为 80\% 的单个回归系数检验。
+
+在上述 Gaussian Model、已知噪声方差及大样本近似下：
+\[\sqrt{n\cdot\mathrm{SNR}}
+\approx
+z_{0.975}+z_{0.8}.\]
+
+即：
+\[\sqrt{n\cdot\mathrm{SNR}}
+\approx1.96+0.842.\]
+
+因此：
+\[\boxed{
+n\approx\frac{7.85}{\mathrm{SNR}}.
+}\]
+
+\textbf{Sample Requirement for Detecting a Signal}
+
+SNR = 0.1
+
+≈ 79
+
+SNR = 0.01
+
+≈ 785
+
+SNR = 0.001
+
+≈ 7,850
+
+SNR = 0.0001
+
+≈ 78,500
+
+理论近似：IID 观测、单一预测变量、单次检验。未考虑时间依赖、多重检验和自适应搜索。
+
+这还只是在检验一个事先确定的 Feature。
+
+如果 Agent 同时搜索数千个候选特征，或者反复根据检验结果生成新特征，那么统计问题会更加困难。
+
+\hypertarget{part-4-60-0001-spurious-correlationux865aux5047ux76f8ux5173}{%
+\subsection{8. Spurious Correlation（虚假相关）}\label{part-4-60-0001-spurious-correlationux865aux5047ux76f8ux5173}}
+
+这是低信噪比环境中非常危险的现象。
+
+\hypertarget{part-4-60-0001-a-null-feature-experiment}{%
+\subsubsection{8.1 A Null-feature Experiment}\label{part-4-60-0001-a-null-feature-experiment}}
+
+假设真实金融收益率完全不可预测：
+\[r_{t+1}
+=
+\varepsilon_{t+1}.\]
+
+Agent 却拥有 \(m\) 个候选特征：
+\[X_t^{(1)},\ldots,X_t^{(m)}.\]
+
+假设每个特征与收益率在总体上均独立。 因此：
+\[\operatorname{Corr}(X_t^{(j)},r_{t+1})=0,
+\qquad j=1,\ldots,m.\]
+
+但在有限样本中，经验相关系数：
+\[\hat\rho_j\]
+
+通常不会恰好等于零。
+
+如果 Agent 选择：
+\[j^*=\arg\max_j|\hat\rho_j|,\]
+
+它几乎必然会找到一个看起来具有某种预测价值的特征。
+
+\hypertarget{part-4-60-0001-maximum-spurious-correlation}{%
+\subsubsection{8.2 Maximum Spurious Correlation}\label{part-4-60-0001-maximum-spurious-correlation}}
+
+假设处于 IID Gaussian Null Model，并且候选特征相互独立。
+
+当样本量较大时：
+\[\sqrt n\,\hat\rho_j
+\approx\mathcal N(0,1).\]
+
+利用 Part II 中学习的 Extreme Value Approximation：
+\[\boxed{
+\mathbb E\left[
+\max_{1\leq j\leq m}
+|\hat\rho_j|
+\right]
+\approx
+\sqrt{\frac{2\log(2m)}{n}}.
+}\]
+
+这是在适当渐近条件下的 leading-order approximation，并非有限样本精确公式。当搜索规模相对于样本量极大时，这一近似可能失效。
+
+如果对选中的特征进行带截距的 Simple Linear Regression，那么训练集上：
+\[\widehat R^2_{\mathrm{train}}
+=
+\hat\rho_{j^*}^2.\]
+
+因此，最佳噪声特征的训练 \(R^2\) 的典型规模约为：
+\[\boxed{
+\widehat R^2_{\mathrm{train}}
+\sim
+\frac{2\log(2m)}{n}.
+}\]
+
+此处的 \(\sim\) 表示相应的渐近规模，而不是对任意 \(n,m\) 的确定性等式。
+
+\textbf{Spurious Feature Search Explorer}
+
+真实特征 SNR 固定为 0.01；其他候选特征完全没有预测价值。
+
+Sample size\\
+\textbf{1,000}
+
+1000（范围 100--5000）
+
+Number of noise features\\
+\textbf{1,000}
+
+3（范围 1--5）
+
+True signal --- population R²
+
+\begin{verbatim}
+  **0.99%**
+\end{verbatim}
+
+Best noise feature --- approximate training R²
+
+\begin{verbatim}
+  **1.52%**
+\end{verbatim}
+
+Noise features --- population explanatory power
+
+\begin{verbatim}
+  **0%**
+\end{verbatim}
+
+比较真实信号的理论解释能力与噪声搜索产生的经验得分规模。这不是误选概率的计算，也不是实际 Monte Carlo 实验。
+
+这说明一种非常有意思的情况：
+
+\textbf{一个完全没有预测价值的特征，在经过足够大规模的搜索后，其经验表现可能超过真正具有预测价值的特征。}
+
+这也是为什么金融研究不能只关注 Feature Discovery，还需要非常严格的 Feature Validation。
+
+\hypertarget{part-4-60-0001-from-score-inflation-to-genuine-performance-decay}{%
+\subsection{9. From Score Inflation to Genuine Performance Decay}\label{part-4-60-0001-from-score-inflation-to-genuine-performance-decay}}
+
+上面已经解释了为什么 Agent 能够找到高分噪声特征。
+
+但我们此前一直强调：
+\[\text{Score Inflation}
+\not\Rightarrow
+\text{Performance Decay}.\]
+
+现在我们进一步证明，当系统将噪声特征实际纳入模型时，真实性能确实可能下降。
+
+\hypertarget{part-4-60-0001-a-controlled-mathematical-example}{%
+\subsubsection{9.1 A Controlled Mathematical Example}\label{part-4-60-0001-a-controlled-mathematical-example}}
+
+假设真实 DGP 为：
+\[r_{t+1}
+=
+\beta X_t+\varepsilon_{t+1}.\]
+
+Agent 已经找到了理论最优预测器：
+\[h^*(X_t)=\beta X_t.\]
+
+但它仍然尝试通过额外特征 \(W_t\) 改进模型。
+
+假设：
+\[W_t\sim\mathcal N(0,1),\]
+
+且 \(W_t\) 与 \(X_t,\varepsilon_{t+1}\) 独立。
+
+新预测器为：
+\[h_b(X_t,W_t)
+=
+\beta X_t+bW_t.\]
+
+那么在总体分布上：
+\[\begin{aligned}
+R(h_b)
+&=
+\mathbb E[(\varepsilon_{t+1}-bW_t)^2]\\
+&=\sigma_\varepsilon^2+b^2.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+R(h_b)-R(h^*)=b^2.
+}\]
+
+只要 \(b\neq0\)，该修改就会损害真实性能。
+
+但在开发数据 \(D_n\) 上，我们可以通过 OLS 得到：
+\[\hat b
+=
+\frac{
+\sum_{i=1}^nW_i\varepsilon_i
+}{
+\sum_{i=1}^nW_i^2
+}.\]
+
+从而：
+\[\boxed{
+\widehat R_n(h_{\hat b})
+=
+\widehat R_n(h^*)
+-
+\frac{
+(\sum_{i=1}^nW_i\varepsilon_i)^2
+}{
+n\sum_{i=1}^nW_i^2
+}.
+}\]
+
+因此：
+\[\widehat R_n(h_{\hat b})
+\leq
+\widehat R_n(h^*),\]
+
+但在独立的新观测上，给定拟合完成的模型：
+\[R(h_{\hat b})\geq R(h^*).\]
+
+在非退化的连续 Gaussian Model 下，两处不等式几乎必然严格成立。
+
+\hypertarget{part-4-60-0001-a-model-for-better-then-worse}{%
+\subsubsection{9.2 A Model for Better, Then Worse}\label{part-4-60-0001-a-model-for-better-then-worse}}
+
+现在将上述结构推广到一个简单的 Synthetic RSI-like Experiment。
+
+假设真实 DGP 包含三个真正有效的预测变量：
+\[r_{t+1}
+=
+\sum_{j=1}^{3}\beta_jX_t^{(j)}
++\varepsilon_{t+1}.\]
+
+另外，系统拥有大量无效噪声特征。
+
+早期 Agent 不断发现真实预测变量，因此逐渐接近 Bayes Optimal Predictor。
+
+当有效信号已经基本被发现后，Agent 仍然继续尝试添加特征。此时，新增特征可能只是在拟合有限样本中的随机噪声。
+
+\bookgraphic{0.786}{part-4-60-0001-013-01}{}
+
+假想轨迹，用于说明真实信号逐渐耗尽之后，继续拟合噪声可能同时提高 IS R² 并降低 Population R²。不是实际模拟结果。
+
+这个机制甚至不需要 LLM 就能发生。
+
+只需要：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  有限数量的有效预测信息；
+\item
+  大量潜在的无效特征；
+\item
+  持续利用同一批开发数据；
+\item
+  允许经验得分提高的修改被保留。
+\end{enumerate}
+
+这对我们的研究具有重要意义：\textbf{如果普通迭代特征选择就能产生 Better, Then Worse，那么真正的 RSI 研究应该进一步调查递归自我修改是否会放大这一现象。}
+
+\hypertarget{part-4-60-0001-two-different-signal-to-noise-ratios}{%
+\subsection{10. Two Different Signal-to-Noise Ratios}\label{part-4-60-0001-two-different-signal-to-noise-ratios}}
+
+这是本阶段最值得深入思考的 Research Insight。
+
+在 X Program \#161 中，实际上可能存在两种不同层级的 SNR。
+
+\hypertarget{part-4-60-0001-task-level-snr}{%
+\subsubsection{10.1 Task-level SNR}\label{part-4-60-0001-task-level-snr}}
+
+\[\boxed{
+\mathrm{SNR}_{\mathrm{task}}
+=
+\frac{\operatorname{Var}(g(X_t))}
+{\operatorname{Var}(\varepsilon_{t+1})}
+}\]
+
+它衡量金融数据本身的可预测程度。
+
+\hypertarget{part-4-60-0001-revision-level-snr}{%
+\subsubsection{10.2 Revision-level SNR}\label{part-4-60-0001-revision-level-snr}}
+
+假设某次候选修改具有真实性能改善量：
+\[d_k=J(A_{k+1})-J(A_k).\]
+
+而 Evaluator 只能观察到：
+\[\widehat d_k=d_k+\eta_k,\]
+
+其中 \(\eta_k\) 是版本比较中的评估误差。
+
+如果该误差具有零均值和有限正方差，我们可以构造一个衡量修改可识别性的指标：
+\[\boxed{
+\mathrm{SNR}_{\mathrm{revision},k}
+=
+\frac{d_k^2}
+{\operatorname{Var}(\eta_k)}
+}\]
+
+它衡量的是某项真实修改相对于 Evaluation Noise 有多明显。
+
+相应的带方向标准化改善量是：
+\[\frac{d_k}{\sqrt{\operatorname{Var}(\eta_k)}}.\]
+
+这个带符号指标能够区分有利修改与有害修改。
+
+\textbf{Task-level SNR}
+
+\[\frac{\operatorname{Var}(g(X_t))}{\operatorname{Var}(\varepsilon_{t+1})}\]
+
+金融市场本身有多难预测？
+
+\textbf{Revision-level SNR}
+
+\[\frac{d_k^2}{\operatorname{Var}(\eta_k)}\]
+
+Agent 的一次真实改进有多难被识别？
+
+前者决定任务的信息上限；后者影响 Agent 的版本选择可靠性。
+
+两者不是同一个概念，也不存在无条件的一一对应关系。
+
+即使在高 SNR 任务中，当 Agent 已经接近理论最优性能时，后期修改的真实收益也可能非常小，从而产生 Low Revision-level SNR。
+
+反过来，即使金融任务本身具有低 SNR，如果评估数据量足够大且使用有效的配对比较，也可能可靠地识别微小的真实性能改善。
+
+\hypertarget{part-4-60-0001-a-potential-explanation-for-decay-onset}{%
+\subsubsection{10.3 A Potential Explanation for Decay Onset}\label{part-4-60-0001-a-potential-explanation-for-decay-onset}}
+
+假设随着 RSI 推进：
+\[d_k\longrightarrow0,\]
+
+但 Evaluation Noise 没有以同样速度下降。
+
+那么：
+\[\mathrm{SNR}_{\mathrm{revision},k}
+\longrightarrow0.\]
+
+这意味着即使 Agent 的优化能力没有下降，它所提出的修改也可能越来越难以可靠评价。
+
+\bookgraphic{0.463}{part-4-60-0001-016-01}{候选机制示意：真实边际改善逐渐缩小，而评估噪声保持稳定。交点不必然等于实际 OOS 退化点。}
+
+这给出了一个可能值得实际检验的 Research Hypothesis：
+
+\begin{quote}
+RSI 的性能退化可能与 Revision-level SNR 从 Signal-dominated Region 转向 Noise-dominated Region 有关。
+\end{quote}
+
+如果这一机制得到验证，我们甚至可以考虑使用版本比较的不确定性来辅助设计 Early Stopping Mechanism。
+
+不过，Revision-level SNR 是这里提出的工作性指标，尚未确认为课题组采用的定义，也没有证据表明它一定能够预测真实 RSI 的退化点。
+
+\hypertarget{part-4-60-0001-research-practice-controlled-snr-experiment}{%
+\subsection{11. Research Practice --- Controlled SNR Experiment}\label{part-4-60-0001-research-practice-controlled-snr-experiment}}
+
+相比直接在真实金融市场数据上研究 RSI，我建议先构造一个 Ground Truth 已知的环境。
+
+\hypertarget{part-4-60-0001-synthetic-dgp}{%
+\subsubsection{11.1 Synthetic DGP}\label{part-4-60-0001-synthetic-dgp}}
+
+定义：
+\[r_{t+1}
+=
+\sum_{j=1}^{p}\beta_jX_t^{(j)}
++\varepsilon_{t+1},\]
+
+其中：
+\[\boldsymbol X_t\sim\mathcal N(\boldsymbol 0,I_p),\]
+
+\[\varepsilon_{t+1}\sim
+\mathcal N(0,\sigma_\varepsilon^2),\]
+
+且二者独立。 于是：
+\[\operatorname{Var}(g(\boldsymbol X_t))
+=
+\|\boldsymbol\beta\|_2^2.\]
+
+因此：
+\[\boxed{
+\mathrm{SNR}
+=
+\frac{\|\boldsymbol\beta\|_2^2}
+{\sigma_\varepsilon^2}.
+}\]
+
+如果固定噪声方差为 1，并将系数向量归一化为：
+\[\|\boldsymbol\beta\|_2^2=\mathrm{SNR},\]
+
+我们就能够精确控制数据的理论可预测程度。
+
+\begin{verbatim}
+import numpy as np
+
+
+def generate_data(
+    n=1000,
+    p=100,
+    n_signals=3,
+    snr=0.01,
+    seed=42
+):
+    rng = np.random.default_rng(seed)
+
+    X = rng.normal(size=(n, p))
+
+    beta = np.zeros(p)
+    beta[:n_signals] = np.sqrt(snr / n_signals)
+
+    signal = X @ beta
+    noise = rng.normal(size=n)
+
+    y = signal + noise
+
+    return X, y, beta
+\end{verbatim}
+
+这里要求 \texttt{1\ \textless{}=\ n\_signals\ \textless{}=\ p} 且 \texttt{snr\ \textgreater{}=\ 0}。
+
+这个生成器具有一个非常有价值的性质：我们不仅可以计算 Empirical Performance，还能够直接计算线性预测模型的 Population Performance。
+
+\hypertarget{part-4-60-0001-exact-population-risk}{%
+\subsubsection{11.2 Exact Population Risk}\label{part-4-60-0001-exact-population-risk}}
+
+假设某个版本的 Agent 返回估计系数：
+\[\hat{\boldsymbol\beta}_k.\]
+
+那么：
+\[\begin{aligned}
+R(\hat{\boldsymbol\beta}_k)
+&=
+\mathbb E\left[
+(r_{t+1}
+-\boldsymbol X_t^\top
+\hat{\boldsymbol\beta}_k)^2
+\mid \hat{\boldsymbol\beta}_k
+\right]\\
+&=
+1+
+\|\hat{\boldsymbol\beta}_k
+-\boldsymbol\beta\|_2^2.
+\end{aligned}\]
+
+即：
+\[\boxed{
+R(\hat{\boldsymbol\beta}_k)
+=
+1+
+\|\hat{\boldsymbol\beta}_k
+-\boldsymbol\beta\|_2^2
+}\]
+
+这里的期望针对独立于拟合过程的新观测，预测器不含额外截距。
+
+对应的 Population \(R^2\) 为：
+\[\boxed{
+R^2(\hat{\boldsymbol\beta}_k)
+=
+1-
+\frac{
+1+\|\hat{\boldsymbol\beta}_k
+-\boldsymbol\beta\|_2^2
+}{
+1+\mathrm{SNR}
+}
+}\]
+
+Python 实现：
+
+\begin{verbatim}
+def population_r2(beta_hat, beta_true):
+    signal_variance = np.sum(beta_true**2)
+
+    population_mse = (
+        1 + np.sum((beta_hat - beta_true)**2)
+    )
+
+    return 1 - population_mse / (1 + signal_variance)
+\end{verbatim}
+
+这对我们的研究相当重要。
+
+因为在真实金融数据中，我们无法知道某次 OOS 下降究竟是真实退化还是评估噪声。
+
+但在这个 Synthetic Environment 中，可以直接测量真实性能，完全消除有限 OOS 样本对该指标的估计误差。
+
+\hypertarget{part-4-60-0001-experimental-design}{%
+\subsubsection{11.3 Experimental Design}\label{part-4-60-0001-experimental-design}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Independent Variable & Candidate Values \\
+\midrule
+\endhead
+SNR & 0.001, 0.01, 0.1, 1 \\
+Development Sample Size & 500, 1,000, 5,000 \\
+Number of Noise Features & 100, 500, 1,000 \\
+Search Strategy & Random, Adaptive, RSI-like \\
+Evaluation Budget & 100, 500, 1,000 \\
+Mitigation & None, Regularization, Early Stopping \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对于每一种条件，我们记录：
+
+\begin{itemize}
+\tightlist
+\item
+  IS Performance；
+\item
+  Empirical OOS Performance；
+\item
+  Exact Population Performance；
+\item
+  Decay Onset；
+\item
+  Peak-to-Final Decay；
+\item
+  Selection of True vs. Noise Features。
+\end{itemize}
+
+这使得研究者可以比较三种不同的性能曲线：
+
+\bookgraphic{0.723}{part-4-60-0001-017-01}{}
+
+概念示意，非上述代码的运行结果。实际实验中的理论得分上限需要由设定的 SNR 决定。
+
+在我看来，这可能是目前为止最适合我们独立开展的一项 Pilot Study。
+
+它具有 Ground Truth、可控实验变量、明确的数学推导，以及直接对应课题研究目标的性能指标。
+
+目前提供的是实验生成器和总体风险计算方法，尚未实现完整 RSI Optimizer，也没有运行完整实验。
+
+\hypertarget{part-4-60-0001-literature-index}{%
+\subsection{12. Literature Index}\label{part-4-60-0001-literature-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+Priority & Literature & Research Value \\
+\midrule
+\endhead
+P0 & \href{https://doi.org/10.1093/RFS/HHM014}{Welch \& Goyal (2008) --- A Comprehensive Look at the Empirical Performance of Equity Premium Prediction} & 金融预测的 OOS 失效 \\
+P0 & \href{https://doi.org/10.1093/rfs/hhaa009}{Gu, Kelly \& Xiu (2020) --- Empirical Asset Pricing via Machine Learning} & 机器学习金融预测及 OOS 评价 \\
+P1 & \href{https://doi.org/10.1111/j.1540-6261.1970.tb00518.x}{Fama (1970) --- Efficient Capital Markets: A Review of Theory and Empirical Work} & 市场效率的理论基础 \\
+P1 & \href{https://onlinelibrary.wiley.com/doi/full/10.1111/j.1540-6261.1991.tb04636.x}{Fama (1991) --- Efficient Capital Markets: II} & 市场效率检验及 Joint Hypothesis Problem \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+以上均为已正式发表的同行评审论文，本次已核对出版来源。
+
+优先阅读前两篇的 Introduction、Evaluation Protocol 和 Empirical Results，无需立即深入完整的资产定价理论。
+
+\hypertarget{part-4-60-0001-iv-b-conclusion-index}{%
+\subsection{13. IV-B --- Conclusion Index}\label{part-4-60-0001-iv-b-conclusion-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.69}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+B1 & SNR 衡量可预测方差与不可预测方差之比 & §1 \\
+B2 & Conditional Expectation 与预测残差正交 & §2 \\
+B3 & Conditional Expectation 是平方损失下的最优预测器 & §3 \\
+B4 & 固定信息集合决定 Irreducible Error & §3.3 \\
+B5 & Optimal Population \(R^2\) 由 SNR 决定 & §4 \\
+B6 & 扩展合法信息集合可以提高理论预测上限 & §5 \\
+B7 & Feature Transformation 不等于新增信息 & §5.3 \\
+B8 & Market Efficiency 不等于收益率完全不可预测 & §6 \\
+B9 & 识别微弱信号所需样本量随 SNR 降低而增加 & §7 \\
+B10 & 大规模特征搜索可能产生 Spurious Correlation & §8 \\
+B11 & 将噪声特征纳入模型可以造成真实性能下降 & §9 \\
+B12 & Task-level SNR 与 Revision-level SNR 应分别研究 & §10 \\
+B13 & Synthetic DGP 允许精确评价 Population Performance & §11 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-60-0001-core-formula-sheet}{%
+\subsubsection{13.1 Core Formula Sheet}\label{part-4-60-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Variance Decomposition}
+
+\[\operatorname{Var}(r_{t+1})
+=
+\operatorname{Var}(g(X_t))
++
+\operatorname{Var}(\varepsilon_{t+1}).\]
+
+\textbf{Result 2 --- Bayes Optimal Predictor}
+
+\[h^*(X_t)=\mathbb E[r_{t+1}\mid X_t].\]
+
+\textbf{Result 3 --- Risk Decomposition}
+
+\[R(h)
+=
+\mathbb E[(g(X_t)-h(X_t))^2]
++
+\mathbb E[\varepsilon_{t+1}^2].\]
+
+\textbf{Result 4 --- Theoretical Predictability}
+
+\[\boxed{
+R_{\mathrm{optimal}}^2
+=
+\frac{\mathrm{SNR}}{1+\mathrm{SNR}}
+}\]
+
+\textbf{Result 5 --- Value of Additional Information}
+
+\[R_{\mathcal F}^*-R_{\mathcal G}^*
+=
+\mathbb E[(g_{\mathcal G}-g_{\mathcal F})^2].\]
+
+\textbf{Result 6 --- Signal Detectability}
+
+\[\frac{|\beta|}{\operatorname{SE}(\hat\beta)}
+\approx\sqrt{n\cdot\mathrm{SNR}}.\]
+
+\textbf{Result 7 --- Maximum Spurious Training \(R^2\)}
+
+\[\widehat R^2_{\mathrm{train}}
+\sim\frac{2\log(2m)}{n}.\]
+
+\textbf{Result 8 --- Exact Population Risk in Synthetic DGP}
+
+\[R(\hat{\boldsymbol\beta}_k)
+=
+1+
+\|\hat{\boldsymbol\beta}_k-\boldsymbol\beta\|_2^2.\]
+
+\hypertarget{part-4-60-0001-proof-index}{%
+\subsubsection{13.2 Proof Index}\label{part-4-60-0001-proof-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.61}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Proof & Mathematical Result & Location \\
+\midrule
+\endhead
+P1 & Signal--Noise Orthogonality & §2.1 \\
+P2 & Law of Total Variance Decomposition & §2.2 \\
+P3 & Bayes Optimal Predictor & §3.2 \\
+P4 & SNR and Optimal Population \(R^2\) & §4.2 \\
+P5 & Value of Additional Information & §5.2 \\
+P6 & SNR and Regression Standard Error & §7.2 \\
+P7 & Spurious Feature Selection Approximation & §8.2 \\
+P8 & Actual Risk Increase from Noise Features & §9.1 \\
+P9 & Exact Population Risk & §11.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 P7 属于渐近近似，其余结论也应严格遵守各自的模型假设。
+
+\hypertarget{part-4-60-0001-the-most-important-research-insight}{%
+\subsection{14. The Most Important Research Insight}\label{part-4-60-0001-the-most-important-research-insight}}
+
+经过 IV-B，我们实际上已经能够将 Better, Then Worse 的候选机制解释得更加深入。
+
+\textbf{Low Task-level SNR}
+
+给定信息所包含的真实预测信号有限
+
+↓ \textbf{Early-stage RSI}
+
+发现有效特征，逐渐接近 Bayes Optimal Predictor
+
+↓ \textbf{Diminishing Genuine Improvement}
+
+剩余的真实改进空间逐渐缩小
+
+↓ \textbf{Low Revision-level SNR}
+
+Evaluator 越来越难以区分真实改进与随机波动
+
+↓ \textbf{Adaptive Noise Exploitation}
+
+Search、Memory、Reflection 与 Self-Modification 可能强化统计偏差
+
+↓
+
+\[S_k^{\mathrm{IS}}\uparrow,\qquad S_k^{\mathrm{OOS}}\downarrow\]
+
+\textbf{Potential Generalization Decay}
+
+这个框架将我们此前学习的三个领域真正连接起来了。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.57}}@{}}
+\toprule
+Field & Contribution \\
+\midrule
+\endhead
+Probability & 给出理论预测上限 \\
+Statistical Learning & 解释有限样本评估偏差 \\
+Agentic AI & 解释统计偏差如何递归传播 \\
+Financial AI & 提供低信噪比、时间依赖的研究环境 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{RSI 可以提高寻找规律的能力，却无法保证数据中存在更多值得寻找的规律。}
+
+当然，上图仍是一条候选机制链，而不是已经经过因果验证的金融 RSI 理论。
+
+\hypertarget{part-4-60-0001-next-iv-c-financial-factors-machine-learning-models}{%
+\subsection{Next --- IV-C: Financial Factors \& Machine Learning Models}\label{part-4-60-0001-next-iv-c-financial-factors-machine-learning-models}}
+
+IV-A --- Financial Time Series \& DGP
+
+IV-B --- Low Signal-to-Noise Ratio \& Predictability
+
+IV-C --- Financial Factors \& ML Models
+
+IV-D --- Returns, Sharpe Ratio \& Evaluation
+
+IV-E --- Backtest Overfitting, PBO \& DSR
+
+IV-F --- Market Regime \& Robustness
+
+下一阶段的数学密度会有所下降，重心转向真实的 Quantitative Research Pipeline。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Alpha \& Beta & 金融预测中的 Alpha 到底是什么？ \\
+Financial Factors & 什么是因子，因子与普通 Feature 有什么区别？ \\
+Cross-sectional Prediction & 如何在多个资产之间进行相对预测？ \\
+Information Coefficient & 如何评价因子的预测能力？ \\
+Rank IC & 为什么金融研究常使用秩相关？ \\
+Factor Zoo & 大量金融因子是否真的具有预测价值？ \\
+Ridge, Lasso \& Elastic Net & 如何控制金融模型复杂度？ \\
+Tree Models \& Neural Networks & 非线性模型能够带来什么？ \\
+Automated Factor Mining & Financial Agent 如何自动发现和筛选因子？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+IV-B 解释了金融预测的理论困难，IV-C 则将帮助我们理解 Financial Research Agent 每一轮究竟在研究和修改什么。

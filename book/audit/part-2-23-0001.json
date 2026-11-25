@@ -1,0 +1,161 @@
+{
+  "chapter": {
+    "part": 2,
+    "message": 23,
+    "first_line": 1,
+    "last_line": 989,
+    "chapter": "part-2-23-0001",
+    "chosen_title": "II-E — Data Leakage and Distribution Shift",
+    "tables": 10,
+    "source_sha256": "1342e774cb79ca15c635494d3fa1d282add68d6ca623cba6caff4175d4824258",
+    "source_math": 71,
+    "matched_math": 71
+  },
+  "components": [
+    {
+      "part": 2,
+      "message": 23,
+      "line": 73,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 187,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 204,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 297,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 336,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 366,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 467,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 602,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 647,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 678,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 722,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 4
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 773,
+      "component": "row",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 778,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 850,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 852,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 854,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 932,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 23,
+      "line": 965,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

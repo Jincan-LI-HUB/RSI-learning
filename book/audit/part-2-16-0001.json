@@ -1,0 +1,154 @@
+{
+  "chapter": {
+    "part": 2,
+    "message": 16,
+    "first_line": 1,
+    "last_line": 1167,
+    "chapter": "part-2-16-0001",
+    "chosen_title": "II-C — Model Selection Bias and Multiple Testing",
+    "tables": 11,
+    "source_sha256": "b08b533417d997e588890655b00ca353b0454087db1ffb65e4a39406ac2f6b12",
+    "source_math": 92,
+    "matched_math": 92
+  },
+  "components": [
+    {
+      "part": 2,
+      "message": 16,
+      "line": 46,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 193,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 205,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 312,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 433,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 494,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 496,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 598,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 690,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 795,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 833,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 884,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 988,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 990,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 1025,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 1110,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 16,
+      "line": 1130,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

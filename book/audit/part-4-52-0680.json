@@ -1,0 +1,99 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 52,
+    "first_line": 680,
+    "last_line": 1405,
+    "chapter": "part-4-52-0680",
+    "chosen_title": "IV-A — 初稿中的补充推导与例图",
+    "tables": 6,
+    "source_sha256": "3b11485d0972c0620ab62f0d84ca2b908c06804f37472ede62b4272df98919f6",
+    "source_math": 50,
+    "matched_math": 50
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 52,
+      "line": 684,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 859,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 917,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 919,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 942,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 952,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 1067,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 1137,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 1248,
+      "component": "box",
+      "unresolved_citations": 2,
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 1371,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

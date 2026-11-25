@@ -1,0 +1,842 @@
+% Archive record 12, line 1.
+\hypertarget{part-2-12-0001-ii-a-risk-and-generalization}{%
+\section{II-A --- Risk and Generalization}\label{part-2-12-0001-ii-a-risk-and-generalization}}
+
+我们正式进入 Part II。按照前面调整过的学习方式，每次只推进一个相对独立的理论模块，优先掌握结论、成立条件及其研究意义，数学推导作为辅助。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.62}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Section & Topics & Progress \\
+\midrule
+\endhead
+II-A & Population Risk, Empirical Risk, Generalization & 当前 \\
+II-B & Concentration Inequalities, Uniform Convergence & 待学习 \\
+II-C & Model Selection Bias, Multiple Testing & 待学习 \\
+II-D & Adaptive Overfitting, Holdout Reuse & 待学习 \\
+II-E & Data Leakage, Distribution Shift & 待学习 \\
+II-F & Time-Series Cross-Validation, Backtesting & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-12-0001-research-motivation}{%
+\subsection{1. Research Motivation}\label{part-2-12-0001-research-motivation}}
+
+Statistical Learning Theory 最根本的问题是：
+
+\textbf{我们如何利用有限的观测数据，学习一个能够在未知数据上有效工作的模型？}
+
+这涉及两个不同的优化目标：
+
+\begin{itemize}
+\tightlist
+\item
+  在已经观察到的数据上取得良好表现；
+\item
+  在尚未观察到的数据上取得良好表现。
+\end{itemize}
+
+前者可以直接计算，后者原则上只能估计。
+
+这两者之间的差异，就是 Statistical Learning Theory 的重要研究对象，也是 X Program \#161 所研究的 Generalization Decay 的数学基础。
+
+\hypertarget{part-2-12-0001-mathematical-framework}{%
+\subsection{2. Mathematical Framework}\label{part-2-12-0001-mathematical-framework}}
+
+\hypertarget{part-2-12-0001-data-generating-distribution}{%
+\subsubsection{2.1 Data Generating Distribution}\label{part-2-12-0001-data-generating-distribution}}
+
+设随机变量：
+\[Z=(X,Y)\sim\mathcal D,\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(X\in\mathcal X\)：Input / Feature。
+\item
+  \(Y\in\mathcal Y\)：Target / Label。
+\item
+  \(\mathcal D\)：未知的联合数据生成分布。
+\item
+  \(h:\mathcal X\to\mathcal Y\)：Hypothesis，即一个预测模型。
+\end{itemize}
+
+进一步定义：
+\[\mathcal H=\{h:h\text{ is an admissible model}\},\]
+
+称为 \textbf{Hypothesis Space（假设空间）}。
+
+例如，不同的 Hypothesis Space 可以是：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Model Family & Hypothesis Space \\
+\midrule
+\endhead
+Linear Regression & 所有允许的线性函数 \\
+Polynomial Regression & 所有满足阶数约束的多项式函数 \\
+Decision Tree & 所有满足深度等约束的决策树 \\
+Neural Network & 所有满足结构约束的神经网络 \\
+AI Agent & 所有允许的 Agent 程序或工作流程 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+最后一个是对传统学习框架的推广。在 RSI 场景中，Agent 本身也可以被视为一个需要评价和选择的 Hypothesis。
+
+\hypertarget{part-2-12-0001-loss-function}{%
+\subsubsection{2.2 Loss Function}\label{part-2-12-0001-loss-function}}
+
+定义损失函数：
+\[\ell(h(X),Y).\]
+
+它用于衡量模型预测结果与真实结果之间的差异。
+
+例如：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Loss Function & Mathematical Expression \\
+\midrule
+\endhead
+Squared Error & \((h(X)-Y)^2\) \\
+Absolute Error & \(\lvert h(X)-Y\rvert\) \\
+Zero-One Loss & \(\mathbf 1_{\{h(X)\neq Y\}}\) \\
+Binary Cross-Entropy & \(-Y\log p-(1-Y)\log(1-p)\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 \(p\) 是模型预测 \(Y=1\) 的概率。
+
+从这里开始，我们暂时统一采用 \textbf{Risk（越低越好）} 的记号，而不是 Part I 中的 Performance Score（越高越好）。
+
+对于能够表示为样本平均值的性能指标，两者可以通过令 Loss 等于负 Score 进行转换。但 Sharpe Ratio 等非线性总体指标需要单独处理。
+
+\hypertarget{part-2-12-0001-population-risk-and-empirical-risk}{%
+\subsection{3. Population Risk and Empirical Risk}\label{part-2-12-0001-population-risk-and-empirical-risk}}
+
+这是整个 Part II 最基础的一组定义。
+
+\hypertarget{part-2-12-0001-population-riskux603bux4f53ux98ceux9669}{%
+\subsubsection{3.1 Population Risk（总体风险）}\label{part-2-12-0001-population-riskux603bux4f53ux98ceux9669}}
+
+定义：
+\[\boxed{
+R(h)=
+\mathbb E_{(X,Y)\sim\mathcal D}
+[\ell(h(X),Y)]
+}\]
+
+如果展开为积分，则有：
+\[R(h)=
+\int_{\mathcal X\times\mathcal Y}
+\ell(h(x),y)\,\mathrm d\mathcal D(x,y).\]
+
+Population Risk 描述的是模型在目标数据分布上的真实期望损失。
+
+因此，我们真正希望解决的优化问题是：
+\[\boxed{
+h^*=\arg\min_{h\in\mathcal H}R(h)
+}\]
+
+其中假设最优解存在。若不存在，则应使用 infimum 描述最优风险。
+
+这里的根本困难是：我们通常并不知道 \(\mathcal D\)。
+
+所以，Population Risk 虽然是我们真正关心的量，却通常无法直接计算。
+
+\hypertarget{part-2-12-0001-empirical-riskux7ecfux9a8cux98ceux9669}{%
+\subsubsection{3.2 Empirical Risk（经验风险）}\label{part-2-12-0001-empirical-riskux7ecfux9a8cux98ceux9669}}
+
+假设我们观察到 \(n\) 个独立同分布的样本：
+\[D_n=\{(X_i,Y_i)\}_{i=1}^{n}.\]
+
+定义：
+\[\boxed{
+\widehat R_n(h)
+=
+\frac1n
+\sum_{i=1}^{n}
+\ell(h(X_i),Y_i)
+}\]
+
+这就是 Empirical Risk。
+
+其本质是利用 Sample Mean 估计 Population Mean：
+\[\underbrace{
+\mathbb E[\ell(h(X),Y)]
+}_{\text{Population Risk}}
+\quad\longleftarrow\quad
+\underbrace{
+\frac1n\sum_{i=1}^{n}\ell(h(X_i),Y_i)
+}_{\text{Empirical Risk}}.\]
+
+\bookgraphic{0.531}{part-2-12-0001-001-01}{}
+
+\textbf{Population Risk} \(R(h)\)
+
+真正希望最小化的量
+
+\textbf{Empirical Risk} \(\widehat R_n(h)\)
+
+实际可以计算的量
+
+\hypertarget{part-2-12-0001-empirical-risk-minimization-erm}{%
+\subsubsection{3.3 Empirical Risk Minimization (ERM)}\label{part-2-12-0001-empirical-risk-minimization-erm}}
+
+由于无法直接最小化 Population Risk，我们转而求解：
+\[\boxed{
+\hat h_n
+=
+\arg\min_{h\in\mathcal H}
+\widehat R_n(h)
+}\]
+
+这就是 \textbf{Empirical Risk Minimization（经验风险最小化）}。
+
+实际上，我们之前学习的很多统计方法都是 ERM 的具体实例。
+
+例如 Ordinary Least Squares：
+\[\hat{\boldsymbol\beta}
+=
+\arg\min_{\boldsymbol\beta}
+\frac1n
+\sum_{i=1}^{n}
+(y_i-\mathbf x_i^\top\boldsymbol\beta)^2.\]
+
+它最小化的就是 Squared Loss 对应的 Empirical Risk。
+
+而 Statistical Learning Theory 关心的是：
+\[\boxed{
+\hat h_n\text{ minimizes }\widehat R_n(h)
+\quad\Longrightarrow\quad
+\text{How good is }R(\hat h_n)?
+}\]
+
+注意，这里不是一个已经成立的数学蕴含，而是我们试图回答的研究问题。
+
+\hypertarget{part-2-12-0001-generalization-and-generalization-gap}{%
+\subsection{4. Generalization and Generalization Gap}\label{part-2-12-0001-generalization-and-generalization-gap}}
+
+\hypertarget{part-2-12-0001-generalization-gap}{%
+\subsubsection{4.1 Generalization Gap}\label{part-2-12-0001-generalization-gap}}
+
+由于我们现在采用 Risk 记号，定义：
+\[\boxed{
+G_n(h)=R(h)-\widehat R_n(h)
+}\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.65}}@{}}
+\toprule
+Gap & Interpretation \\
+\midrule
+\endhead
+\(G_n(h)>0\) & 经验损失低估了真实损失 \\
+\(G_n(h)=0\) & 经验损失与真实损失一致 \\
+\(G_n(h)<0\) & 经验损失高估了真实损失 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+正向的 Generalization Gap 通常对应我们关心的过度乐观现象。
+
+但必须注意：
+
+\textbf{Generalization Gap 小，并不意味着模型性能好。}
+
+例如：
+
+假设以下数值为模型的 MSE，越低越好。
+
+\textbf{Model A --- Underfitted}
+
+Gap = 0.02
+
+Empirical
+
+0.80
+
+Population
+
+0.82
+
+\textbf{Model B --- Well-generalized}
+
+Gap = 0.04
+
+Empirical
+
+0.20
+
+Population
+
+0.24
+
+\textbf{Model C --- Overfitted}
+
+Gap = 0.60
+
+Empirical
+
+0.05
+
+Population
+
+0.65
+
+Model A 的 Generalization Gap 最小，但其真实性能最差。
+
+因此，我们真正的优化目标仍然是：
+\[\min R(h),\]
+
+而不是：
+\[\min G_n(h).\]
+
+\textbf{Research Implication：} X Program \#161 中提出的 Mitigation Mechanism 不能仅仅以缩小 IS/OOS Gap 作为成功标准。
+
+如果一个机制通过降低所有版本的 IS Performance 来缩小 Gap，却没有改善 OOS Performance，那么它并没有真正解决我们关心的性能问题。
+
+\hypertarget{part-2-12-0001-generalization-ux4e0e-model-complexity}{%
+\subsubsection{4.2 Generalization 与 Model Complexity}\label{part-2-12-0001-generalization-ux4e0e-model-complexity}}
+
+传统 Statistical Learning 中一个典型的现象是：随着 Model Complexity 增加，Training Risk 通常下降，而 Population Risk 可能先下降后上升。
+
+\textbf{Classical Underfitting--Overfitting Curve}
+
+\bookgraphic{0.487}{part-2-12-0001-003-01}{}
+
+Empirical Risk
+
+Population Risk
+
+经典理论示意，并非所有模型都必然呈现 U-shaped Risk Curve。
+
+你应该能够立即发现：这与 X Program \#161 的 Better, Then Worse 现象非常相似。
+
+但存在一个重要区别。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Classical Overfitting & RSI Performance Decay \\
+\midrule
+\endhead
+横轴是 Model Complexity & 横轴是 Self-Improvement Iteration \\
+主要关注模型拟合 & 同时关注模型拟合与自适应选择 \\
+优化空间通常事先定义 & 优化空间可能不断变化 \\
+Training Data 可能被过拟合 & 整个 Evaluation Environment 可能被过拟合 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在 RSI 中，Iteration 与 Model Complexity 不一定同步增长。
+
+例如，一个 Agent 后期可能删减代码、降低模型参数量，却通过更有针对性的搜索策略加剧 Adaptive Overfitting。
+
+因此，不能简单地认为：
+\[\text{More Iterations}
+\equiv
+\text{Higher Model Complexity}.\]
+
+这两者之间的关系本身就可以成为研究问题。
+
+\hypertarget{part-2-12-0001-pointwise-convergence-vs.-uniform-convergence}{%
+\subsection{5. Pointwise Convergence vs. Uniform Convergence}\label{part-2-12-0001-pointwise-convergence-vs.-uniform-convergence}}
+
+这一节是本模块最重要的理论内容，也是下一模块的入口。
+
+\hypertarget{part-2-12-0001-pointwise-convergence}{%
+\subsubsection{5.1 Pointwise Convergence}\label{part-2-12-0001-pointwise-convergence}}
+
+利用我们已经学过的 Law of Large Numbers。
+
+对于任意一个事先固定的模型 \(h\)，若损失可积，且样本独立同分布，则根据 SLLN：
+\[\boxed{
+\widehat R_n(h)
+\xrightarrow{\mathrm{a.s.}}
+R(h)
+}\]
+
+也就是说，对于一个固定模型，随着样本量增加，Empirical Risk 几乎必然收敛于 Population Risk。
+
+我们称之为 \textbf{Pointwise Convergence（逐点收敛）}。
+
+这个结论本身并不复杂。
+
+但问题在于，我们真正关心的不是任意一个固定模型，而是通过数据选择出来的模型：
+\[\hat h_n
+=
+\arg\min_{h\in\mathcal H}
+\widehat R_n(h).\]
+
+这里的 \(\hat h_n\) 随数据和样本量变化。
+
+因此，我们不能直接应用固定模型的 LLN，断言：
+\[\widehat R_n(\hat h_n)
+-
+R(\hat h_n)
+\xrightarrow{\mathrm{a.s.}}0.\]
+
+\textbf{对于一般的无限假设空间，这个推论并不自动成立。}
+
+\hypertarget{part-2-12-0001-uniform-convergence}{%
+\subsubsection{5.2 Uniform Convergence}\label{part-2-12-0001-uniform-convergence}}
+
+为了控制经过选择的模型，我们希望建立一个更强的结论：
+\[\boxed{
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\xrightarrow{\mathrm{a.s.}}0
+}\]
+
+这就是一种 Uniform Convergence（一致收敛）条件。
+
+\textbf{Pointwise Convergence}
+
+\bookgraphic{0.341}{part-2-12-0001-004-01}{}
+
+\begin{verbatim}
+  对每一个固定模型分别控制误差，但不同模型的收敛速度可能不同。
+\end{verbatim}
+
+\textbf{Uniform Convergence}
+
+\bookgraphic{0.341}{part-2-12-0001-004-02}{}
+
+\begin{verbatim}
+  同时控制整个 Hypothesis Space 中最大的评估误差。
+\end{verbatim}
+
+两者的区别可以直接从量词顺序理解。
+
+Pointwise Convergence：
+\[\forall h\in\mathcal H,\quad
+\forall\epsilon>0,\quad
+\exists N(h,\epsilon).\]
+
+Uniform Convergence：
+\[\forall\epsilon>0,\quad
+\exists N(\epsilon),\quad
+\forall h\in\mathcal H.\]
+
+这里省略了随机样本路径及后续 \(n\geq N\) 的条件，以突出量词顺序的区别。
+
+在 Uniform Convergence 中，控制误差所需要的样本量不再针对某一个具体模型，而是需要同时适用于整个模型集合。
+
+\hypertarget{part-2-12-0001-ux4e3aux4ec0ux4e48ux8fd9ux5bf9ux4e8e-rsi-ux7279ux522bux91cdux8981}{%
+\paragraph{为什么这对于 RSI 特别重要？}\label{part-2-12-0001-ux4e3aux4ec0ux4e48ux8fd9ux5bf9ux4e8e-rsi-ux7279ux522bux91cdux8981}}
+
+因为 RSI 不是在评价一个事先固定的 Agent，而是在大量候选版本中不断寻找表现最好的版本。
+
+我们真正需要控制的是：
+\[\sup_{A\in\mathcal A}
+|\widehat R_n(A)-R(A)|.\]
+
+而不是：
+\[|\widehat R_n(A_0)-R(A_0)|.\]
+
+对于固定有限的 Hypothesis Space，可以利用 LLN 获得一致收敛；但对于复杂甚至开放式的 Agent Space，问题就远没有那么简单。
+
+下一模块我们将正式研究如何对这个 supremum 建立概率上界。
+
+\hypertarget{part-2-12-0001-excess-risk-ux5982ux4f55ux8bc4ux4ef7ux6a21ux578bux9009ux62e9ux7684ux8d28ux91cf}{%
+\subsection{6. Excess Risk --- 如何评价模型选择的质量？}\label{part-2-12-0001-excess-risk-ux5982ux4f55ux8bc4ux4ef7ux6a21ux578bux9009ux62e9ux7684ux8d28ux91cf}}
+
+Generalization Gap 评价的是经验风险与总体风险之间的差异。
+
+但另一个同样重要的问题是：
+
+\textbf{我们选择出来的模型，与假设空间中真正最好的模型相比，究竟差多少？}
+
+定义 Excess Risk：
+\[\boxed{
+\mathcal E(\hat h_n)
+=
+R(\hat h_n)-R(h^*)
+}\]
+
+其中：
+\[h^*=\arg\min_{h\in\mathcal H}R(h),\]
+
+\[\hat h_n=\arg\min_{h\in\mathcal H}\widehat R_n(h).\]
+
+\hypertarget{part-2-12-0001-excess-risk-bound}{%
+\subsubsection{6.1 Excess Risk Bound}\label{part-2-12-0001-excess-risk-bound}}
+
+这是一个非常经典且重要的结论：
+\[\boxed{
+R(\hat h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+}\]
+
+也就是说，只要能够同时控制整个假设空间的 Generalization Gap，就能够控制 ERM 所选择模型的实际性能损失。
+
+\hypertarget{part-2-12-0001-proof}{%
+\paragraph{Proof}\label{part-2-12-0001-proof}}
+
+这一段可以暂时跳过，之后通过索引回来看。
+
+\[\begin{aligned}
+R(\hat h_n)-R(h^*)
+={}&
+\underbrace{
+R(\hat h_n)-\widehat R_n(\hat h_n)
+}_{\text{Generalization Error}}
+\\
+&+
+\underbrace{
+\widehat R_n(\hat h_n)-\widehat R_n(h^*)
+}_{\text{Empirical Optimization}}
+\\
+&+
+\underbrace{
+\widehat R_n(h^*)-R(h^*)
+}_{\text{Estimation Error}}.
+\end{aligned}\]
+
+由于 \(\hat h_n\) 是 Empirical Risk Minimizer：
+\[\widehat R_n(\hat h_n)
+\leq
+\widehat R_n(h^*).\]
+
+因此中间项非正，从而：
+\[\begin{aligned}
+R(\hat h_n)-R(h^*)
+&\leq
+|R(\hat h_n)-\widehat R_n(\hat h_n)|\\
+&\quad+
+|\widehat R_n(h^*)-R(h^*)|\\
+&\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|.
+\end{aligned}\]
+
+\[\hfill\blacksquare\]
+
+\hypertarget{part-2-12-0001-extension-approximate-optimization}{%
+\subsubsection{6.2 Extension --- Approximate Optimization}\label{part-2-12-0001-extension-approximate-optimization}}
+
+实际上，AI Agent 通常不可能找到整个程序空间中 Empirical Risk 最低的 Agent。
+
+假设它只能找到一个近似最优解 \(\tilde h_n\)，满足：
+\[\widehat R_n(\tilde h_n)
+\leq
+\widehat R_n(h^*)+\delta,\]
+
+其中 \(\delta\geq0\) 表示相对于 \(h^*\) 的经验风险优化误差上界。
+
+通过同样的证明，可以得到：
+\[\boxed{
+R(\tilde h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|+\delta
+}\]
+
+这个不等式尤其值得我们关注，因为它建立了 \textbf{Optimization 与 Generalization 之间的关系}。
+
+\textbf{Excess Risk Upper Bound}
+
+\begin{verbatim}
+$R(\tilde h_n)-R(h^*)$
+\end{verbatim}
+
+↓
+
+\textbf{Statistical Error} \(2\sup_{h\in\mathcal H}|G_n(h)|\)
+
+有限数据造成的评估不确定性
+
+\textbf{Optimization Error} \(\delta\)
+
+搜索算法未找到足够好的解
+
+这给出了我们理解 RSI 的另一种角度。
+
+随着 Self-Improvement 进行，Agent 可能越来越善于搜索，从而降低 Optimization Error。
+
+但是，如果这一过程同时扩大了 Hypothesis Space，或者增加了对同一评估数据的自适应利用，Statistical Error 就可能变得更难控制。
+
+\textbf{Optimization--Generalization Trade-off}
+
+假设性的研究机制示意，而非由上述不等式直接推出的性能曲线。
+
+\bookgraphic{0.536}{part-2-12-0001-006-01}{}
+
+Optimization error
+
+Statistical error
+
+Combined bound
+
+不过，需要严格区分：
+
+\begin{itemize}
+\tightlist
+\item
+  对于一个固定的 \(\mathcal H\) 和固定的数据集，上述 supremum 本身不会因为迭代次数增加而改变。
+\item
+  如果有效搜索空间扩大，或者研究对象变成自适应产生的随机模型集合，我们才需要进一步分析统计误差如何变化。
+\item
+  Excess Risk 的上界增加，也不等于实际 Excess Risk 必然增加。
+\end{itemize}
+
+因此，Optimization--Generalization Trade-off 是一个很有价值的研究解释框架，但还不是关于 RSI Performance Decay 的完整定理。
+
+\hypertarget{part-2-12-0001-in-sample-and-out-of-sample-evaluation}{%
+\subsection{7. In-Sample and Out-of-Sample Evaluation}\label{part-2-12-0001-in-sample-and-out-of-sample-evaluation}}
+
+\hypertarget{part-2-12-0001-ux6570ux636eux96c6ux7684ux529fux80fdux5212ux5206}{%
+\subsubsection{7.1 数据集的功能划分}\label{part-2-12-0001-ux6570ux636eux96c6ux7684ux529fux80fdux5212ux5206}}
+
+在传统机器学习中，我们通常使用三个数据集。
+
+\textbf{Training}
+
+\begin{verbatim}
+  60%
+\end{verbatim}
+
+\textbf{Validation}
+
+\begin{verbatim}
+  20%
+\end{verbatim}
+
+\textbf{Test}
+
+\begin{verbatim}
+  20%
+\end{verbatim}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.70}}@{}}
+\toprule
+\textbf{Training} & 用于参数估计及模型拟合。 \\
+\midrule
+\endhead
+\textbf{Validation} & 用于模型选择、超参数调整和 Agent Revision。 \\
+\textbf{Test} & 用于独立评估泛化性能。 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+60/20/20 仅为划分示例，不是金融时间序列的推荐固定比例。
+
+在 RSI 项目中，最重要的是理解 \textbf{In-Sample 的含义取决于我们正在优化什么}。
+
+考虑一个 Agent 使用 Training Set 拟合模型，并使用 Validation Set 来决定是否接受新的 Revision。
+
+那么：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}@{}}
+\toprule
+Dataset & 对预测模型而言 & 对 RSI Agent 而言 \\
+\midrule
+\endhead
+Training & In-Sample & Development Data \\
+Validation & 未用于直接参数拟合 & In-Sample Evaluation \\
+Test & Out-of-Sample & Out-of-Sample Evaluation \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+换句话说，某个数据集对于内层模型而言可能是 Out-of-Sample，但对于外层 Agent Optimization 而言却是 In-Sample。
+
+\textbf{In-Sample / Out-of-Sample 应当根据数据是否参与当前层级的优化与选择来判断，而不只是根据文件名称判断。}
+
+\hypertarget{part-2-12-0001-rsi-ux4e2dux7684-oos-evaluation}{%
+\subsubsection{7.2 RSI 中的 OOS Evaluation}\label{part-2-12-0001-rsi-ux4e2dux7684-oos-evaluation}}
+
+\bookgraphic{0.477}{part-2-12-0001-008-01}{保存所有 Agent 版本，使用独立的 OOS Evaluator 进行外部审计，但不让其结果参与 Agent 的优化过程。}
+
+这正好对应项目要求：
+
+\begin{quote}
+records the in-sample score of every version and additionally scores each one out of sample.
+\end{quote}
+
+但这里存在一个潜在的 Methodological Problem。
+
+假设研究人员通过 OOS Evaluation 发现 \(A_5\) 表现最好，然后设计了一种机制，要求所有 Agent 在第 5 轮停止。
+
+那么这个 OOS Dataset 实际上也参与了 Mitigation Mechanism 的设计。
+
+因此，它不再适合作为该机制的最终独立测试集。
+
+一种候选实验协议是：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Dataset & Purpose \\
+\midrule
+\endhead
+\(D_{\mathrm{train}}\) & 训练金融模型 \\
+\(D_{\mathrm{IS}}\) & 驱动 RSI \\
+\(D_{\mathrm{audit}}\) & 分析退化轨迹、设计缓解机制 \\
+\(D_{\mathrm{test}}\) & 独立检验最终缓解机制 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+我认为这是本节与实际科研联系最紧密的一个观点。
+
+\textbf{不仅 Agent 会过拟合，研究 Agent 的研究人员也可能过拟合。}
+
+当然，这种四层划分是我们提出的候选实验设计，并不是已知的课题组正式协议。有限金融数据如何在各评估阶段之间分配，也需要进一步研究。
+
+\hypertarget{part-2-12-0001-ii-a-conclusion-index}{%
+\subsection{8. II-A --- Conclusion Index}\label{part-2-12-0001-ii-a-conclusion-index}}
+
+按照我们刚刚约定的学习方式，下面是本模块需要保留的数学结论。证明与解释可以通过索引返回相应章节。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.69}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.15}}@{}}
+\toprule
+ID & Key Result & Index \\
+\midrule
+\endhead
+A1 & Population Risk 与 Empirical Risk & §3.1--2 \\
+A2 & Empirical Risk Minimization & §3.3 \\
+A3 & Generalization Gap 小不等于真实性能好 & §4.1 \\
+A4 & RSI Iteration 不等于 Model Complexity & §4.2 \\
+A5 & Fixed-model LLN 不自动保证 Selected-model Generalization & §5.1 \\
+A6 & Uniform Convergence 可以同时控制所有候选模型 & §5.2 \\
+A7 & Excess Risk Bound & §6.1 \\
+A8 & Optimization Error 与 Statistical Error & §6.2 \\
+A9 & IS/OOS 具有 Optimization-level Dependence & §7.1 \\
+A10 & OOS 数据一旦参与机制设计，就需要新的最终测试集 & §7.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-12-0001-core-formula-sheet}{%
+\subsubsection{8.1 Core Formula Sheet}\label{part-2-12-0001-core-formula-sheet}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.32}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.64}}@{}}
+\toprule
+Concept & Formula \\
+\midrule
+\endhead
+Population Risk & \(R(h)=\mathbb E[\ell(h(X),Y)]\) \\
+Empirical Risk & \(\widehat R_n(h)=\frac1n\sum_i\ell(h(X_i),Y_i)\) \\
+ERM & \(\hat h_n=\arg\min_h\widehat R_n(h)\) \\
+Generalization Gap & \(G_n(h)=R(h)-\widehat R_n(h)\) \\
+Excess Risk & \(\mathcal E(\hat h_n)=R(\hat h_n)-R(h^*)\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+最重要的三个数学结论：
+
+\textbf{Result 1 --- Pointwise LLN}
+
+\[\widehat R_n(h)
+\xrightarrow{\mathrm{a.s.}}R(h)\]
+
+\textbf{Result 2 --- Uniform Convergence Condition}
+
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\xrightarrow{\mathrm{a.s.}}0\]
+
+\textbf{Result 3 --- Approximate ERM Excess Risk Bound}
+
+\[R(\tilde h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|+\delta.\]
+
+\hypertarget{part-2-12-0001-knowledge-checklist}{%
+\subsubsection{8.2 Knowledge Checklist}\label{part-2-12-0001-knowledge-checklist}}
+
+\textbf{II-A --- Knowledge Review}
+
+\begin{itemize}
+\item
+  理解 Population Risk 与 Empirical Risk 的区别
+\item
+  理解 ERM 为什么不一定能够获得真正的最优模型
+\item
+  区分 Generalization Gap 与 Population Risk
+\item
+  理解 Pointwise Convergence 与 Uniform Convergence 的区别
+\item
+  理解 Excess Risk Bound 的数学意义
+\item
+  理解 Optimization Error 与 Statistical Error 的区别
+\item
+  理解 IS/OOS 在不同优化层级上的相对性
+\item
+  理解 OOS Evaluation 本身也可能受到研究人员的过拟合
+\end{itemize}
+
+\hypertarget{part-2-12-0001-next-ii-b-concentration-inequalities-and-uniform-convergence}{%
+\subsection{Next --- II-B: Concentration Inequalities and Uniform Convergence}\label{part-2-12-0001-next-ii-b-concentration-inequalities-and-uniform-convergence}}
+
+目前，我们已经知道 Uniform Convergence 为什么重要，但是还没有解决一个问题：
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|\]
+
+究竟有多大？
+
+下一模块将利用你已经熟悉的 Probability Theory，沿着如下路线展开：
+
+\textbf{Law of Large Numbers}
+
+误差最终会不会消失？
+
+↓ \textbf{Concentration Inequalities}
+
+有限样本下，误差超过阈值的概率有多大？
+
+↓ \textbf{Hoeffding's Inequality}
+
+控制单个固定模型的评估误差
+
+↓ \textbf{Union Bound}
+
+将误差控制扩展到多个候选模型
+
+↓ \textbf{Uniform Generalization Bound}
+
+\[2|\mathcal H|e^{-2n\epsilon^2}\]
+
+建立样本量、搜索空间与泛化误差之间的数学关系
+
+II-B 将真正解释为什么 Search Budget 和 Evaluation Sample Size 对 RSI 的可靠性如此重要，并为之后的 Adaptive Overfitting 理论建立基准。

@@ -1,0 +1,877 @@
+% Archive record 14, line 1.
+\hypertarget{part-2-14-0001-ii-b-concentration-inequalities-and-uniform-convergence}{%
+\section{II-B --- Concentration Inequalities and Uniform Convergence}\label{part-2-14-0001-ii-b-concentration-inequalities-and-uniform-convergence}}
+
+上一阶段 II-A，我们得到了一个重要结论：
+\[R(\hat h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|.\]
+
+也就是说，只要能够控制整个 Hypothesis Space 中最大的评估误差，就能够控制 Empirical Risk Minimization 所选择模型的实际性能损失。
+
+但我们还不知道这个误差究竟有多大。
+
+本阶段的目标，就是建立 \textbf{Sample Size、Search Space 和 Generalization Error 之间的定量关系}。
+
+\hypertarget{part-2-14-0001-knowledge-roadmap}{%
+\subsection{1. Knowledge Roadmap}\label{part-2-14-0001-knowledge-roadmap}}
+
+\textbf{Law of Large Numbers}
+
+当样本量趋于无穷时，误差是否消失？
+
+↓ \textbf{Concentration Inequalities}
+
+有限样本下，误差超过阈值的概率有多大？
+
+↓ \textbf{Hoeffding's Inequality}
+
+控制单个固定模型的评估误差
+
+↓ \textbf{Union Bound}
+
+同时控制多个候选模型的评估误差
+
+↓ \textbf{Uniform Generalization Bound}
+
+控制整个假设空间，进而保证模型选择的可靠性
+
+前两个部分与你已经学习过的 Probability 内容高度重合，我们快速通过，重点关注后三者如何应用于 Statistical Learning。
+
+\hypertarget{part-2-14-0001-from-lln-to-concentration-inequalities}{%
+\subsection{2. From LLN to Concentration Inequalities}\label{part-2-14-0001-from-lln-to-concentration-inequalities}}
+
+\hypertarget{part-2-14-0001-lln-ux7684ux5c40ux9650ux6027}{%
+\subsubsection{2.1 LLN 的局限性}\label{part-2-14-0001-lln-ux7684ux5c40ux9650ux6027}}
+
+沿用 II-A 中的记号：
+\[R(h)=\mathbb E[\ell(h(X),Y)],\]
+
+\[\widehat R_n(h)
+=
+\frac1n\sum_{i=1}^{n}\ell(h(X_i),Y_i).\]
+
+对于一个事先固定的模型 \(h\)，在 IID Sampling 和损失可积的条件下，根据 SLLN：
+\[\widehat R_n(h)
+\xrightarrow{\mathrm{a.s.}}
+R(h).\]
+
+然而，LLN 是一个 \textbf{Asymptotic Result（渐近结论）}。
+
+它告诉我们当 \(n\to\infty\) 时会发生什么，但并不直接告诉我们：
+
+\begin{itemize}
+\tightlist
+\item
+  当 \(n=500\) 时，评估结果有多可靠？
+\item
+  我们至少需要多少样本才能控制评估误差？
+\item
+  当 Agent 比较大量候选模型时，需要增加多少评估数据？
+\end{itemize}
+
+因此，我们希望得到如下形式的 \textbf{Finite-Sample Guarantee}：
+\[\boxed{
+\mathbb P
+\left(
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq B(n,\epsilon)
+}\]
+
+其中 \(B(n,\epsilon)\) 是一个可以明确计算的概率上界。
+
+这就是 Concentration Inequalities 的作用。
+
+\hypertarget{part-2-14-0001-ux5e38ux89c1-concentration-inequalities}{%
+\subsubsection{2.2 常见 Concentration Inequalities}\label{part-2-14-0001-ux5e38ux89c1-concentration-inequalities}}
+
+设随机变量 \(X_1,\ldots,X_n\) IID，均值为 \(\mu\)，方差为 \(\sigma^2\)，并定义：
+\[\bar X_n=\frac1n\sum_{i=1}^{n}X_i.\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+Inequality & 主要条件 & Tail Probability Bound \\
+\midrule
+\endhead
+Markov & 非负随机变量 \(X\) & \(\mathbb P(X\geq a)\leq\frac{\mathbb E[X]}a\) \\
+Chebyshev & 有限方差 & \(\mathbb P(|\bar X_n-\mu|\geq\epsilon)\leq\frac{\sigma^2}{n\epsilon^2}\) \\
+Hoeffding & 独立、有界变量 \(X_i\in[0,1]\) & \(2e^{-2n\epsilon^2}\) \\
+Bernstein & 独立、有界，利用方差信息 & 指数型上界，考虑实际方差 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+最值得关注的是 Chebyshev 与 Hoeffding 在收敛速度上的区别。
+
+对于固定的 \(\epsilon>0\)：
+\[B_{\mathrm{Chebyshev}}(n,\epsilon)
+=
+O(n^{-1}),\]
+
+而：
+\[B_{\mathrm{Hoeffding}}(n,\epsilon)
+=
+O(e^{-cn}),
+\qquad c=2\epsilon^2.\]
+
+\textbf{Chebyshev vs. Hoeffding}
+
+假设 IID 随机变量取值于 {[}0,1{]}，Chebyshev 使用最大可能方差 1/4。
+
+Error tolerance \(\epsilon\)\\
+\textbf{0.10}
+
+0.1（范围 0.05--0.2）
+
+\bookgraphic{0.498}{part-2-14-0001-002-01}{}
+
+Chebyshev
+
+Hoeffding
+
+纵轴采用 Log Scale；概率上界截断至 1，低于 10⁻⁶ 的部分不显示。
+
+eps = 0.2
+
+\bookgraphic{0.498}{part-2-14-0001-002-state-01}{}
+
+\textbf{核心观点：} Hoeffding 利用更强的分布条件，换取了更强的有限样本误差控制。
+
+\hypertarget{part-2-14-0001-hoeffdings-inequality}{%
+\subsection{3. Hoeffding's Inequality}\label{part-2-14-0001-hoeffdings-inequality}}
+
+\hypertarget{part-2-14-0001-theorem}{%
+\subsubsection{3.1 Theorem}\label{part-2-14-0001-theorem}}
+
+设 \(X_1,\ldots,X_n\) 为相互独立的随机变量，且：
+\[a_i\leq X_i\leq b_i
+\qquad\text{a.s.}\]
+
+令：
+\[S_n=\sum_{i=1}^{n}X_i.\]
+
+则对于任意 \(t>0\)：
+\[\boxed{
+\mathbb P
+\left(
+|S_n-\mathbb E[S_n]|\geq t
+\right)
+\leq
+2\exp
+\left(
+-\frac{2t^2}
+{\sum_{i=1}^{n}(b_i-a_i)^2}
+\right)
+}\]
+
+特别地，如果：
+\[X_i\in[0,1],\]
+
+则：
+\[\boxed{
+\mathbb P
+\left(
+|\bar X_n-\mathbb E[\bar X_n]|
+\geq\epsilon
+\right)
+\leq
+2e^{-2n\epsilon^2}
+}\]
+
+注意，Hoeffding 不要求随机变量服从 Normal Distribution，也不要求它们具有完全相同的分布。
+
+\hypertarget{part-2-14-0001-proof-index-mathematical-principle}{%
+\subsubsection{3.2 Proof Index --- Mathematical Principle}\label{part-2-14-0001-proof-index-mathematical-principle}}
+
+完整推导目前不是重点。它主要依赖于你已经接触过的 MGF、Markov's Inequality 和 Independence。
+
+\textbf{Hoeffding's Lemma} \(\mathbb E[e^{\lambda(X-\mathbb E[X])}]\leq e^{\lambda^2(b-a)^2/8}\) ↓ \textbf{Independence}
+
+将随机变量之和的 MGF 分解为乘积
+
+↓ \textbf{Exponential Markov Inequality} \(\mathbb P(S_n-\mathbb E[S_n]\geq t)\leq e^{-\lambda t}\mathbb E[e^{\lambda(S_n-\mathbb E[S_n])}]\) ↓ \textbf{Optimize over \(\lambda>0\)}
+
+得到最紧的指数型上界，再合并两侧尾概率
+
+现阶段掌握定理本身以及其成立条件即可。
+
+\hypertarget{part-2-14-0001-applying-hoeffding-to-statistical-learning}{%
+\subsection{4. Applying Hoeffding to Statistical Learning}\label{part-2-14-0001-applying-hoeffding-to-statistical-learning}}
+
+\hypertarget{part-2-14-0001-single-model-generalization-bound}{%
+\subsubsection{4.1 Single-model Generalization Bound}\label{part-2-14-0001-single-model-generalization-bound}}
+
+现在将随机变量替换为模型的 Loss：
+\[L_i(h)=\ell(h(X_i),Y_i).\]
+
+假设：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \((X_i,Y_i)\) IID；
+\item
+  \(h\) 事先固定且独立于评估数据；
+\item
+  Loss Function 满足：
+\end{enumerate}
+
+\[0\leq\ell(h(X_i),Y_i)\leq1.\]
+
+那么：
+\[\mathbb E[L_i(h)]=R(h),\]
+
+\[\frac1n\sum_{i=1}^{n}L_i(h)
+=
+\widehat R_n(h).\]
+
+直接应用 Hoeffding：
+\[\boxed{
+\mathbb P
+\left(
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq
+2e^{-2n\epsilon^2}
+}\]
+
+这就是 \textbf{Single-model Generalization Bound}。
+
+\hypertarget{part-2-14-0001-confidence-form}{%
+\subsubsection{4.2 Confidence Form}\label{part-2-14-0001-confidence-form}}
+
+引入 Failure Probability：
+\[\alpha\in(0,1).\]
+
+这里使用 \(\alpha\)，以免与 II-A 中表示 Optimization Error 的 \(\delta\) 混淆。
+
+令：
+\[2e^{-2n\epsilon^2}=\alpha.\]
+
+解得：
+\[\epsilon
+=
+\sqrt{\frac{\log(2/\alpha)}{2n}}.\]
+
+因此，以至少 \(1-\alpha\) 的概率：
+\[\boxed{
+|\widehat R_n(h)-R(h)|
+\leq
+\sqrt{\frac{\log(2/\alpha)}{2n}}
+}\]
+
+这已经建立了第一个重要的定量关系：
+\[\text{Generalization Error Bound}
+=
+O\left(\frac1{\sqrt n}\right).\]
+
+即使我们完全不知道 Loss 的具体分布，也能够在有界性和独立性条件下给出这一保证。
+
+但目前仍然只能控制一个固定模型。
+
+\hypertarget{part-2-14-0001-union-bound-and-uniform-generalization}{%
+\subsection{5. Union Bound and Uniform Generalization}\label{part-2-14-0001-union-bound-and-uniform-generalization}}
+
+\textbf{这是本阶段最重要的内容。}
+
+\hypertarget{part-2-14-0001-research-motivation}{%
+\subsubsection{5.1 Research Motivation}\label{part-2-14-0001-research-motivation}}
+
+假设 RSI Agent 并不是只评价一个模型，而是从以下候选集合中选择模型：
+\[\mathcal H=\{h_1,h_2,\ldots,h_M\}.\]
+
+其中：
+\[M=|\mathcal H|.\]
+
+即使每个模型的评估误差超过 \(\epsilon\) 的概率都很小，只要候选模型数量足够多，仍然可能出现某一个模型具有很大的评估误差。
+
+而 Agent 恰恰可能选择到这个模型。
+
+因此，我们需要从控制单个模型：
+\[|\widehat R_n(h)-R(h)|\]
+
+转向同时控制所有模型：
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|.\]
+
+\hypertarget{part-2-14-0001-theorem-finite-hypothesis-space-generalization-bound}{%
+\subsubsection{5.2 Theorem --- Finite Hypothesis Space Generalization Bound}\label{part-2-14-0001-theorem-finite-hypothesis-space-generalization-bound}}
+
+假设：
+
+\begin{itemize}
+\tightlist
+\item
+  \(\mathcal H\) 是事先确定的有限假设空间；
+\item
+  评估样本 IID；
+\item
+  所有模型的 Loss 均取值于 \([0,1]\)。
+\end{itemize}
+
+那么：
+\[\boxed{
+\mathbb P
+\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq
+2Me^{-2n\epsilon^2}
+}\]
+
+这就是我们一直在追求的 \textbf{Uniform Generalization Bound}。
+
+\hypertarget{part-2-14-0001-proof}{%
+\subsubsection{5.3 Proof}\label{part-2-14-0001-proof}}
+
+这个证明非常简洁，也值得理解。
+
+定义事件：
+\[E_j=
+\left\{
+|\widehat R_n(h_j)-R(h_j)|>\epsilon
+\right\}.\]
+
+整个假设空间中至少有一个模型的误差超过 \(\epsilon\)，等价于：
+\[\bigcup_{j=1}^{M}E_j.\]
+
+因此，根据 Union Bound：
+\[\begin{aligned}
+&\mathbb P
+\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)\\
+&=
+\mathbb P\left(\bigcup_{j=1}^{M}E_j\right)\\
+&\leq
+\sum_{j=1}^{M}\mathbb P(E_j)\\
+&\leq
+\sum_{j=1}^{M}2e^{-2n\epsilon^2}\\
+&=
+2Me^{-2n\epsilon^2}.
+\end{aligned}\]
+
+\[\hfill\blacksquare\]
+
+有一个非常重要的细节：
+
+\textbf{Union Bound 不要求不同模型的评估误差相互独立。}
+
+因此，即使 RSI 产生的多个 Agent 版本具有高度相似的结构，只要它们属于满足上述条件的固定有限假设空间，该不等式仍然成立。
+
+\hypertarget{part-2-14-0001-confidence-form-1}{%
+\subsubsection{5.4 Confidence Form}\label{part-2-14-0001-confidence-form-1}}
+
+与前面采用相同的方法，令：
+\[2Me^{-2n\epsilon^2}=\alpha.\]
+
+解得：
+\[\boxed{
+\epsilon
+=
+\sqrt{
+\frac{\log(2M/\alpha)}{2n}
+}
+}\]
+
+因此，以至少 \(1-\alpha\) 的概率：
+\[\boxed{
+\forall h\in\mathcal H,\quad
+|\widehat R_n(h)-R(h)|
+\leq
+\sqrt{
+\frac{\log(2M/\alpha)}{2n}
+}
+}\]
+
+这个式子非常重要，因为它直接建立了四个变量之间的联系。
+
+\textbf{Uniform Generalization Bound Explorer}
+
+\[\epsilon=\sqrt{\frac{\log(2M/\alpha)}{2n}}\]
+
+Evaluation Sample Size \(n\)\\
+\textbf{1,000}
+
+3（范围 2--5）
+
+Hypothesis Space Size \(M\)\\
+\textbf{1,000}
+
+3（范围 0--6） Confidence Level \(1-\alpha\) 90\% / 95\% / 99\%
+
+Uniform Error Bound
+
+\textbf{0.0728}
+
+ERM Excess Risk Bound
+
+\textbf{0.1456}
+
+\bookgraphic{0.588}{part-2-14-0001-004-01}{该工具计算的是理论概率上界，而不是对真实 Generalization Gap 的预测。}
+
+logN = 5
+
+\bookgraphic{0.588}{part-2-14-0001-004-state-01}{}
+
+我们可以直接观察到：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}@{}}
+\toprule
+Variable & Change & Impact on Error Bound \\
+\midrule
+\endhead
+\(n\) & 样本量增加 & 下降 \\
+\(M\) & 假设空间扩大 & 上升 \\
+\(\alpha\) & 要求更高置信水平，即 \(\alpha\) 减小 & 上升 \\
+\(\epsilon\) & 要求更小的误差 & 需要更多数据 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+尤其注意：
+\[\boxed{
+\text{Uniform Generalization Error Bound}
+=
+O\left(
+\sqrt{\frac{\log M+\log(1/\alpha)}n}
+\right)
+}\]
+
+这与 Part I 中通过 Gaussian Maximum 得到的 Selection Bias 尺度：
+\[O\left(\sqrt{\frac{\log M}{n}}\right)\]
+
+具有非常相似的数学形式。
+
+但两者不是同一个结论。前者是有界损失条件下的高概率上界，后者是特定噪声模型下的期望偏差尺度。
+
+\hypertarget{part-2-14-0001-sample-complexity}{%
+\subsection{6. Sample Complexity}\label{part-2-14-0001-sample-complexity}}
+
+我们也可以从反方向理解上述不等式。
+
+假设我们要求：
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\leq\epsilon\]
+
+以至少 \(1-\alpha\) 的概率成立。
+
+那么，一个充分的样本量条件是：
+\[\boxed{
+n\geq
+\frac{\log(2M/\alpha)}{2\epsilon^2}
+}\]
+
+这就是有限假设空间下的一种 \textbf{Sample Complexity Bound}。
+
+\textbf{Required Evaluation Sample Size}
+
+固定 Confidence Level = 95\%
+
+Error Tolerance \(\epsilon\)\\
+\textbf{0.05}
+
+0.05（范围 0.01--0.2）
+
+Hypothesis Space Size \(M\)\\
+\textbf{1,000}
+
+3（范围 0--6）
+
+该理论保证所需的充分样本量
+
+\textbf{2,120}
+
+将误差容忍度减半，充分样本量约增加至原来的四倍。
+
+最值得记住的是两个 Scaling Laws：
+\[n=O(\log M)\]
+
+以及：
+\[n=O(\epsilon^{-2}).\]
+
+这里分别固定其他变量。
+
+这意味着，在该理论框架下，扩大有限搜索空间所增加的样本需求是对数级别的，而提高评估精度所增加的样本需求是平方反比级别的。
+
+不过，这是一个充分条件，并不是实际任务所需最小样本量的精确计算。
+
+\hypertarget{part-2-14-0001-combining-uniform-convergence-with-excess-risk}{%
+\subsection{7. Combining Uniform Convergence with Excess Risk}\label{part-2-14-0001-combining-uniform-convergence-with-excess-risk}}
+
+现在我们将 II-A 与 II-B 的数学结论连接起来。
+
+II-A 中已经证明：
+\[R(\hat h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|.\]
+
+II-B 中又证明，以至少 \(1-\alpha\) 的概率：
+\[\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\leq
+\sqrt{\frac{\log(2M/\alpha)}{2n}}.\]
+
+将两个结果结合：
+\[\boxed{
+R(\hat h_n)-R(h^*)
+\leq
+\sqrt{
+\frac{2\log(2M/\alpha)}{n}
+}
+}\]
+
+这就是有限假设空间下 ERM 的一种 \textbf{Excess Risk Guarantee}。
+
+对于 Approximate ERM，进一步有：
+\[\boxed{
+R(\tilde h_n)-R(h^*)
+\leq
+\underbrace{
+\sqrt{\frac{2\log(2M/\alpha)}n}
+}_{\text{Statistical Error Bound}}
++
+\underbrace{\delta}_{\text{Optimization Error Bound}}
+}\]
+
+这是目前为止我们得到的、与 RSI 研究联系最紧密的数学结论之一。
+
+\hypertarget{part-2-14-0001-optimizationgeneralization-trade-off}{%
+\subsubsection{7.1 Optimization--Generalization Trade-off}\label{part-2-14-0001-optimizationgeneralization-trade-off}}
+
+假设 Agent 的改进能力不断增强：
+
+\begin{itemize}
+\tightlist
+\item
+  它能够搜索更多候选方法；
+\item
+  它更容易找到 Empirical Risk 较低的模型；
+\item
+  它的 Optimization Error 可能不断下降；
+\item
+  但如果有效搜索空间扩大，Statistical Error Bound 可能上升。
+\end{itemize}
+
+\textbf{Optimization--Generalization Trade-off}
+
+\bookgraphic{0.498}{part-2-14-0001-006-01}{}
+
+Optimization error
+
+Statistical error bound
+
+Combined bound
+
+研究假设示意：假设搜索能力增强的同时，有效搜索空间也在扩大。该曲线不是上述定理必然推出的结果。
+
+这里我们已经获得了一个解释 Better, Then Worse 的潜在数学框架。
+
+但必须强调：\textbf{上界变差不等于真实性能变差。} 我们还不能据此证明 RSI 必然产生 Performance Decay。
+
+\hypertarget{part-2-14-0001-limitations-ux4e3aux4ec0ux4e48ux8fd9ux4e9bux5b9aux7406ux4e0dux80fdux76f4ux63a5ux5957ux7528ux5230-rsi}{%
+\subsection{8. Limitations --- 为什么这些定理不能直接套用到 RSI？}\label{part-2-14-0001-limitations-ux4e3aux4ec0ux4e48ux8fd9ux4e9bux5b9aux7406ux4e0dux80fdux76f4ux63a5ux5957ux7528ux5230-rsi}}
+
+这一节在科研意义上甚至比定理本身更重要。
+
+\hypertarget{part-2-14-0001-fixed-hypothesis-space-vs.-adaptive-hypothesis-space}{%
+\subsubsection{8.1 Fixed Hypothesis Space vs. Adaptive Hypothesis Space}\label{part-2-14-0001-fixed-hypothesis-space-vs.-adaptive-hypothesis-space}}
+
+在前面的证明中，我们假设：
+\[\mathcal H=\{h_1,\ldots,h_M\}\]
+
+是一个事先确定的假设空间。
+
+但是，在 RSI 中，候选版本可能根据之前的评估结果不断生成：
+\[A_{k+1}
+=
+\mathcal I_{A_k}(A_k,F_k,H_k).\]
+
+因此，实际访问的候选集合可能依赖于评估数据 \(D_n\)：
+\[\mathcal H(D_n)
+=
+\{A_0,A_1(D_n),\ldots,A_K(D_n)\}.\]
+
+\textbf{Fixed Search Space}
+
+\bookgraphic{0.353}{part-2-14-0001-007-01}{}
+
+\begin{verbatim}
+  候选空间在观察评估结果前已经确定。
+\end{verbatim}
+
+\textbf{Adaptive Search Space}
+
+\bookgraphic{0.353}{part-2-14-0001-007-02}{}
+
+\begin{verbatim}
+  新候选版本可能根据历史评估反馈自适应生成。
+\end{verbatim}
+
+这里必须区分两个概念：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.59}}@{}}
+\toprule
+Quantity & Meaning \\
+\midrule
+\endhead
+\(M=|\mathcal H|\) & 事先确定的完整假设空间大小 \\
+\(K+1\) & RSI 实际访问的版本数量 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{不能直接用 \(K+1\) 替代 \(M\)，然后声称得到了 RSI 的 Generalization Guarantee。}
+
+因为实际生成的这些版本可能已经依赖于评估数据，从而破坏了逐个应用 Hoeffding 所需要的独立性条件。
+
+不过，如果所有自适应生成的版本都属于一个预先确定的有限空间 \(\mathcal H\)，那么针对整个 \(\mathcal H\) 建立的 Uniform Bound 仍然有效。
+
+这一区别是理解 Adaptive Overfitting 的关键。
+
+\hypertarget{part-2-14-0001-ux4e00ux4e2aux53cdux4f8bux4e3aux4ec0ux4e48ux5019ux9009ux6a21ux578bux6570ux91cfux5c11ux4e5fux53efux80fdux4e25ux91cdux8fc7ux62dfux5408}{%
+\subsubsection{8.2 一个反例：为什么候选模型数量少也可能严重过拟合？}\label{part-2-14-0001-ux4e00ux4e2aux53cdux4f8bux4e3aux4ec0ux4e48ux5019ux9009ux6a21ux578bux6570ux91cfux5c11ux4e5fux53efux80fdux4e25ux91cdux8fc7ux62dfux5408}}
+
+设：
+\[X\sim\operatorname{Uniform}(0,1),
+\qquad Y=0.\]
+
+观察到评估数据：
+\[D_n=\{X_1,\ldots,X_n\}.\]
+
+现在根据这个数据集构造一个分类器：
+\[h_{D_n}(x)=
+\begin{cases}
+0,&x\in D_n,\\
+1,&x\notin D_n.
+\end{cases}\]
+
+采用 Zero-One Loss。
+
+显然，在评估数据集上：
+\[\widehat R_n(h_{D_n})=0.\]
+
+但是，由于连续型随机变量落在有限个固定点上的概率为零：
+\[\mathbb P(X\in D_n\mid D_n)=0.\]
+
+所以：
+\[R(h_{D_n})=1.\]
+
+最终：
+\[\boxed{
+G_n(h_{D_n})
+=
+R(h_{D_n})-\widehat R_n(h_{D_n})
+=
+1
+}\]
+
+即使我们最终只输出了一个模型，也可以产生最大的 Generalization Gap。
+
+这个例子虽然极端，但严格说明了：
+
+\textbf{实际输出的模型数量，并不足以刻画模型选择过程的统计复杂度。}
+
+这也解释了为什么研究 RSI 时，不能只统计迭代轮数，还需要研究 Agent 从评估环境中获取了多少信息，以及如何利用这些信息。
+
+\hypertarget{part-2-14-0001-ux91d1ux878dux573aux666fux4e2dux7684ux5176ux4ed6ux6761ux4ef6ux9650ux5236}{%
+\subsubsection{8.3 金融场景中的其他条件限制}\label{part-2-14-0001-ux91d1ux878dux573aux666fux4e2dux7684ux5176ux4ed6ux6761ux4ef6ux9650ux5236}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Hoeffding Assumption & Potential Violation in Finance \\
+\midrule
+\endhead
+Independent Samples & 金融时间序列具有时间依赖性 \\
+Bounded Loss & Squared Error、Returns 可能无界 \\
+Fixed Target Distribution & Non-stationarity、Regime Shift \\
+Fixed Hypothesis Space & Agent 可能进行开放式、自适应搜索 \\
+Sample Mean Estimator & Sharpe Ratio 是非线性统计量 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+因此，我们目前得到的是一个 \textbf{Theoretical Baseline}，而不是能够直接用于真实金融 RSI 系统的完整理论。
+
+后续的 Adaptive Data Analysis 和 Time-Series Evaluation，正是为了处理这些条件受到破坏之后的问题。
+
+\hypertarget{part-2-14-0001-research-connections-x-program-161}{%
+\subsection{9. Research Connections --- X Program \#161}\label{part-2-14-0001-research-connections-x-program-161}}
+
+经过本阶段的学习，我们可以进一步提出几个具体的实验方向。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}@{}}
+\toprule
+Research Variable & Experimental Design & Hypothesis \\
+\midrule
+\endhead
+Evaluation Sample Size & 改变评估集规模 \(n\) & 更大的评估集可能缓解选择偏差 \\
+Search Budget & 改变候选版本数量 & 更大的搜索预算可能扩大 Gap \\
+Evaluation Noise & 控制 Synthetic Data 的噪声强度 & 高噪声可能加剧错误选择 \\
+Search Adaptivity & 比较 Fixed Search 与 Adaptive Search & 自适应反馈可能带来额外的过拟合风险 \\
+Search Space & 限制 Agent 允许修改的组件 & 限制搜索复杂度可能改善泛化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中一个非常自然的实验就是：
+
+保持底层模型、数据生成机制和评估指标不变，只改变 Sample Size 与 Search Budget。
+
+随后观察：
+\[G_k=S_k^{\mathrm{IS}}-S_k^{\mathrm{OOS}}\]
+
+如何随着 RSI Iteration 变化。
+
+我们可以利用前面的理论作为解释框架，但不能预先假设实验一定满足：
+\[G_k\propto
+\sqrt{\frac{\log M}{n}}.\]
+
+因为真实的自适应搜索不一定满足该公式的成立条件。
+
+\hypertarget{part-2-14-0001-ii-b-conclusion-index}{%
+\subsection{10. II-B --- Conclusion Index}\label{part-2-14-0001-ii-b-conclusion-index}}
+
+按照我们之前确定的学习方式，以下是本阶段需要保留的结论。推导可以通过 Index 返回相应章节。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.71}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}@{}}
+\toprule
+ID & Key Result & Index \\
+\midrule
+\endhead
+B1 & LLN 提供渐近保证，Concentration Inequalities 提供有限样本保证 & §2 \\
+B2 & Hoeffding's Inequality 提供指数型概率上界 & §3 \\
+B3 & 固定模型的 Generalization Bound & §4 \\
+B4 & Hoeffding + Union Bound 得到 Uniform Generalization Bound & §5.2--3 \\
+B5 & 泛化误差与样本量、假设空间大小之间的关系 & §5.4 \\
+B6 & Sample Complexity 随 \(\epsilon^{-2}\) 增长 & §6 \\
+B7 & ERM Excess Risk 的有限样本保证 & §7 \\
+B8 & 实际访问的候选数量不能直接替代固定假设空间大小 & §8.1 \\
+B9 & Data-dependent Model 可以在候选数量极少时严重过拟合 & §8.2 \\
+B10 & 经典泛化理论不能未经修正直接应用于金融 RSI & §8.3 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-14-0001-core-formula-sheet}{%
+\subsubsection{10.1 Core Formula Sheet}\label{part-2-14-0001-core-formula-sheet}}
+
+本阶段最重要的是以下五个公式。
+
+\textbf{Result 1 --- Single-model Generalization Bound}
+
+\[\boxed{
+\mathbb P(|\widehat R_n(h)-R(h)|>\epsilon)
+\leq2e^{-2n\epsilon^2}
+}\]
+
+\textbf{Result 2 --- Uniform Generalization Bound}
+
+\[\boxed{
+\mathbb P
+\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq2Me^{-2n\epsilon^2}
+}\]
+
+\textbf{Result 3 --- High-probability Error Bound}
+
+\[\boxed{
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+\leq
+\sqrt{\frac{\log(2M/\alpha)}{2n}}
+}\]
+
+\textbf{Result 4 --- Sample Complexity}
+
+\[\boxed{
+n\geq
+\frac{\log(2M/\alpha)}{2\epsilon^2}
+}\]
+
+\textbf{Result 5 --- Approximate ERM Excess Risk Bound}
+
+\[\boxed{
+R(\tilde h_n)-R(h^*)
+\leq
+\sqrt{\frac{2\log(2M/\alpha)}n}+\delta
+}\]
+
+这些公式均有明确的成立条件。对于金融时间序列、无界损失及自适应生成的假设空间，需要额外的理论处理。
+
+\hypertarget{part-2-14-0001-knowledge-checklist}{%
+\subsubsection{10.2 Knowledge Checklist}\label{part-2-14-0001-knowledge-checklist}}
+
+\textbf{II-B --- Knowledge Review}
+
+\begin{itemize}
+\item
+  理解 LLN 与 Concentration Inequalities 的区别
+\item
+  理解 Hoeffding's Inequality 的成立条件
+\item
+  能够利用 Union Bound 推导 Uniform Generalization Bound
+\item
+  理解 Sample Size 与 Hypothesis Space Size 的数学关系
+\item
+  理解 Sample Complexity 的含义
+\item
+  理解 Statistical Error 与 Optimization Error 的联系
+\item
+  理解为什么实际 RSI 迭代次数不能直接代入 Uniform Bound
+\item
+  理解经典泛化理论在金融 RSI 中的局限性
+\end{itemize}
+
+\hypertarget{part-2-14-0001-next-ii-c-model-selection-bias-and-multiple-testing}{%
+\subsection{Next --- II-C: Model Selection Bias and Multiple Testing}\label{part-2-14-0001-next-ii-c-model-selection-bias-and-multiple-testing}}
+
+II-A --- Risk and Generalization
+
+II-B --- Concentration Inequalities
+
+II-C --- Model Selection Bias \& Multiple Testing
+
+II-D --- Adaptive Overfitting \& Holdout Reuse
+
+II-E --- Data Leakage \& Distribution Shift
+
+II-F --- Time-Series Validation \& Backtesting
+
+前面的 II-A 和 II-B 主要解决了评估误差的定义与控制问题。
+
+下一阶段 II-C 将正式研究 \textbf{Selection Mechanism 本身如何产生系统性偏差}，包括 Winner's Curse、Order Statistics、Multiple Hypothesis Testing、FWER、FDR，以及金融领域中尤其重要的 Data Snooping。
+
+我们将逐渐从研究泛化误差的上界，转向研究实际过拟合是如何产生的。

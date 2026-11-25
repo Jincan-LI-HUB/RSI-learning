@@ -1,0 +1,249 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 48,
+    "first_line": 1,
+    "last_line": 1542,
+    "chapter": "part-3-48-0001",
+    "chosen_title": "III-F — RSI Failure Modes & Experimental Instrumentation",
+    "tables": 17,
+    "source_sha256": "7019eccbf8ee3553613106893f846bffa39bffb23aa84074bd7bf6ee1dcadb56",
+    "source_math": 93,
+    "matched_math": 93
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 48,
+      "line": 11,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 70,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 127,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 233,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 353,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 429,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 514,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 675,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 725,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 793,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 904,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 997,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 999,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1032,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1123,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1187,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1238,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1308,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1323,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1333,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1348,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1358,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1375,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1388,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1402,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1420,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1438,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1446,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 48,
+      "line": 1515,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 37,
+    "first_line": 1,
+    "last_line": 1279,
+    "chapter": "part-3-37-0001",
+    "chosen_title": "III-C — Self-Modification and Recursive Optimization",
+    "tables": 12,
+    "source_sha256": "4859c43f7650b2c09faae1228d7d6eb9ce762ec291029d527f606197e7aed081",
+    "source_math": 76,
+    "matched_math": 76
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 37,
+      "line": 15,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 16,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 92,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 172,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 232,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 245,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 361,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 429,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 447,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 549,
+      "component": "card",
+      "state": "converted",
+      "graphics": 3
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 577,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 623,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 627,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 647,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 705,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 786,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 809,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 897,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 985,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 1001,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 1017,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 1212,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 37,
+      "line": 1255,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

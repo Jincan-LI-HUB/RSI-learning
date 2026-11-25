@@ -1,0 +1,96 @@
+{
+  "chapter": {
+    "part": 2,
+    "message": 12,
+    "first_line": 1,
+    "last_line": 917,
+    "chapter": "part-2-12-0001",
+    "chosen_title": "II-A — Risk and Generalization",
+    "tables": 10,
+    "source_sha256": "34f63bbe7acccf5e8c3701e96d056fbe789d5d1ccadfe88b2235d6ac4daf3c8b",
+    "source_math": 71,
+    "matched_math": 71
+  },
+  "components": [
+    {
+      "part": 2,
+      "message": 12,
+      "line": 171,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 276,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 324,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 439,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 638,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 671,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 708,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 761,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 868,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 12,
+      "line": 899,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

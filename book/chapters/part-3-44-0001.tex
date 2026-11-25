@@ -1,0 +1,1068 @@
+% Archive record 44, line 1.
+\hypertarget{part-3-44-0001-iii-e-automated-research-agents-and-real-world-rsi-systems}{%
+\section{III-E --- Automated Research Agents and Real-world RSI Systems}\label{part-3-44-0001-iii-e-automated-research-agents-and-real-world-rsi-systems}}
+
+这一阶段是 Part III 中最重要的文献学习模块之一。
+
+此前我们已经从 Statistical Learning Theory、Agent Architecture 和 Search Algorithms 三个方向理解了 RSI。现在需要检验：\textbf{这些理论框架在真实研究系统中究竟是如何体现的？}
+
+在核对文献时，我还发现了一篇 2026 年 9 月发表的预印本 RRSI，直接研究 Agent Harness 自我改进过程中的过拟合及正则化机制。因此，本阶段将它额外纳入阅读范围。它与你准备参与的课题具有很高的相关性。
+
+\href{https://arxiv.org/abs/2609.24972}{来源 1}
+
+\hypertarget{part-3-44-0001-literature-roadmap}{%
+\subsection{0. Literature Roadmap}\label{part-3-44-0001-literature-roadmap}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.28}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}@{}}
+\toprule
+System & Year & 核心研究对象 & Priority \\
+\midrule
+\endhead
+STOP & 2023/24 & Recursive Code Optimizer & P0 \\
+AIDE & 2025 & Automated ML Research & P1 \\
+ADAS & 2024/25 & Automated Agent Design & P1 \\
+Darwin Gödel Machine & 2025/26 & Self-modifying Coding Agent & P0 \\
+R\&D-Agent-Quant & 2025 & Automated Financial Research & P0 \\
+AIDE² & 2026 & Recursive AI Research Agent & P0 \\
+RRSI & 2026 & Regularized Harness Evolution & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+年份跨越两年的论文，分别对应预印本首次发布和正式会议发表的时间。
+
+本阶段不追求完整复现七篇论文，而是统一从以下六个维度理解它们：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Dimension & Research Question \\
+\midrule
+\endhead
+Optimization Object & 究竟在优化什么？ \\
+Mutable Components & 哪些组件能够被修改？ \\
+Search Strategy & 如何生成并保留候选方案？ \\
+Evaluation Protocol & 如何评价候选对象？ \\
+Generalization Evidence & 是否证明了跨数据或跨任务的泛化？ \\
+Research Limitations & 还有哪些尚未解决的问题？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-44-0001-ux5148ux5efaux7acbux4e00ux4e2aux91cdux8981ux7684ux5206ux7c7bux6846ux67b6}{%
+\subsection{1. 先建立一个重要的分类框架}\label{part-3-44-0001-ux5148ux5efaux7acbux4e00ux4e2aux91cdux8981ux7684ux5206ux7c7bux6846ux67b6}}
+
+并不是所有 Automated Research Agents 都属于严格意义上的 RSI。
+
+\bookgraphic{0.390}{part-3-44-0001-002-01}{根据各系统主要优化对象建立的教学分类，而非原论文共同采用的正式分类体系。边界取决于具体实现与研究定义。}
+
+这里有三个关键区别：
+
+\textbf{Automated Research：} Agent 改进科研任务的解决方案。
+
+\textbf{Automated Agent Design：} Meta-Agent 改进负责解决任务的 Agent。
+
+\textbf{Recursive Self-Improvement：} 被改进的 Agent 或其中的优化机制，继续参与自身的后续改进。
+
+理解这种层级差异之后，我们就可以更加准确地阅读每篇论文，而不会把所有具有迭代能力的 AI 系统都归类为 RSI。
+
+\hypertarget{part-3-44-0001-stop-self-taught-optimizer}{%
+\subsection{2. STOP --- Self-Taught Optimizer}\label{part-3-44-0001-stop-self-taught-optimizer}}
+
+Zelikman, Lorch, Mackey \& Kalai · COLM 2024 · 同行评审
+
+\href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{正式会议论文} · \href{https://github.com/microsoft/STOP}{开源代码}
+
+III-C 已经详细分析了 STOP 的递归机制，因此这里不再重复推导。
+
+它最重要的贡献是建立了一个能够实际运行的、基于代码的递归优化结构：
+\[\mathcal I_{k+1}
+=
+\mathcal I_k
+(\widehat J_D,\mathcal I_k,\mathcal L).\]
+
+当前 Improver 同时承担两个角色：优化主体与优化对象。
+
+STOP 展示了 GPT-4 可以通过改进外围 Scaffolding Code，在一组下游任务上获得更好的程序优化能力。底层语言模型权重保持不变。
+
+\href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{来源 1}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Dimension & STOP \\
+\midrule
+\endhead
+Optimization Object & Improver Source Code \\
+Mutable Components & 搜索及代码生成策略 \\
+Search Strategy & 由当前 Improver 实现 \\
+Evaluation & Downstream Meta-Utility \\
+RSI & 有代码层面的递归自我改进 \\
+Limitation & 不代表底层模型本身在学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对我们而言，STOP 的价值主要是提供一个 \textbf{Minimal RSI Formulation}。
+
+但 X Program \#161 更进一步：它不只是问 Improver 能不能提高得分，还问它在不断提高开发得分的过程中，什么时候开始失去泛化能力，以及为什么。
+
+\hypertarget{part-3-44-0001-aide-ai-driven-exploration-in-the-space-of-code}{%
+\subsection{3. AIDE --- AI-Driven Exploration in the Space of Code}\label{part-3-44-0001-aide-ai-driven-exploration-in-the-space-of-code}}
+
+Zhengyao Jiang et al. · February 2025 · arXiv 预印本
+
+\href{https://arxiv.org/abs/2502.13138}{原始论文} · \href{https://github.com/wecoai/aideml}{开源代码}
+
+\hypertarget{part-3-44-0001-research-motivation}{%
+\subsubsection{3.1 Research Motivation}\label{part-3-44-0001-research-motivation}}
+
+传统 Machine Learning Engineering 包含大量 Trial-and-error：
+
+特征工程、模型选择、超参数调整、代码调试以及实验验证。
+
+AIDE 将整个过程视为一个 \textbf{Code Optimization Problem}。
+
+设一个完整的 ML Solution 为程序 \(x\)，那么研究任务可以抽象为：
+\[x^*=\arg\max_{x\in\mathcal X}u(x).\]
+
+这里的搜索空间不再局限于某个固定模型的参数，而是可能包含完整的 Python 机器学习程序。
+
+\hypertarget{part-3-44-0001-solution-space-tree-search}{%
+\subsubsection{3.2 Solution Space Tree Search}\label{part-3-44-0001-solution-space-tree-search}}
+
+AIDE 将每一个候选解决方案表示为 Search Tree 中的一个节点，并使用三类主要操作扩展搜索树：Draft、Debug 和 Improve。
+
+\href{https://arxiv.org/html/2502.13138v1}{来源 1} \href{https://arxiv.org/html/2502.13138v1}{来源 2}
+
+\bookgraphic{0.453}{part-3-44-0001-007-01}{根据 AIDE 的方法重新绘制的教学示意图，分数为假想数据。}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.67}}@{}}
+\toprule
+Operator & Function \\
+\midrule
+\endhead
+Draft & 从零生成新的机器学习方案 \\
+Debug & 修复无法正常运行的候选程序 \\
+Improve & 基于已有方案进一步优化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这实际上就是 III-D 中讨论的 LLM-guided Search。
+
+\hypertarget{part-3-44-0001-aide-ux662fux5426ux5c5eux4e8e-rsi}{%
+\subsubsection{3.3 AIDE 是否属于 RSI？}\label{part-3-44-0001-aide-ux662fux5426ux5c5eux4e8e-rsi}}
+
+原始 AIDE 主要修改的是机器学习解决方案，而其负责搜索这些方案的核心机制仍然是预先设计的。 因此：
+\[\boxed{
+\text{AIDE}
+\approx
+\text{Automated Object-level Research}
+}\]
+
+而不是严格意义上的 Recursive Meta-optimization。
+
+但这使 AIDE 成为了一个非常有价值的对照系统：我们可以研究在\textbf{不允许优化器修改自身}的情况下，仅仅通过大规模自适应科研搜索，是否已经能够复现 Performance Decay。
+
+这一点也为后来的 AIDE² 奠定了基础。
+
+\hypertarget{part-3-44-0001-adas-automated-design-of-agentic-systems}{%
+\subsection{4. ADAS --- Automated Design of Agentic Systems}\label{part-3-44-0001-adas-automated-design-of-agentic-systems}}
+
+Shengran Hu, Cong Lu \& Jeff Clune · ICLR 2025 · 同行评审
+
+\href{https://proceedings.iclr.cc/paper_files/paper/2025/hash/36b7acf6f6010652b3f2a433774a66fe-Abstract-Conference.html}{正式会议论文} · \href{https://www.shengranhu.com/ADAS/}{项目主页}
+
+\hypertarget{part-3-44-0001-ux4ece-solution-search-ux8f6cux5411-agent-search}{%
+\subsubsection{4.1 从 Solution Search 转向 Agent Search}\label{part-3-44-0001-ux4ece-solution-search-ux8f6cux5411-agent-search}}
+
+ADAS 的研究对象不再是具体任务的解决方案，而是负责解决任务的 Agent Architecture。
+
+例如，人类已经设计出很多 Agentic Methods：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}@{}}
+\toprule
+Human-designed Method & Core Mechanism \\
+\midrule
+\endhead
+Chain-of-Thought & 分步骤推理 \\
+Self-Consistency & 多次生成并聚合答案 \\
+Self-Refine & 自我评价与修改 \\
+LLM Debate & 多个模型相互讨论 \\
+Reflexion & 利用反馈积累经验 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+ADAS 提出的问题是：
+
+\textbf{能不能让 AI 自动发现新的 Agent Architecture，而不再完全依赖人类设计？}
+
+其代表性算法称为 \textbf{Meta Agent Search}。
+
+\textbf{Meta-Agent}
+
+读取历史 Agent、代码及评估结果
+
+↓ \textbf{Generate New Agent Code} ↓ \textbf{Validation Evaluation} ↓ \textbf{Archive of Discovered Agents}
+
+利用不断增长的 Archive 产生新的设计。
+
+\hypertarget{part-3-44-0001-generalization-evidence}{%
+\subsubsection{4.2 Generalization Evidence}\label{part-3-44-0001-generalization-evidence}}
+
+论文不仅在 ARC、数学、科学问答等任务上比较了自动发现的 Agent 与人工设计的 Baseline，还研究了跨任务及跨 Foundation Model 的迁移能力。
+
+尤其是在 ARC 实验中，作者分别使用 20 道验证题和 60 道测试题，并对发现的 Agent 进行独立测试。
+
+\href{https://arxiv.org/html/2408.08435}{来源 1}
+
+这种方法与 X Program \#161 的研究协议有很强的相似性：不仅记录搜索过程中的性能，还观察不同版本在独立数据上的表现。
+
+\hypertarget{part-3-44-0001-adas-ux4e0e-rsi-ux7684ux533aux522b}{%
+\subsubsection{4.3 ADAS 与 RSI 的区别}\label{part-3-44-0001-adas-ux4e0e-rsi-ux7684ux533aux522b}}
+
+ADAS 已经进入 Meta-level Optimization，但其 Meta Agent Search 的外层算法并未在主要实验中被递归替换为新发现的 Agent。
+
+因此需要区分：
+\[\text{Automated Agent Design}
+\neq
+\text{Recursive Self-Improvement}.\]
+
+ADAS 对我们的主要价值，是提供了一个 \textbf{Fixed Meta-Optimizer Baseline}。
+
+\hypertarget{part-3-44-0001-darwin-guxf6del-machinedgm}{%
+\subsection{5. Darwin Gödel Machine（DGM）}\label{part-3-44-0001-darwin-guxf6del-machinedgm}}
+
+Jenny Zhang, Shengran Hu, Cong Lu, Robert Lange \& Jeff Clune · ICLR 2026 · 同行评审
+
+\href{https://arxiv.org/abs/2505.22954}{arXiv:2505.22954} · \href{https://openreview.net/pdf?id=pUpzQZTvGY}{正式会议论文}
+
+这是本阶段优先级最高的研究之一。
+
+\hypertarget{part-3-44-0001-research-motivation-1}{%
+\subsubsection{5.1 Research Motivation}\label{part-3-44-0001-research-motivation-1}}
+
+DGM 结合了两个重要思想：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Gödel Machine：} 改进自身程序的计算系统；
+\item
+  \textbf{Open-ended Evolution：} 不局限于当前最优解，而是持续探索不同演化方向。
+\end{itemize}
+
+传统 Gödel Machine 的理论设想需要证明某项自我修改具有足够的效用。
+
+DGM 则采用 Empirical Evaluation：通过运行实际任务判断修改后的 Agent 表现如何。
+
+\hypertarget{part-3-44-0001-archive-based-self-improvement}{%
+\subsubsection{5.2 Archive-based Self-Improvement}\label{part-3-44-0001-archive-based-self-improvement}}
+
+沿用 Part III 中的记号，我们用 \(\mathcal A_k\) 表示第 \(k\) 轮已保存的 Agent Archive。
+
+注意，这里带下标的 \(\mathcal A_k\) 表示已经发现的版本集合，而不是 III-D 中全部允许存在的 Agent 空间 \(\mathcal A\)。
+
+每轮执行：
+\[A_{\mathrm{parent}}
+\sim
+p_k(A\mid\mathcal A_k),\]
+
+\[A_{\mathrm{new}}
+=
+\mathcal I_{A_{\mathrm{parent}}}
+(A_{\mathrm{parent}},F_k,H_k).\]
+
+如果候选版本满足相应的归档条件，则：
+\[\mathcal A_{k+1}
+=
+\mathcal A_k\cup\{A_{\mathrm{new}}\}.\]
+
+\textbf{Archive-based Agent Evolution}
+
+\bookgraphic{0.407}{part-3-44-0001-012-01}{DGM 思想的简化示意：新版本不必来自最近产生的 Agent，也不必来自当前最高分版本。}
+
+DGM 的重要特征是允许 Agent 修改自身代码，同时利用历史 Archive 保持搜索多样性。
+
+\hypertarget{part-3-44-0001-empirical-results}{%
+\subsubsection{5.3 Empirical Results}\label{part-3-44-0001-empirical-results}}
+
+原论文报告了以下编程任务性能变化：
+
+SWE-bench
+
+\textbf{+30.0 pp}
+
+20.0\% → 50.0\%
+
+Polyglot
+
+\textbf{+16.5 pp}
+
+14.2\% → 30.7\%
+
+\textbf{SWE-bench}
+
+Initial
+
+20.0\%
+
+Evolved
+
+50.0\%
+
+\textbf{Polyglot}
+
+Initial
+
+14.2\%
+
+Evolved
+
+30.7\%
+
+数据来自 DGM 论文报告的 Benchmark Performance，pp 表示百分点。
+
+作者还报告，自我修改和开放式探索均对其系统表现有所贡献。
+
+\href{https://arxiv.org/abs/2505.22954}{来源 1} \href{https://openreview.net/pdf?id=pUpzQZTvGY}{来源 2}
+
+更重要的是，该研究进行了 Cross-benchmark Transfer。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.29}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.15}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.21}}@{}}
+\toprule
+Evolution Benchmark & Held-out Benchmark & Initial & Transferred \\
+\midrule
+\endhead
+SWE-bench & Polyglot & 14.2\% & 28.9\% \\
+Polyglot & SWE-bench & 20.0\% & 24.5\% \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这提供了修改具有跨任务可迁移性的证据。
+
+\href{https://arxiv.org/html/2505.22954}{来源 1}
+
+\hypertarget{part-3-44-0001-ux4e0e-x-program-161-ux7684ux8054ux7cfb}{%
+\subsubsection{5.4 与 X Program \#161 的联系}\label{part-3-44-0001-ux4e0e-x-program-161-ux7684ux8054ux7cfb}}
+
+DGM 证明了一种技术路径的可行性，但它不能证明在任何低信噪比环境中，RSI 都能够持续获得真实收益。
+
+而且金融任务与编程任务有一个根本区别：
+
+编程任务中的 Unit Test 可以提供相对明确的正确性反馈，而金融预测的历史得分即使计算完全正确，也可能包含大量统计噪声。
+
+因此，一个在 Software Engineering 中有效的 RSI Search Mechanism，迁移到金融环境之后，可能产生完全不同的 Generalization Trajectory。
+
+这正是值得研究的领域差异。
+
+\hypertarget{part-3-44-0001-rd-agent-quant-automated-financial-research}{%
+\subsection{6. R\&D-Agent-Quant --- Automated Financial Research}\label{part-3-44-0001-rd-agent-quant-automated-financial-research}}
+
+Yuante Li et al. · NeurIPS 2025 · 同行评审
+
+\href{https://proceedings.neurips.cc/paper_files/paper/2025/hash/ac5c2b6e423883cbcacbcccf88491b78-Abstract-Datasets_and_Benchmarks_Track.html}{正式会议论文} · \href{https://arxiv.org/abs/2505.15155}{arXiv:2505.15155}
+
+这是七篇论文中与金融业务场景联系最直接的一篇。
+
+\hypertarget{part-3-44-0001-factormodel-joint-optimization}{%
+\subsubsection{6.1 Factor--Model Joint Optimization}\label{part-3-44-0001-factormodel-joint-optimization}}
+
+传统量化研究经常分别优化：
+\[\text{Financial Factors}\]
+
+以及：
+\[\text{Prediction Models}.\]
+
+R\&D-Agent-Quant 则试图协调这两个过程，实现 Factor--Model Co-optimization。
+
+\bookgraphic{0.320}{part-3-44-0001-017-01}{根据论文主要模块简化绘制，省略了 Co-STEER 等内部实现。}
+
+该系统还通过 Multi-armed Bandit Scheduler 动态分配因子研究与模型研究方向的资源。
+
+\href{https://arxiv.org/html/2505.15155v2}{来源 1}
+
+这与你在 III-B 学到的 Exploration--Exploitation Trade-off 存在直接联系。
+
+\hypertarget{part-3-44-0001-experimental-protocol}{%
+\subsubsection{6.2 Experimental Protocol}\label{part-3-44-0001-experimental-protocol}}
+
+论文采用的主要 CSI 300 实验数据划分如下：
+
+\textbf{Training}
+
+2008--2014
+
+\textbf{Validation}
+
+2015--2016
+
+\textbf{Testing}
+
+2017--2020
+
+论文主要实验划分，测试期截至 2020 年 8 月 1 日。色块宽度为示意。
+
+作者报告，在其测试条件下，自动化系统使用更精简的因子集合也可以获得具有竞争力的预测和回测表现。
+
+\href{https://arxiv.org/html/2505.15155v2}{来源 1} \href{https://arxiv.org/html/2505.15155v2}{来源 2}
+
+不过，需要严格区分：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Automatic Financial Research：} Agent 自动发现更好的金融因子与预测方法。
+\item
+  \textbf{Financial RSI：} Agent 进一步递归修改负责发现这些方法的研究系统。
+\end{itemize}
+
+R\&D-Agent-Quant 的核心贡献主要属于前者。
+
+\hypertarget{part-3-44-0001-research-value}{%
+\subsubsection{6.3 Research Value}\label{part-3-44-0001-research-value}}
+
+对于 X Program \#161，该论文最值得借鉴的未必是最终收益数字，而是实际金融研究系统中的工程细节。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Paper Component & 可迁移的研究经验 \\
+\midrule
+\endhead
+Factor Generation & 金融候选方法如何表示 \\
+Model Generation & 预测模型如何自动开发 \\
+Backtesting & 如何评价金融候选方法 \\
+Feedback Analysis & 如何将实验结果返回 Agent \\
+Direction Scheduler & 如何分配搜索预算 \\
+Factor Library Analysis & 如何分析模型复杂度和冗余 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这篇论文可以作为我们未来理解 Financial Research Harness 的主要参考。
+
+\hypertarget{part-3-44-0001-aideuxb2-recursive-self-improvement-of-ai-research-agents}{%
+\subsection{7. AIDE² --- Recursive Self-Improvement of AI Research Agents}\label{part-3-44-0001-aideuxb2-recursive-self-improvement-of-ai-research-agents}}
+
+Dhruv Srikanth, Bingchen Zhao, Dixing Xu, Yuxiang Wu \& Zhengyao Jiang · September 22, 2026 · arXiv 预印本
+
+\href{https://arxiv.org/abs/2609.26457}{arXiv:2609.26457} · \href{https://arxiv.org/html/2609.26457v1}{完整论文 HTML}
+
+\textbf{这篇论文值得重点阅读。}
+
+它将原本用于自动化机器学习研究的 AIDE，进一步扩展到优化 AI Research Agent 自身的任务。
+
+\hypertarget{part-3-44-0001-inner-loop-and-outer-loop-architecture}{%
+\subsubsection{7.1 Inner-loop and Outer-loop Architecture}\label{part-3-44-0001-inner-loop-and-outer-loop-architecture}}
+
+这里最有价值的是作者对不同优化层级的评估信号进行了分离。
+
+\bookgraphic{0.345}{part-3-44-0001-022-01}{根据 AIDE² Algorithm 1 重新组织的教学图。注意 Private Task Evaluation 与 External Held-out Evaluation 的区别。}
+
+这套结构有三个层级的评价：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}@{}}
+\toprule
+Evaluation & 对 Inner Agent & 对 Outer Optimizer \\
+\midrule
+\endhead
+Public Task Score & IS & 开发信息 \\
+Private Task Score & OOS & IS Selection Signal \\
+External Benchmarks & OOS & OOS \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这与你在 II-A 和 II-F 学习的一个重要结论完全对应：
+
+\textbf{IS/OOS 的定义取决于当前的优化层级。}
+
+虽然 Private Score 对 Inner Agent 是隐藏的，但 Outer Optimizer 反复使用它选择 Agent，因此它并不是整个 RSI 系统最终意义上的 OOS 数据。
+
+AIDE² 的实际实验明确采用了这种多层评价机制。
+
+\href{https://arxiv.org/html/2609.26457v1}{来源 1}
+
+\hypertarget{part-3-44-0001-actual-improvement-trajectory}{%
+\subsubsection{7.2 Actual Improvement Trajectory}\label{part-3-44-0001-actual-improvement-trajectory}}
+
+Autonomous run
+
+\textbf{8 days}
+
+Rewrite proposals
+
+\textbf{99}
+
+Accepted improvements
+
+\textbf{7}
+
+\textbf{Accepted Agent Rewrites}
+
+\bookgraphic{0.750}{part-3-44-0001-025-01}{论文报告的真实接受位置。横轴为候选编号，不是递归谱系深度；未虚构中间各版本的具体得分。}
+
+作者还进行了另外两次完整运行，分别接受了两次和四次修改。
+
+\href{https://arxiv.org/html/2609.26457v1}{来源 1}
+
+这说明即使使用相同的系统与评价协议，不同 Runs 的演化轨迹仍然可能存在较大差异。
+
+\hypertarget{part-3-44-0001-ux6700ux503cux5f97ux5173ux6ce8ux7684ux7ed3ux679cnon-monotonic-generalization}{%
+\subsubsection{7.3 最值得关注的结果：Non-monotonic Generalization}\label{part-3-44-0001-ux6700ux503cux5f97ux5173ux6ce8ux7684ux7ed3ux679cnon-monotonic-generalization}}
+
+论文评估了多个 Agent Checkpoints 在四个独立 Benchmark 上的性能。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.61}}@{}}
+\toprule
+External Benchmark & Best among evaluated evolved checkpoints \\
+\midrule
+\endhead
+ALE-Bench & AIDE₈₅ \\
+MLE-Bench & \textbf{AIDE₄₇} \\
+FML-Bench & AIDE₈₅ \\
+WeatherBench 2 & \textbf{AIDE₄₇} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+独立 Benchmark 上的最佳 Checkpoint 分布
+
+\textbf{AIDE₄₇}
+
+\textbf{2 / 4}
+
+MLE-Bench
+
+WeatherBench 2
+
+\textbf{AIDE₈₅}
+
+\textbf{2 / 4}
+
+ALE-Bench
+
+FML-Bench
+
+这是原论文 Figure 3 中报告的结果。两个演化版本相对于初始 Agent 均有所提升，但跨 Checkpoint 的样本外性能并非单调增长。
+
+\href{https://arxiv.org/html/2609.26457v1}{来源 1}
+
+这与我们课题的标题 Better, Then Worse 存在非常值得关注的联系。
+
+但是，不能过度解读这项证据。
+
+AIDE² 的主要结论仍然是 RSI 获得的能力可以迁移到外部任务；两个 Benchmark 上较晚版本不如中间版本，并不能证明系统发生了普遍性的严重过拟合。
+
+它真正支持的是：
+\[\boxed{
+\text{Monotonic Selection Score}
+\not\Rightarrow
+\text{Monotonic OOS Performance}
+}\]
+
+\hypertarget{part-3-44-0001-ignition-testux4e25ux683c-rsi-ux7684ux8fdbux4e00ux6b65ux95eeux9898}{%
+\subsubsection{7.4 Ignition Test：严格 RSI 的进一步问题}\label{part-3-44-0001-ignition-testux4e25ux683c-rsi-ux7684ux8fdbux4e00ux6b65ux95eeux9898}}
+
+还有一个容易被论文标题掩盖的细节。
+
+在主要实验中，负责提出 Agent Rewrite 的外层研究 Agent 是固定的人类开发版本 AIDE-human。演化的主要对象是内层 Agent。
+
+作者因此额外开展 Ignition Test，尝试让演化得到的 AIDE₄₇ 接替外层改进角色。
+
+两个实验组分别使用：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Group & Outer Improver \\
+\midrule
+\endhead
+Control & AIDE-human \\
+Treatment & AIDE₄₇ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+两组各执行三次独立的 50-step Runs。
+
+最终平均得分分别为 0.782 和 0.780。作者明确认为，目前的实验不足以证明演化得到的 Agent 更擅长自我改进。
+
+\href{https://arxiv.org/html/2609.26457v1}{来源 1}
+
+这与 III-C 的理论认识完全一致：
+\[\text{Better Research Agent}
+\not\Rightarrow
+\text{Better Self-improver}.\]
+
+这是阅读 RSI 论文时特别值得保持的严谨性。
+
+\hypertarget{part-3-44-0001-rrsi-regularized-recursive-self-improvement-of-agent-harnesses}{%
+\subsection{8. RRSI --- Regularized Recursive Self-Improvement of Agent Harnesses}\label{part-3-44-0001-rrsi-regularized-recursive-self-improvement-of-agent-harnesses}}
+
+Peng Xia et al. · September 21, 2026 · arXiv 预印本
+
+\href{https://arxiv.org/abs/2609.24972}{arXiv:2609.24972} · \href{https://regularized-rsi.com/}{项目主页}
+
+在本次检索到的七篇论文中，\textbf{这篇论文与 X Program \#161 的 Mitigation Research 最直接相关。}
+
+\hypertarget{part-3-44-0001-research-problem}{%
+\subsubsection{8.1 Research Problem}\label{part-3-44-0001-research-problem}}
+
+RRSI 关注的核心现象是：Agent Harness 不断适应有限的 Evolution Dataset，却未必能够将改进迁移到未见任务。
+
+作者讨论了三个相互关联的机制：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.45}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.51}}@{}}
+\toprule
+Failure Mechanism & 对应我们此前的知识 \\
+\midrule
+\endhead
+Benchmark-specific Fitting & Adaptive Overfitting --- II-D \\
+Noise Chasing & Selection Bias --- II-C \\
+Complexity Accumulation & Generalization Complexity --- II-B \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\href{https://arxiv.org/html/2609.24972v1}{来源 1}
+
+你会发现，我们之前花大量时间建立的统计理论框架，在这里已经变成了实际研究系统的设计动机。
+
+\hypertarget{part-3-44-0001-regularize-the-evolution-process}{%
+\subsubsection{8.2 Regularize the Evolution Process}\label{part-3-44-0001-regularize-the-evolution-process}}
+
+RRSI 最有意思的地方在于，它不只是对最终 Agent 进行正则化，而是对产生 Agent 的搜索过程进行正则化。
+
+\textbf{Proposal-side Regularization}
+
+\begin{verbatim}
+限制单轮修改数量、记录历史修改贡献、在停滞时引导探索。
+\end{verbatim}
+
+↓
+
+Candidate Harness
+
+↓
+
+\textbf{Selection-side Regularization}
+
+\begin{verbatim}
+检查数据泄漏、控制评估噪声、约束资源成本、删除长期无效组件。
+\end{verbatim}
+
+↓
+
+Retained Harness Version
+
+论文将这些机制与经典的 \(L_0\)、\(L_1\)、\(L_2\) Regularization 建立联系。
+
+\href{https://arxiv.org/html/2609.24972v1}{来源 1} \href{https://arxiv.org/html/2609.24972v1}{来源 2}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Regularization Analogy & Harness-level Implementation \\
+\midrule
+\endhead
+\(L_0\) & 限制每轮独立修改的数量 \\
+\(L_1\) & 删除长期缺乏有效贡献的组件 \\
+\(L_2\) & 限制没有足够性能收益支撑的资源膨胀 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+注意，这些属于正则化思想的工程推广，并不等价于在连续参数空间中直接执行 Lasso 或 Ridge Regression。
+
+\hypertarget{part-3-44-0001-ux4e00ux4e2aux503cux5f97ux7814ux7a76ux7684ux6570ux5b66ux8bbeux8ba1annealed-update-sparsity}{%
+\subsubsection{8.3 一个值得研究的数学设计：Annealed Update Sparsity}\label{part-3-44-0001-ux4e00ux4e2aux503cux5f97ux7814ux7a76ux7684ux6570ux5b66ux8bbeux8ba1annealed-update-sparsity}}
+
+随着 RSI 推进，允许每轮修改的组件数量逐渐减少。
+
+采用论文中的 \(b_{\min}\)、\(b_{\max}\) 记号，并沿用我们的外层迭代变量 \(k,K\)，其余弦退火规则可以写为：
+\[\boxed{
+b_k=
+\left\lceil
+b_{\min}
++
+\frac{b_{\max}-b_{\min}}2
+\left(1+\cos\frac{\pi k}{K}\right)
+\right\rceil
+}\]
+
+其中 \(b_k\) 是第 \(k\) 轮允许的独立修改数量上限。
+
+\textbf{Annealed Update Budget}
+
+Initial edit budget\\
+\textbf{6}
+
+6（范围 3--12）
+
+Final edit budget\\
+\textbf{1}
+
+1（范围 1--6）
+
+Evolution rounds\\
+\textbf{20}
+
+20（范围 10--50）
+
+\bookgraphic{0.523}{part-3-44-0001-034-01}{公式来自 RRSI §3.2；滑块中的参数为教学设定，不是论文固定实验参数。}
+
+bmax = 12
+
+\bookgraphic{0.523}{part-3-44-0001-034-state-01}{}
+
+这个方法具有两个潜在价值。
+
+首先，后期较小的修改范围可能限制 Agent 利用评估噪声进行过度复杂的修改。
+
+其次，当每一轮只修改少量组件时，Revision Attribution 会更加容易。
+
+对于以诊断退化机制为研究目标的 X Program，这第二项价值甚至可能与泛化性能本身同样重要。
+
+\hypertarget{part-3-44-0001-actual-ablation-results}{%
+\subsubsection{8.4 Actual Ablation Results}\label{part-3-44-0001-actual-ablation-results}}
+
+下面是论文 Table 2 中报告的真实结果。
+
+\textbf{Development Performance vs. OOD Transfer}
+
+Agentic workspace tasks，使用论文原始分数。
+
+\bookgraphic{0.786}{part-3-44-0001-035-01}{以初始 Harness 为基准计算的得分增量。OOD 指 Out-of-Distribution。}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.41}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.18}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.19}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.19}}@{}}
+\toprule
+Method & Evolve Set & ID Held-out & OOD Average \\
+\midrule
+\endhead
+Initial Harness & 89.4 & 86.9 & 39.7 \\
+Unregularized & 92.8 & 88.9 & 40.3 \\
+Without Proposal Regularizers & 90.7 & 88.8 & 41.9 \\
+Without Acceptance Regularizers & 91.5 & 88.7 & 41.0 \\
+\textbf{RRSI} & \textbf{90.5} & \textbf{89.2} & \textbf{43.6} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+数据来源：RRSI，Table 2。
+
+\href{https://arxiv.org/html/2609.24972v1}{来源 1}
+
+这个结果非常具有启发性。
+
+Unregularized Evolution 在开发数据上取得了最大的提升，但在分布外任务上的提升很小。
+
+反而是受到正则化约束的 RRSI，牺牲了一部分开发得分，取得了更好的外部泛化表现。
+
+这提供了我们在 III-D 中讨论的 Optimization--Generalization Trade-off 的实际经验证据。
+
+需要说明，RRSI 的主要证据来自 Agent Harness Benchmark，而不是金融时间序列。其结果能否推广到低信噪比金融研究，仍然是需要验证的问题。
+
+\hypertarget{part-3-44-0001-consolidated-comparison-ux4e03ux79cdux7814ux7a76ux7cfbux7edf}{%
+\subsection{9. Consolidated Comparison --- 七种研究系统}\label{part-3-44-0001-consolidated-comparison-ux4e03ux79cdux7814ux7a76ux7cfbux7edf}}
+
+\hypertarget{part-3-44-0001-architecture-comparison}{%
+\subsubsection{9.1 Architecture Comparison}\label{part-3-44-0001-architecture-comparison}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}@{}}
+\toprule
+System & 优化对象 & 搜索方式 & 改进后的对象是否参与自身优化 \\
+\midrule
+\endhead
+AIDE & ML Solution & Tree Search & 否 \\
+R\&D-Agent-Quant & Factors \& Models & Adaptive Multi-agent Search & 非主要目标 \\
+ADAS & Agent Design & Archive-based Meta Search & 外层固定 \\
+STOP & Improver Code & Recursive Code Search & 是 \\
+DGM & Coding Agent & Open-ended Evolution & 是 \\
+AIDE² & Research Agent & Iterative Rewrite & 主要实验外层固定，另有 Ignition Test \\
+RRSI & Agent Harness & Regularized Evolution & 研究递归 Harness 演化，需区分 proposer 和 harness \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-44-0001-research-evidence-matrix}{%
+\subsubsection{9.2 Research Evidence Matrix}\label{part-3-44-0001-research-evidence-matrix}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.21}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.13}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.22}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.22}}@{}}
+\toprule
+System & 自动科研 & 代码层自我修改 & 独立泛化评估 & 过拟合诊断或缓解 \\
+\midrule
+\endhead
+STOP & & & & 部分 \\
+AIDE & & --- & & 非重点 \\
+ADAS & --- & Meta-design & & 非重点 \\
+DGM & --- & & & 部分 \\
+R\&D-Agent-Quant & & --- & & 部分 \\
+AIDE² & & & & Reward Hacking 等 \\
+RRSI & --- & Harness Evolution & & \textbf{核心目标} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+根据各论文主要研究目标进行的定性归类。``---''表示不是该研究的主要贡献，并不代表系统绝对不具备相关能力。
+
+\hypertarget{part-3-44-0001-where-does-x-program-161-fit}{%
+\subsection{10. Where Does X Program \#161 Fit?}\label{part-3-44-0001-where-does-x-program-161-fit}}
+
+现在我们终于可以比较清楚地理解这个项目在现有研究中的潜在定位。
+
+\bookgraphic{0.338}{part-3-44-0001-052-01}{这是根据公开论文与项目描述构建的研究关联图，不代表上述论文是课题组已经确定的技术来源。}
+
+现有文献大致回答了如下问题：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.65}}@{}}
+\toprule
+Literature & Main Question \\
+\midrule
+\endhead
+STOP、DGM & Agent 能否改进自身？ \\
+AIDE、R\&D-Agent-Quant & Agent 能否自动开展科研？ \\
+ADAS & Agent 能否自动设计其他 Agent？ \\
+AIDE² & RSI 获得的改进能否迁移到独立研究任务？ \\
+RRSI & 能否通过正则化改善 Harness Evolution 的泛化？ \\
+\textbf{X Program \#161} & \textbf{金融 RSI 的泛化性能何时开始退化、为什么退化，以及如何缓解？} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+由此可见，项目的潜在特色不只是将 RSI 应用到 Finance，而是重点研究 \textbf{Trajectory-level Diagnosis（演化轨迹层面的诊断）}。
+
+这与只比较初始版本和最终版本存在重要区别。
+
+\hypertarget{part-3-44-0001-endpoint-evaluation-vs.-trajectory-evaluation}{%
+\subsubsection{10.1 Endpoint Evaluation vs. Trajectory Evaluation}\label{part-3-44-0001-endpoint-evaluation-vs.-trajectory-evaluation}}
+
+\textbf{Endpoint Evaluation}
+
+\bookgraphic{0.342}{part-3-44-0001-053-01}{最终版本是否优于初始版本？}
+
+\textbf{Trajectory Evaluation}
+
+\bookgraphic{0.342}{part-3-44-0001-053-02}{改进在哪一轮停止有效？哪些修改造成了退化？}
+
+IS（右图）
+
+OOS（右图）
+
+即使最终版本优于初始版本，也可能已经从中间版本的峰值表现严重退化。 因此：
+\[S_K^{\mathrm{OOS}}>S_0^{\mathrm{OOS}}\]
+
+与
+
+\[S_K^{\mathrm{OOS}}
+<
+\max_{0\leq k\leq K}
+S_k^{\mathrm{OOS}}\]
+
+完全可以同时成立。
+
+\textbf{Endpoint Improvement 与 Intermediate Performance Decay 并不矛盾。}
+
+不过，现有文献也已经开始研究演化过程与泛化问题，因此不能仅凭这七篇论文就宣称 X Program \#161 的研究问题具有确定的原创性。完整的 Research Gap Analysis 留到 Part V。
+
+\hypertarget{part-3-44-0001-recommended-reading-order}{%
+\subsection{11. Recommended Reading Order}\label{part-3-44-0001-recommended-reading-order}}
+
+七篇论文没有必要全部精读。考虑到目前的目标是准备与导师及博士生沟通，我建议采用以下顺序。
+
+\textbf{1}
+
+\textbf{\href{https://arxiv.org/abs/2609.24972}{RRSI --- Regularized Recursive Self-Improvement}}
+
+第一优先级 · 预计 30--45 min
+
+\begin{verbatim}
+  重点阅读 Introduction、Figure 1、§3 Regularization、Table 2 Ablation。理解最直接的过拟合缓解思路。
+\end{verbatim}
+
+\textbf{2}
+
+\textbf{\href{https://arxiv.org/abs/2609.26457}{Recursive Self-Improvement of AI Research Agents --- AIDE²}}
+
+第一优先级 · 预计 30--45 min
+
+\begin{verbatim}
+  重点阅读 Algorithm 1、§3.2、§3.3 和 Ignition Test。理解不同层级的评估与非单调泛化现象。
+\end{verbatim}
+
+\textbf{3}
+
+\textbf{\href{https://arxiv.org/abs/2505.15155}{R\&D-Agent-Quant}}
+
+第一优先级 · 预计 30 min
+
+\begin{verbatim}
+  理解真实金融研究 Agent 如何生成因子、模型与实验反馈。
+\end{verbatim}
+
+\textbf{4}
+
+\textbf{\href{https://arxiv.org/abs/2505.22954}{Darwin Gödel Machine}}
+
+第二优先级 · 预计 30 min
+
+\begin{verbatim}
+  重点理解 Archive-based Evolution 和 Self-modification Ablation。
+\end{verbatim}
+
+\textbf{5}
+
+\textbf{\href{https://arxiv.org/abs/2310.02304}{STOP}、\href{https://arxiv.org/abs/2502.13138}{AIDE}、\href{https://arxiv.org/abs/2408.08435}{ADAS}}
+
+第二轮阅读 · 按需索引
+
+\begin{verbatim}
+  补充具体算法、Meta-optimization 和 Automated Agent Design 的理论基础。
+\end{verbatim}
+
+特别是 RRSI 和 AIDE²，两篇论文的首次发布时间只相差一天。它们分别从正则化泛化和自动科研能力增长的角度研究 RSI，很适合进行对照阅读。
+
+\hypertarget{part-3-44-0001-iii-e-conclusion-index}{%
+\subsection{12. III-E --- Conclusion Index}\label{part-3-44-0001-iii-e-conclusion-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.69}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+E1 & Automated Research 不等于 RSI & §1 \\
+E2 & STOP 建立了基于代码的递归优化形式 & §2 \\
+E3 & AIDE 将机器学习研究转化为代码空间搜索 & §3 \\
+E4 & ADAS 实现了自动化 Agent Design & §4 \\
+E5 & DGM 通过 Archive 保留多条演化路径 & §5 \\
+E6 & R\&D-Agent-Quant 实现因子与模型的联合自动化研究 & §6 \\
+E7 & AIDE² 区分内层任务评估与外层 Agent 评估 & §7.1 \\
+E8 & 真实 RSI 系统可以出现非单调的跨任务泛化表现 & §7.3 \\
+E9 & 更好的 Research Agent 不一定是更好的 Self-improver & §7.4 \\
+E10 & RRSI 将 Regularization 应用于 Harness Evolution & §8 \\
+E11 & 正则化可以在牺牲部分 IS 收益的同时改善外部泛化 & §8.4 \\
+E12 & Endpoint Evaluation 可能掩盖 Intermediate Decay & §10 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-44-0001-research-takeaway}{%
+\subsubsection{Research Takeaway}\label{part-3-44-0001-research-takeaway}}
+
+经过这七篇论文的对照，我们现在可以更加准确地描述 X Program \#161 可能涉及的研究问题：
+\[\underbrace{\text{Recursive Agent Evolution}}_{\text{Computer Science}}
++
+\underbrace{\text{Adaptive Overfitting}}_{\text{Statistics}}
++
+\underbrace{\text{Low-SNR Environment}}_{\text{Finance}}\]
+
+\[\Downarrow\]
+
+\[\boxed{
+\text{Generalization Decay Diagnosis}
+}\]
+
+目前已经有公开研究支持 RSI 的可行性，也有初步研究支持其泛化风险与正则化缓解机制。但尚不能确认课题组采用了哪一种 Agent Framework，也没有验证这些方法在其具体金融任务上的表现。
+
+\hypertarget{part-3-44-0001-next-iii-f-rsi-failure-modes-experimental-instrumentation}{%
+\subsection{Next --- III-F: RSI Failure Modes \& Experimental Instrumentation}\label{part-3-44-0001-next-iii-f-rsi-failure-modes-experimental-instrumentation}}
+
+III-A --- Agent Architecture \& Harness
+
+III-B --- Tools, Memory, Planning \& Reflection
+
+III-C --- Self-Modification \& Recursive Optimization
+
+III-D --- Evaluation, Search \& Selection
+
+III-E --- Automated Research Agents
+
+III-F --- Failure Modes \& Instrumentation
+
+下一阶段是 Part III 的最后一个模块。我们将从阅读研究系统，正式过渡到如何开展自己的实验研究。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.44}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.52}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Failure Taxonomy & RSI 的失败机制有哪些？ \\
+Experiment Instrumentation & 应该监控和记录哪些系统变量？ \\
+Revision Classification & 如何从代码 Diff 中识别修改类型？ \\
+Change-point Detection & 如何确定 OOS Decay Onset？ \\
+Rollback \& Counterfactual & 如何调查某项修改是否造成退化？ \\
+Ablation Study & 如何识别具体组件的贡献？ \\
+Reproducibility & 如何完整复现一条 Agent 演化轨迹？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{III-F 将是目前最接近你实际参与本科生科研后可能承担工作的一个模块。}
+
+完成之后，我们将具备初步设计 RSI 诊断实验的能力，再进入 Part IV 的 Financial AI 与金融统计方法。

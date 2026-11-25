@@ -1,0 +1,239 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 67,
+    "first_line": 1,
+    "last_line": 2146,
+    "chapter": "part-4-67-0001",
+    "chosen_title": "IV-D — Returns, Sharpe Ratio & Performance Evaluation",
+    "tables": 11,
+    "source_sha256": "91bd7b7cfd359f1f7c628a2cb5f0942de7f1996661402d5e13bda2f4db384191",
+    "source_math": 158,
+    "matched_math": 158
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 67,
+      "line": 27,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 28,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 29,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 73,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 165,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 271,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 357,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 464,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 660,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 707,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 855,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 876,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 980,
+      "component": "grid",
+      "gaps": [
+        {
+          "type": "missing-image",
+          "detail": "negative skew left skew probability density distribution statistical graph"
+        },
+        {
+          "type": "missing-image",
+          "detail": "normal Gaussian symmetric bell curve probability density graph"
+        },
+        {
+          "type": "missing-image",
+          "detail": "positive skew right skew probability density distribution statistical graph"
+        }
+      ],
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1066,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1092,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1276,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1278,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1345,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1406,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1456,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1559,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1601,
+      "component": "box",
+      "state": "converted",
+      "graphics": 3
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1865,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 1918,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 2073,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 67,
+      "line": 2109,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "chapter": {
+    "part": 2,
+    "message": 14,
+    "first_line": 1,
+    "last_line": 1023,
+    "chapter": "part-2-14-0001",
+    "chosen_title": "II-B — Concentration Inequalities and Uniform Convergence",
+    "tables": 6,
+    "source_sha256": "0b9c9f76a10c001ed220cce70b257e7816af8593073be167a3c1b5600436551e",
+    "source_math": 103,
+    "matched_math": 103
+  },
+  "components": [
+    {
+      "part": 2,
+      "message": 14,
+      "line": 22,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 123,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 219,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 477,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 587,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 693,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 750,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 990,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 14,
+      "line": 1010,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

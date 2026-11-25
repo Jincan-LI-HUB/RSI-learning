@@ -7,6 +7,7 @@
 
 # Local builds, regenerated bundles, and Python bytecode.
 /reader_prototype/build/
+/book/build/
 /reader_prototype/LaTeX_source.zip
 /reader_prototype/latex/main.aux
 /reader_prototype/latex/main.fdb_latexmk

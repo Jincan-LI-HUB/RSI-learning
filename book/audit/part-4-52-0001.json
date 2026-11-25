@@ -1,0 +1,92 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 52,
+    "first_line": 1,
+    "last_line": 680,
+    "chapter": "part-4-52-0001",
+    "chosen_title": "IV-A — Financial Time Series & Data Generating Process",
+    "tables": 4,
+    "source_sha256": "892f64d9738e15ac59f3acec037b8cb9ba21141c1f0db26b15c4f67e40d3ac08",
+    "source_math": 67,
+    "matched_math": 67
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 52,
+      "line": 13,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 138,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 230,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 281,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 384,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 426,
+      "component": "box",
+      "state": "converted",
+      "graphics": 3
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 519,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 613,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 52,
+      "line": 650,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

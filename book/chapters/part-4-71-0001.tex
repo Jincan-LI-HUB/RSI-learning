@@ -1,0 +1,1726 @@
+% Archive record 71, line 1.
+\hypertarget{part-4-71-0001-iv-e-backtest-overfitting-pbo-deflated-sharpe-ratio}{%
+\section{IV-E --- Backtest Overfitting, PBO \& Deflated Sharpe Ratio}\label{part-4-71-0001-iv-e-backtest-overfitting-pbo-deflated-sharpe-ratio}}
+
+这是 Part IV 中与 X Program \#161 联系最紧密的一个模块。
+
+此前，我们已经从不同角度研究了 Overfitting：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.32}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.64}}@{}}
+\toprule
+Previous Module & Core Mechanism \\
+\midrule
+\endhead
+II-B & Hypothesis Space 与 Generalization Bound \\
+II-C & Multiple Testing \& Selection Bias \\
+II-D & Adaptive Data Analysis \\
+III-D & Search \& Selection Pressure \\
+IV-B & Low SNR \& Spurious Correlation \\
+IV-D & Sharpe Ratio Estimation Uncertainty \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+现在，我们将这些知识整合到一个具体的金融统计问题中：
+
+\textbf{如果一个金融策略是从数千次实验中筛选出来的，那么它所报告的优异历史表现究竟还有多少统计可信度？}
+
+金融研究中已经发展出三种非常值得关注的方法。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.49}}@{}}
+\toprule
+Method & Full Name & 解决的问题 \\
+\midrule
+\endhead
+PSR & Probabilistic Sharpe Ratio & 观察到的 Sharpe 是否显著超过指定基准？ \\
+DSR & Deflated Sharpe Ratio & 考虑大量策略搜索后，Sharpe 是否仍然具有统计说服力？ \\
+PBO & Probability of Backtest Overfitting & 样本内最优策略在样本外排名退化的频率有多高？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中，PSR 和 DSR 主要关注\textbf{绩效水平的统计可靠性}，PBO 主要关注\textbf{策略选择的可靠性}。
+
+本阶段的研究重点不仅是掌握三个指标，更是理解它们能否被推广到 Recursive Self-Improvement。
+
+\hypertarget{part-4-71-0001-backtest-overfittingux56deux6d4bux8fc7ux62dfux5408}{%
+\subsection{1. Backtest Overfitting（回测过拟合）}\label{part-4-71-0001-backtest-overfittingux56deux6d4bux8fc7ux62dfux5408}}
+
+\hypertarget{part-4-71-0001-ux666eux901aux56deux6d4bux4e0eux7b56ux7565ux9009ux62e9ux7684ux533aux522b}{%
+\subsubsection{1.1 普通回测与策略选择的区别}\label{part-4-71-0001-ux666eux901aux56deux6d4bux4e0eux7b56ux7565ux9009ux62e9ux7684ux533aux522b}}
+
+假设我们在研究开始之前，就已经确定了一个金融策略 \(A\)，然后使用历史数据 \(D\) 评价它：
+\[\widehat{\mathrm{SR}}_D(A).\]
+
+如果策略事先固定、评价协议正确，那么我们主要面临有限样本造成的 Estimation Error。
+
+但如果我们首先生成大量策略：
+\[\mathcal A=\{A^{(1)},\ldots,A^{(m)}\},\]
+
+随后在同一批数据上选择：
+\[A^*
+=
+\arg\max_{A\in\mathcal A}
+\widehat{\mathrm{SR}}_D(A),\]
+
+情况就完全不同了。
+
+此时，最终报告的统计量不再是一个普通 Sharpe Ratio，而是多个随机估计量的最大值：
+\[\boxed{
+\widehat{\mathrm{SR}}_D(A^*)
+=
+\max_{1\leq j\leq m}
+\widehat{\mathrm{SR}}_D(A^{(j)})
+}\]
+
+它的 Sampling Distribution 已经因为 Selection Procedure 发生了改变。
+
+\hypertarget{part-4-71-0001-three-levels-of-backtest-overfitting}{%
+\subsubsection{1.2 Three Levels of Backtest Overfitting}\label{part-4-71-0001-three-levels-of-backtest-overfitting}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.21}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Level & Optimization Object & Example \\
+\midrule
+\endhead
+Model-level & 模型参数 & 拟合过多预测变量 \\
+Strategy-level & 策略选择 & 从数千个策略中保留历史 Sharpe 最高者 \\
+Research-process-level & 研究过程本身 & 根据历史回测结果不断改变搜索算法、Prompt、Memory 和实验方向 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+第三层是我们为 RSI 研究引入的工作性分类，并非经典金融文献中的统一术语。
+
+\bookgraphic{0.481}{part-4-71-0001-001-01}{三个嵌套的优化层级。每一个层级都有可能引入新的统计偏差。}
+
+传统 Backtest Overfitting 研究为前两个层级提供了重要的分析方法。
+
+而 X Program \#161 的潜在研究价值，正在于第三个层级：当研究机制本身也参与递归优化时，统计偏差会如何传播？
+
+\hypertarget{part-4-71-0001-probabilistic-sharpe-ratio-psr}{%
+\subsection{2. Probabilistic Sharpe Ratio (PSR)}\label{part-4-71-0001-probabilistic-sharpe-ratio-psr}}
+
+\hypertarget{part-4-71-0001-ux4ece-point-estimation-ux5230-statistical-inference}{%
+\subsubsection{2.1 从 Point Estimation 到 Statistical Inference}\label{part-4-71-0001-ux4ece-point-estimation-ux5230-statistical-inference}}
+
+沿用 IV-D 的记号：
+\[\widehat{\mathrm{SR}}
+=
+\frac{\hat\mu}{\hat\sigma}.\]
+
+我们已经利用 Delta Method 推导出，在 IID 且具有有限四阶矩的条件下：
+\[\operatorname{SE}(\widehat{\mathrm{SR}})
+\approx
+\sqrt{
+\frac{
+1-\gamma_3\mathrm{SR}
++\frac{\gamma_4-1}{4}\mathrm{SR}^2
+}{n}
+}.\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(n\)：收益率观测数量；
+\item
+  \(\gamma_3\)：收益率偏度（Skewness）；
+\item
+  \(\gamma_4\)：收益率峰度（Kurtosis，非超额峰度）。
+\end{itemize}
+
+现在，我们不再仅仅询问 Sharpe Ratio 是多少，而是希望检验真实 Sharpe Ratio 是否超过某个预先指定的 Benchmark：
+\[\mathrm{SR}^*.\]
+
+建立单侧假设检验：
+\[\begin{cases}
+H_0:\mathrm{SR}\leq\mathrm{SR}^*,\\
+H_1:\mathrm{SR}>\mathrm{SR}^*.
+\end{cases}\]
+
+相应的 Wald-type Statistic 为：
+\[Z=
+\frac{
+\widehat{\mathrm{SR}}-\mathrm{SR}^*
+}{
+\widehat{\operatorname{SE}}(\widehat{\mathrm{SR}})
+}.\]
+
+\hypertarget{part-4-71-0001-definition-of-psr}{%
+\subsubsection{2.2 Definition of PSR}\label{part-4-71-0001-definition-of-psr}}
+
+Bailey 和 López de Prado 在 2012 年发表的 \emph{The Sharpe Ratio Efficient Frontier} 中提出了 Probabilistic Sharpe Ratio，将 Sharpe Ratio 的估计不确定性纳入绩效评价。
+
+\href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643.}{来源 1} \href{https://www.risk.net/journal-of-risk/volume-15-number-2-december-2012}{来源 2}
+
+采用原文常见的 \(n-1\) 有限样本口径：
+\[\boxed{
+\widehat{\mathrm{PSR}}(\mathrm{SR}^*)
+=
+\Phi
+\left(
+\frac{
+(\widehat{\mathrm{SR}}-\mathrm{SR}^*)\sqrt{n-1}
+}{
+\sqrt{
+1-\hat\gamma_3\widehat{\mathrm{SR}}
++
+\frac{\hat\gamma_4-1}{4}
+\widehat{\mathrm{SR}}^2
+}
+}
+\right)
+}\]
+
+其中 \(\Phi\) 为标准正态分布的 CDF。
+
+上一阶段渐近推导中的 \(n\) 与这里的 \(n-1\) 在大样本下等价。
+
+\hypertarget{part-4-71-0001-interpretation}{%
+\paragraph{Interpretation}\label{part-4-71-0001-interpretation}}
+
+如果：
+\[\widehat{\mathrm{PSR}}(0)=0.97,\]
+
+那么按照该近似统计模型，真实 Sharpe Ratio 超过零这一判断获得了较强的统计支持，对应单侧近似 \(p\)-value 为：
+\[p\approx1-0.97=0.03.\]
+
+但需要特别注意：
+
+\textbf{PSR 并不严格等于 Bayesian Posterior Probability。}
+
+在 Frequentist Statistics 中，真实参数是固定的未知量。除非进一步建立 Prior Distribution 和 Bayesian Model，否则不能直接宣称真实 Sharpe Ratio 有 97\% 的概率大于零。
+
+PSR 更适合被理解为一种基于渐近分布的单侧统计置信度指标。
+
+\hypertarget{part-4-71-0001-interactive-psr-explorer}{%
+\subsubsection{2.3 Interactive PSR Explorer}\label{part-4-71-0001-interactive-psr-explorer}}
+
+\textbf{Probabilistic Sharpe Ratio Calculator}
+
+IID Returns，每年 252 个交易日。输入为常规年化 Sharpe，内部统一转换为单期 Sharpe。
+
+Observed annualized SR\\
+\textbf{1.50}
+
+1.5（范围 0--4）
+
+Benchmark annualized SR\\
+\textbf{0.00}
+
+0（范围 0--3）
+
+Track record\\
+\textbf{3 years}
+
+3（范围 1--20）
+
+Skewness\\
+\textbf{-1.0}
+
+-1（范围 -2--2）
+
+Kurtosis\\
+\textbf{5.0}
+
+5（范围 2--15）
+
+Probabilistic Sharpe Ratio
+
+\textbf{99.33\%}
+
+Approximate one-sided p-value
+
+\textbf{0.0067}
+
+在当前模型下超过常用的 95\% 单侧置信度门槛。 尚未修正策略选择偏差或时间依赖。
+
+你可以尝试保持 Sharpe Ratio 不变，只调整历史数据长度。会发现同样的 Sharpe Ratio，在不同的 Track Record 下具有完全不同的统计说服力。
+
+\hypertarget{part-4-71-0001-minimum-track-record-length-mintrl}{%
+\subsubsection{2.4 Minimum Track Record Length (MinTRL)}\label{part-4-71-0001-minimum-track-record-length-mintrl}}
+
+PSR 还可以帮助我们回答一个反向问题：
+
+为了达到指定置信度，需要多长的历史数据？
+
+设所需置信度为 \(1-\alpha\)，则要求：
+\[\widehat{\mathrm{PSR}}(\mathrm{SR}^*)
+\geq1-\alpha.\]
+
+由于 \(\Phi\) 单调递增，因此：
+\[\frac{
+(\widehat{\mathrm{SR}}-\mathrm{SR}^*)\sqrt{n-1}
+}{
+\sqrt{
+1-\hat\gamma_3\widehat{\mathrm{SR}}
++\frac{\hat\gamma_4-1}{4}
+\widehat{\mathrm{SR}}^2
+}
+}
+\geq z_{1-\alpha}.\]
+
+当 \(\widehat{\mathrm{SR}}>\mathrm{SR}^*\) 且 \(0<\alpha<0.5\) 时，整理得到：
+\[\boxed{
+n_{\min}
+=
+\left\lceil
+1+
+\frac{
+z_{1-\alpha}^2
+\left[
+1-\hat\gamma_3\widehat{\mathrm{SR}}
++
+\frac{\hat\gamma_4-1}{4}
+\widehat{\mathrm{SR}}^2
+\right]
+}{
+(\widehat{\mathrm{SR}}-\mathrm{SR}^*)^2
+}
+\right\rceil
+}\]
+
+这是 Minimum Track Record Length 的基本思想。
+
+\href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643.}{来源 1}
+
+它与 IV-B 中的 Sample Complexity 有相似的数学结构：
+\[n_{\min}
+\propto
+\frac1{(\widehat{\mathrm{SR}}-\mathrm{SR}^*)^2}.\]
+
+如果观察到的 Sharpe 与 Benchmark 之间的差距缩小为原来的一半，那么在其他条件不变时，所需样本量大约增加至四倍。
+
+不过，这是基于当前绩效估计的历史长度要求，不是包含指定 Statistical Power 的严格前瞻性样本量设计，更不能保证市场规律在新增观测期间保持稳定。
+
+\hypertarget{part-4-71-0001-deflated-sharpe-ratio-dsr}{%
+\subsection{3. Deflated Sharpe Ratio (DSR)}\label{part-4-71-0001-deflated-sharpe-ratio-dsr}}
+
+PSR 虽然考虑了 Sharpe Ratio 的估计误差，却没有解决一个关键问题：
+
+\textbf{如果我们先测试了 1,000 个策略，再选择其中 PSR 最高的一个，那么它的统计置信度还可信吗？}
+
+这就是 DSR 所试图解决的问题。
+
+Bailey 和 López de Prado 于 2014 年在 \emph{The Journal of Portfolio Management} 发表了 Deflated Sharpe Ratio 的原始论文，将策略搜索产生的选择偏差与非正态收益分布纳入同一个绩效评价框架。
+
+\href{https://doi.org/10.3905/jpm.2014.40.5.094?trk=article-ssr-frontend-pulse_little-text-block}{来源 1}
+
+\hypertarget{part-4-71-0001-expected-maximum-sharpe-ratio}{%
+\subsubsection{3.1 Expected Maximum Sharpe Ratio}\label{part-4-71-0001-expected-maximum-sharpe-ratio}}
+
+假设有 \(m\) 个相互独立的候选策略，其真实 Sharpe Ratio 均为零。
+
+为了建立一个简化的 Null Model，假设其经验 Sharpe Ratio 近似满足：
+\[\widehat{\mathrm{SR}}_j
+\sim\mathcal N(0,\sigma_{\mathrm{SR}}^2),
+\qquad j=1,\ldots,m.\]
+
+这里需要区分两个不同的标准差：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.59}}@{}}
+\toprule
+Notation & Meaning \\
+\midrule
+\endhead
+\(\sigma\) & 单个策略的收益率标准差 \\
+\(\sigma_{\mathrm{SR}}\) & 零假设下不同试验的 Sharpe 估计值的标准差 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+令：
+\[Z_j=
+\frac{\widehat{\mathrm{SR}}_j}{\sigma_{\mathrm{SR}}},\]
+
+则：
+\[Z_j\overset{\mathrm{i.i.d.}}{\sim}\mathcal N(0,1).\]
+
+定义最大值：
+\[M_m=\max_{1\leq j\leq m}Z_j.\]
+
+利用独立性：
+\[\begin{aligned}
+F_{M_m}(x)
+&=\mathbb P(M_m\leq x)\\
+&=\mathbb P(Z_1\leq x,\ldots,Z_m\leq x)\\
+&=\Phi(x)^m.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+F_{M_m}(x)=\Phi(x)^m
+}\]
+
+对其求导：
+\[\boxed{
+f_{M_m}(x)
+=
+m\phi(x)\Phi(x)^{m-1}
+}\]
+
+其中 \(\phi\) 为标准正态分布的 PDF。
+
+\textbf{Sampling Distribution of the Best Candidate}
+
+\bookgraphic{0.477}{part-4-71-0001-006-01}{}
+
+m = 1
+
+m = 10
+
+m = 100
+
+m = 1000
+
+理论概率密度曲线：所有候选的真实绩效均为零，但随着搜索次数增加，被选中者的经验绩效分布不断向右移动。
+
+即使所有候选策略都没有真实预测价值，只要扩大搜索规模，观察到的最高 Sharpe Ratio 也会不断提高。
+
+这就是 II-C 中 Winner's Curse 在金融评价中的具体表现。
+
+\hypertarget{part-4-71-0001-extreme-value-approximation}{%
+\subsubsection{3.2 Extreme Value Approximation}\label{part-4-71-0001-extreme-value-approximation}}
+
+在 II-C 和 IV-D 中，我们使用过：
+\[\mathbb E[M_m]\approx\sqrt{2\log m}.\]
+
+DSR 原始论文采用了更加精细的极值近似：
+\[\boxed{
+\begin{aligned}
+\mathbb E[M_m]\approx{}&
+(1-\gamma_{\mathrm E})
+\Phi^{-1}\left(1-\frac1m\right)\\
+&+\gamma_{\mathrm E}
+\Phi^{-1}\left(1-\frac1{me}\right)
+\end{aligned}
+}\]
+
+其中新定义的常数：
+\[\gamma_{\mathrm E}\approx0.5772156649\]
+
+是 Euler--Mascheroni Constant（欧拉--马歇罗尼常数），与此前表示收益率偏度和峰度的 \(\gamma_3,\gamma_4\) 不同。该公式主要适用于较大的独立试验数量 \(m\)。
+
+\href{https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf}{来源 1}
+
+它来自 Gaussian Maximum 的 Extreme Value Theory（极值理论），暂时不需要完整学习 Gumbel Distribution 的收敛证明。
+
+在共同零均值、共同方差的独立 Gaussian Null Model 下：
+\[\boxed{
+\begin{aligned}
+\mathrm{SR}_0\approx
+\sigma_{\mathrm{SR}}
+\Bigg[
+&(1-\gamma_{\mathrm E})
+\Phi^{-1}\left(1-\frac1m\right)\\
+&+\gamma_{\mathrm E}
+\Phi^{-1}\left(1-\frac1{me}\right)
+\Bigg].
+\end{aligned}
+}\]
+
+\(\mathrm{SR}_0\) 的统计含义是：即使所有策略都没有真实超额绩效，仅通过多次试验和择优选择，我们也可能观察到的最高 Sharpe Ratio 的期望水平。
+
+\hypertarget{part-4-71-0001-definition-of-dsr}{%
+\subsubsection{3.3 Definition of DSR}\label{part-4-71-0001-definition-of-dsr}}
+
+此前 PSR 的 Benchmark \(\mathrm{SR}^*\) 可以由研究人员指定。
+
+DSR 则使用经过搜索规模调整的 Benchmark：
+\[\mathrm{SR}^*=\mathrm{SR}_0.\]
+
+因此：
+\[\boxed{
+\widehat{\mathrm{DSR}}
+=
+\widehat{\mathrm{PSR}}(\mathrm{SR}_0)
+}\]
+
+展开得到：
+\[\boxed{
+\widehat{\mathrm{DSR}}
+=
+\Phi\left(
+\frac{
+(\widehat{\mathrm{SR}}-\mathrm{SR}_0)\sqrt{n-1}
+}{
+\sqrt{
+1-\hat\gamma_3\widehat{\mathrm{SR}}
++
+\frac{\hat\gamma_4-1}{4}\widehat{\mathrm{SR}}^2
+}
+}
+\right)
+}\]
+
+这就是 DSR 的核心结构。
+
+\textbf{PSR}
+
+固定 Benchmark
+
+\[\widehat{\mathrm{SR}}-\mathrm{SR}^*\]
+
+考虑样本长度、偏度和峰度
+
+\textbf{DSR}
+
+Search-adjusted Benchmark
+
+\[\widehat{\mathrm{SR}}-\mathrm{SR}_0\]
+
+额外考虑多次策略试验带来的绩效膨胀
+
+DSR 最重要的创新并不是重新定义 Sharpe Ratio 的估计误差，而是提高了证明某个策略具有真实绩效所需要跨越的 Benchmark。
+
+需要注意，DSR 是一个介于 0 和 1 之间的统计指标，不是经过调整之后的 Sharpe Ratio 数值。
+
+\hypertarget{part-4-71-0001-numerical-example-psr-vs.-dsr}{%
+\subsubsection{3.4 Numerical Example --- PSR vs. DSR}\label{part-4-71-0001-numerical-example-psr-vs.-dsr}}
+
+假设我们拥有以下实验结果：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.71}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.25}}@{}}
+\toprule
+Parameter & Value \\
+\midrule
+\endhead
+Historical Data & 5 years \\
+Daily Observations & 1,260 \\
+Observed Annualized Sharpe & 2.00 \\
+Number of Independent Trials & 1,000 \\
+Skewness & 0 \\
+Kurtosis & 3 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在 IID Gaussian Null Model 下，使用：
+\[\sigma_{\mathrm{SR}}\approx\frac1{\sqrt n},\]
+
+并将所有 Sharpe Ratio 统一转换至相同时间尺度，可以计算得到：
+
+\textbf{Observed Sharpe vs. Statistical Benchmark}
+
+Zero-performance benchmark
+
+\begin{verbatim}
+    **0.00**
+\end{verbatim}
+
+Search-adjusted benchmark
+
+\begin{verbatim}
+    **1.46**
+\end{verbatim}
+
+Observed annualized Sharpe
+
+\begin{verbatim}
+    **2.00**
+\end{verbatim}
+
+PSR against zero
+
+\textbf{99.9996\%}
+
+Deflated Sharpe Ratio
+
+\textbf{88.72\%}
+
+基于上述假设实际计算的理论结果，并非金融市场实证数据。
+
+如果忽略搜索历史，观察到的 Sharpe Ratio = 2 似乎具有极强的统计说服力。
+
+但是，在考虑此前已经执行的 1,000 次独立试验后，DSR 下降至约 88.72\%，低于常用的 95\% 置信度门槛。
+
+\textbf{同一个观察结果，在不同的 Search History 下，可以具有完全不同的统计意义。}
+
+\hypertarget{part-4-71-0001-dsr-ux4e0dux7b49ux4e8eux4e25ux683cux7684-multiple-testing-correction}{%
+\subsubsection{3.5 DSR 不等于严格的 Multiple Testing Correction}\label{part-4-71-0001-dsr-ux4e0dux7b49ux4e8eux4e25ux683cux7684-multiple-testing-correction}}
+
+这一点需要特别注意。
+
+DSR 使用的是 Expected Maximum：
+\[\mathrm{SR}_0
+\approx
+\mathbb E\left[\max_j\widehat{\mathrm{SR}}_j\right].\]
+
+但如果我们希望在独立 Gaussian Null Model 下严格控制 Family-Wise Error Rate，应该使用最大值分布的相应分位数。
+
+由：
+\[\mathbb P(M_m\leq x)=\Phi(x)^m,\]
+
+要求：
+\[\mathbb P(M_m>x_\alpha)=\alpha.\]
+
+则：
+\[\Phi(x_\alpha)^m=1-\alpha.\]
+
+因此：
+\[\boxed{
+x_\alpha
+=
+\Phi^{-1}\left((1-\alpha)^{1/m}\right)
+}\]
+
+将其转换回 Sharpe Ratio 尺度：
+\[\boxed{
+\mathrm{SR}_{\mathrm{critical}}
+=
+\sigma_{\mathrm{SR}}
+\Phi^{-1}\left((1-\alpha)^{1/m}\right)
+}\]
+
+这实际上与 II-C 中的 Šidák Correction 对应。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}@{}}
+\toprule
+Method & Benchmark & Purpose \\
+\midrule
+\endhead
+DSR & Expected Maximum & 评价考虑搜索膨胀后的绩效 \\
+Maximum-statistic Test & Maximum Distribution Quantile & 在给定零模型下控制 FWER \\
+Bonferroni & 单项显著性水平 \(\alpha/m\) & 在有效单项检验下控制 FWER \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+因此，\textbf{DSR 不是对任意相关、自适应策略搜索都具有严格错误率保证的万能修正方法。}
+
+\hypertarget{part-4-71-0001-correlated-trials-effective-number-of-trials}{%
+\subsection{4. Correlated Trials \& Effective Number of Trials}\label{part-4-71-0001-correlated-trials-effective-number-of-trials}}
+
+\hypertarget{part-4-71-0001-ux4e3aux4ec0ux4e48ux5b9eux9645ux5019ux9009ux7b56ux7565ux901aux5e38ux4e0dux72ecux7acb}{%
+\subsubsection{4.1 为什么实际候选策略通常不独立？}\label{part-4-71-0001-ux4e3aux4ec0ux4e48ux5b9eux9645ux5019ux9009ux7b56ux7565ux901aux5e38ux4e0dux72ecux7acb}}
+
+假设 RSI 依次测试以下策略：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.58}}@{}}
+\toprule
+Strategy & Configuration \\
+\midrule
+\endhead
+\(A^{(1)}\) & 20-day Momentum \\
+\(A^{(2)}\) & 21-day Momentum \\
+\(A^{(3)}\) & 22-day Momentum \\
+\(A^{(4)}\) & 23-day Momentum \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+虽然执行了四次 Backtest，但这些策略使用高度相似的金融信息，其收益序列和 Sharpe 估计误差可能高度相关。 因此：
+\[\text{Number of Trials}
+\neq
+\text{Number of Independent Trials}.\]
+
+极端情况下，重复评价完全相同的确定性策略 1,000 次，与只评价一次相比，并不会产生新的最大值选择偏差。
+
+\hypertarget{part-4-71-0001-a-mathematical-model-of-correlated-searches}{%
+\subsubsection{4.2 A Mathematical Model of Correlated Searches}\label{part-4-71-0001-a-mathematical-model-of-correlated-searches}}
+
+构造一个 Equicorrelated Gaussian Model：
+\[Z_j
+=
+\sqrt\rho\,U
++
+\sqrt{1-\rho}\,V_j,\]
+
+其中：
+\[U,V_1,\ldots,V_m
+\overset{\mathrm{i.i.d.}}{\sim}\mathcal N(0,1),\]
+
+且：
+\[0\leq\rho\leq1.\]
+
+容易验证：
+\[\operatorname{Var}(Z_j)=1,\]
+
+\[\operatorname{Corr}(Z_i,Z_j)=\rho,
+\qquad i\neq j.\]
+
+现在考虑最大值：
+\[\max_j Z_j
+=
+\sqrt\rho\,U
++
+\sqrt{1-\rho}\max_j V_j.\]
+
+由于 \(\mathbb E[U]=0\)，取期望得到：
+\[\boxed{
+\mathbb E[\max_j Z_j]
+=
+\sqrt{1-\rho}\,
+\mathbb E[\max_j V_j]
+}\]
+
+这是上述相关 Gaussian Model 下的严格数学结果。
+
+\textbf{Correlation and Selection-induced Optimism}
+
+Number of candidates\\
+\textbf{1,000}
+
+3（范围 1--5）
+
+Common correlation \(\rho\)\\
+\textbf{0.50}
+
+0.5（范围 0--1）
+
+Independent candidates
+
+\begin{verbatim}
+  **3.717**
+\end{verbatim}
+
+Correlated candidates
+
+\begin{verbatim}
+  **2.628**
+\end{verbatim}
+
+采用 Gaussian Maximum 的 leading-order approximation。相关性对期望最大值的缩放关系在本节模型中精确成立。
+
+如果所有候选的边际误差方差相同，在这种特定相关结构下，候选相关性越高，由最大值选择产生的期望膨胀越小。
+
+不过，现实 RSI 中的相关结构通常远比 Equicorrelation 复杂。
+
+\hypertarget{part-4-71-0001-effective-number-of-trials}{%
+\subsubsection{4.3 Effective Number of Trials}\label{part-4-71-0001-effective-number-of-trials}}
+
+我们可以尝试定义一个 Effective Number of Trials，记为 \(m_{\mathrm{eff}}\)，使得：
+\[\mathbb E[M_m^{\mathrm{correlated}}]
+\approx
+\mathbb E[M_{m_{\mathrm{eff}}}^{\mathrm{independent}}].\]
+
+利用前面的极值近似，在 Equicorrelated Model 下：
+\[\sqrt{2\log m_{\mathrm{eff}}}
+\approx
+\sqrt{1-\rho}\sqrt{2\log m}.\]
+
+因此：
+\[\log m_{\mathrm{eff}}
+\approx
+(1-\rho)\log m.\]
+
+得到：
+\[\boxed{
+m_{\mathrm{eff}}\approx m^{1-\rho}
+}\]
+
+例如，当 \(m=1000\)、\(\rho=0.5\) 时，该简化模型对应的有效试验数约为 32。
+
+\textbf{但这个公式是我们基于特定相关模型推导的教学近似，不是 DSR 的通用有效试验数估计公式。}
+
+而且，针对 Expected Maximum 定义的有效试验数，不一定适合用于 FWER 或其他尾部概率的修正。
+
+对于真正的 RSI 系统，我们不能仅仅根据平均候选相关性就可靠推断整个搜索过程的统计复杂度。
+
+\hypertarget{part-4-71-0001-probability-of-backtest-overfitting-pbo}{%
+\subsection{5. Probability of Backtest Overfitting (PBO)}\label{part-4-71-0001-probability-of-backtest-overfitting-pbo}}
+
+现在进入本阶段另一个核心方法。
+
+PSR 和 DSR 主要研究：
+
+\begin{quote}
+Is the observed performance statistically convincing?
+\end{quote}
+
+而 PBO 研究的是：
+
+\begin{quote}
+Does the strategy selection procedure actually select good strategies?
+\end{quote}
+
+这两个问题并不相同。
+
+Bailey、Borwein、López de Prado 和 Zhu 在 2017 年发表于 \emph{The Journal of Computational Finance} 的论文 \emph{The Probability of Backtest Overfitting} 中，系统建立了这一研究框架。
+
+\href{https://www.risk.net/journal-of-computational-finance/2471206/the-probability-of-backtest-overfitting}{来源 1} \href{https://scholarworks.wmich.edu/math_pubs/42/}{来源 2}
+
+\hypertarget{part-4-71-0001-mathematical-definition}{%
+\subsubsection{5.1 Mathematical Definition}\label{part-4-71-0001-mathematical-definition}}
+
+假设我们拥有 \(m\) 个候选策略。
+
+首先根据 IS Performance 选出最佳策略：
+\[j^*
+=
+\arg\max_{1\leq j\leq m}
+S_j^{\mathrm{IS}}.\]
+
+然后评价该策略在 OOS 中相对于其他候选策略的表现。
+
+PBO 的核心思想是估计：
+\[\boxed{
+\mathrm{PBO}
+=
+\mathbb P\left(
+S_{j^*}^{\mathrm{OOS}}
+<
+\operatorname{Median}_{j}
+S_j^{\mathrm{OOS}}
+\right)
+}\]
+
+即：样本内选出的最佳策略，在样本外表现低于候选策略中位数的概率。
+
+这里先使用严格低于中位数的概念定义；实际计算时还需要明确如何处理恰好位于中位数和并列排名的情形。
+
+\hypertarget{part-4-71-0001-a-simple-example}{%
+\subsubsection{5.2 A Simple Example}\label{part-4-71-0001-a-simple-example}}
+
+考虑以下五个候选策略：
+
+\bookgraphic{0.391}{part-4-71-0001-012-01}{假想实验。策略 A 在 IS 中排名第一，却在 OOS 中排名最后。图中第 1 名表示最佳策略。}
+
+如果这种现象在不同的数据划分中反复出现，就说明我们的 Strategy Selection Procedure 可能存在严重问题。
+
+不过，一次失败并不足以估计概率。因此，我们需要一种系统地构造 IS/OOS 数据划分的方法。
+
+这就是 CSCV。
+
+\hypertarget{part-4-71-0001-combinatorially-symmetric-cross-validation-cscv}{%
+\subsection{6. Combinatorially Symmetric Cross-Validation (CSCV)}\label{part-4-71-0001-combinatorially-symmetric-cross-validation-cscv}}
+
+\hypertarget{part-4-71-0001-performance-matrix}{%
+\subsubsection{6.1 Performance Matrix}\label{part-4-71-0001-performance-matrix}}
+
+首先构造一个收益率矩阵：
+\[\mathbf M\in\mathbb R^{T\times m}.\]
+
+具体而言：
+\[\mathbf M=
+\begin{pmatrix}
+Y_1^{(1)} & \cdots & Y_1^{(m)}\\
+Y_2^{(1)} & \cdots & Y_2^{(m)}\\
+\vdots & \ddots & \vdots\\
+Y_T^{(1)} & \cdots & Y_T^{(m)}
+\end{pmatrix}.\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(T\)：收益率观测数量；
+\item
+  \(m\)：候选策略数量；
+\item
+  \(Y_t^{(j)}\)：第 \(j\) 个策略在时刻 \(t\) 的净超额收益率。
+\end{itemize}
+
+矩阵的每一列对应一个策略，每一行对应同一个市场时期。
+
+这里已经体现了 III-F 中 Experimental Instrumentation 的重要性：
+
+\textbf{如果只保存每个策略最终的 Sharpe Ratio，而没有保存完整收益率序列，就无法直接执行 CSCV。}
+
+\hypertarget{part-4-71-0001-symmetric-partition}{%
+\subsubsection{6.2 Symmetric Partition}\label{part-4-71-0001-symmetric-partition}}
+
+将 \(\mathbf M\) 沿时间维度划分为 \(S\) 个连续且等长的 Block，其中 \(S\) 为偶数。
+
+\[\mathbf M_1,\mathbf M_2,\ldots,\mathbf M_S.\]
+
+每次从中选取 \(S/2\) 个 Block 作为 IS，其余 \(S/2\) 个 Block 作为 OOS。
+
+\textbf{CSCV --- Four-block Example}
+
+令 S = 4，可以产生六种对称的 IS/OOS 划分。
+
+\bookgraphic{0.830}{part-4-71-0001-013-01}{}
+
+\bookgraphic{0.830}{part-4-71-0001-013-02}{}
+
+Strategy selection
+
+Strategy evaluation
+
+因此，全部划分的数量为：
+\[\boxed{
+|\mathcal C_S|
+=
+\binom{S}{S/2}
+}\]
+
+其中 \(\mathcal C_S\) 表示所有可能的对称数据划分集合。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.49}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.47}}@{}}
+\toprule
+Number of Blocks \(S\) & Number of Splits \\
+\midrule
+\endhead
+4 & 6 \\
+6 & 20 \\
+8 & 70 \\
+10 & 252 \\
+12 & 924 \\
+16 & 12,870 \\
+20 & 184,756 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些是实际的组合数。
+
+需要注意，12,870 种数据划分并不意味着获得了 12,870 次相互独立的实验。各划分之间共享大量观测值。
+
+\hypertarget{part-4-71-0001-in-sample-selection}{%
+\subsubsection{6.3 In-sample Selection}\label{part-4-71-0001-in-sample-selection}}
+
+对于每一种划分 \(c\in\mathcal C_S\)，计算所有候选策略的 IS Sharpe Ratio：
+\[\widehat{\mathrm{SR}}_{j,c}^{\mathrm{IS}},
+\qquad j=1,\ldots,m.\]
+
+选择：
+\[j_c^*
+=
+\arg\max_j
+\widehat{\mathrm{SR}}_{j,c}^{\mathrm{IS}}.\]
+
+然后在其对应的 OOS Block 上评价所有候选策略。
+
+注意，CSCV 中的 IS 是用于\textbf{选择策略}的数据，不一定是该策略最初用于拟合模型参数的 Training Dataset。原论文也明确区分了策略选择与底层模型校准。
+
+\href{https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf}{来源 1}
+
+\hypertarget{part-4-71-0001-relative-rank-and-logit-transformation}{%
+\subsubsection{6.4 Relative Rank and Logit Transformation}\label{part-4-71-0001-relative-rank-and-logit-transformation}}
+
+现在定义：
+\[q_c
+=
+\operatorname{Rank}_{\mathrm{OOS}}(j_c^*).\]
+
+为了与原论文的数学方向保持一致，本节采用：
+\[q_c=1
+\quad\Longleftrightarrow\quad
+\text{worst OOS strategy},\]
+
+\[q_c=m
+\quad\Longleftrightarrow\quad
+\text{best OOS strategy}.\]
+
+这与 §5.2 示意图采用的排名方向相反，计算时必须注意。
+
+将排名标准化：
+\[\boxed{
+\omega_c=\frac{q_c}{m+1}
+}\]
+
+这样可以保证：
+\[0<\omega_c<1.\]
+
+随后进行 Logit Transformation：
+\[\boxed{
+\lambda_c
+=
+\log\frac{\omega_c}{1-\omega_c}
+}\]
+
+这是原论文 CSCV Algorithm 中采用的变换。
+
+\href{https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf}{来源 1}
+
+由于 Logit 是严格单调递增函数，因此：
+\[\begin{cases}
+\lambda_c>0,&\omega_c>0.5,\\
+\lambda_c=0,&\omega_c=0.5,\\
+\lambda_c<0,&\omega_c<0.5.
+\end{cases}\]
+
+Logit Transformation 将有限区间 \((0,1)\) 映射到了整个实数轴。
+
+\textbf{OOS Relative Rank \& Logit}
+
+假设共有 100 个候选策略。
+
+OOS rank（1 = worst）\\
+\textbf{20 / 100}
+
+20（范围 1--100）
+
+\bookgraphic{0.469}{part-4-71-0001-016-01}{}
+
+Relative rank
+
+\textbf{0.198}
+
+Logit
+
+\textbf{-1.399}
+
+\textbf{IS winner ranks below the OOS median}
+
+rank = 100
+
+\bookgraphic{0.469}{part-4-71-0001-016-state-01}{}
+
+\hypertarget{part-4-71-0001-estimation-of-pbo}{%
+\subsubsection{6.5 Estimation of PBO}\label{part-4-71-0001-estimation-of-pbo}}
+
+获得全部 CSCV 划分对应的 Logit：
+\[\{\lambda_c:c\in\mathcal C_S\}.\]
+
+就可以构造经验分布，并采用常见的非正 Logit 计数口径：
+\[\boxed{
+\widehat{\mathrm{PBO}}
+=
+\frac{
+\sum_{c\in\mathcal C_S}
+\mathbf 1_{\{\lambda_c\leq0\}}
+}{
+\binom S{S/2}
+}
+}\]
+
+这里将恰好处于中位数的结果也计为退化事件。实际研究应报告这一约定及并列排名处理方法。
+
+\textbf{Illustrative Logit Distribution --- CSCV}
+
+\bookgraphic{0.477}{part-4-71-0001-017-01}{}
+
+Below-median outcomes
+
+\textbf{63 / 100}
+
+Illustrative PBO
+
+\textbf{63\%}
+
+100 个假想划分结果的直方图，用于说明计算方法，并非实际 CSCV 实验。
+
+\hypertarget{part-4-71-0001-interpretation-1}{%
+\paragraph{Interpretation}\label{part-4-71-0001-interpretation-1}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.76}}@{}}
+\toprule
+PBO & Interpretation \\
+\midrule
+\endhead
+接近 0 & IS 选择通常能够保留具有较好 OOS 相对表现的策略 \\
+接近 0.5 & 在无信息基线下，IS 排名可能几乎没有 OOS 选择价值 \\
+接近 1 & IS 选择可能系统性地偏向 OOS 表现较差的策略 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中，0.5 的无信息基线需要相应的可交换排名假设；对于奇数候选数量、并列排名以及包含中位数的定义，精确基线可能略有不同。
+
+\hypertarget{part-4-71-0001-python-implementation-minimal-cscv}{%
+\subsection{7. Python Implementation --- Minimal CSCV}\label{part-4-71-0001-python-implementation-minimal-cscv}}
+
+以下是一份基于原论文算法构造的简化实现。
+
+\begin{verbatim}
+import numpy as np
+from itertools import combinations
+from scipy.stats import rankdata
+
+
+def sharpe_ratio(x):
+    """Column-wise, unannualized Sharpe ratios."""
+    mu = x.mean(axis=0)
+    sigma = x.std(axis=0, ddof=1)
+
+    if np.any(sigma <= 0):
+        raise ValueError("Undefined Sharpe ratio")
+
+    return mu / sigma
+
+
+def estimate_pbo(returns, S=8):
+    """
+    returns: T × m matrix of aligned excess returns.
+    S: even number of chronological blocks.
+    """
+
+    M = np.asarray(returns, dtype=float)
+
+    if M.ndim != 2 or not np.all(np.isfinite(M)):
+        raise ValueError("Invalid return matrix")
+
+    T, m = M.shape
+
+    if m < 2:
+        raise ValueError("At least two strategies required")
+
+    if S < 2 or S % 2 != 0:
+        raise ValueError("S must be positive and even")
+
+    if T % S != 0 or T // S < 2:
+        raise ValueError("Equal nontrivial blocks required")
+
+    blocks = np.split(M, S)
+
+    logits = []
+    is_scores = []
+    oos_scores = []
+
+    for c in combinations(range(S), S // 2):
+
+        is_indices = set(c)
+
+        oos_indices = [
+            i for i in range(S)
+            if i not in is_indices
+        ]
+
+        IS = np.concatenate(
+            [blocks[i] for i in c],
+            axis=0
+        )
+
+        OOS = np.concatenate(
+            [blocks[i] for i in oos_indices],
+            axis=0
+        )
+
+        sr_is = sharpe_ratio(IS)
+        sr_oos = sharpe_ratio(OOS)
+
+        # Select the IS winner
+        winner = np.argmax(sr_is)
+
+        # Ascending OOS rank: worst = 1
+        ranks = rankdata(
+            sr_oos,
+            method="average"
+        )
+
+        omega = ranks[winner] / (m + 1)
+        logit = np.log(omega / (1 - omega))
+
+        logits.append(logit)
+        is_scores.append(sr_is[winner])
+        oos_scores.append(sr_oos[winner])
+
+    logits = np.asarray(logits)
+
+    return {
+        "pbo": np.mean(logits <= 0),
+        "logits": logits,
+        "n_splits": len(logits),
+        "selected_is_scores": np.asarray(is_scores),
+        "selected_oos_scores": np.asarray(oos_scores)
+    }
+\end{verbatim}
+
+这里有三个需要明确的实现决策：
+
+\begin{itemize}
+\tightlist
+\item
+  IS 并列最优时，\texttt{np.argmax()} 保留第一个候选；OOS 并列则采用平均排名。
+\item
+  使用连续等长 Block，不自动删除任何历史数据。
+\item
+  使用普通单期 Sharpe Ratio，不执行自相关修正。
+\end{itemize}
+
+该代码是教学参考实现，尚未运行完整测试。它可以用于固定候选策略集合的 Selection Diagnosis，但不是完整的金融时间序列验证框架。
+
+\hypertarget{part-4-71-0001-pbo-does-not-directly-measure-rsi-performance-decay}{%
+\subsection{8. PBO Does Not Directly Measure RSI Performance Decay}\label{part-4-71-0001-pbo-does-not-directly-measure-rsi-performance-decay}}
+
+这一点非常 Nontrivial，也是我们阅读相关论文时必须保持清醒的地方。
+
+PBO 是一种 \textbf{Relative Performance Metric}。
+
+而 X Program \#161 所研究的 Better, Then Worse，更接近 \textbf{Absolute Trajectory Decay}。
+
+两者完全可能出现不一致。
+
+\textbf{Case A --- Low PBO, Severe Decay}
+
+\bookgraphic{0.786}{part-4-71-0001-018-01}{Agent 始终优于其他候选，但自身 OOS 性能严重下降。}
+
+\textbf{Case B --- High PBO, Absolute Improvement}
+
+\bookgraphic{0.786}{part-4-71-0001-018-02}{Agent 自身持续改善，但其他候选改善得更快，选择机制可能不理想。}
+
+假想反例。Other candidates 表示其他候选的代表性相对表现；两图仅说明绝对性能与相对排名可以分离，并非实际 PBO 计算结果。 因此：
+\[\boxed{
+\text{Low PBO}
+\not\Rightarrow
+\text{No OOS Decay}
+}\]
+
+同时：
+\[\boxed{
+\text{High PBO}
+\not\Rightarrow
+\text{Absolute OOS Decline}
+}\]
+
+这意味着 PBO 应当作为 Complementary Diagnostic Metric，而不能替代 III-F 中学习过的：
+\[k_{\mathrm{peak}},\quad
+D_{\mathrm{PF}},\quad
+D_{\max},\quad
+\hat\tau.\]
+
+\hypertarget{part-4-71-0001-adaptive-backtest-overfitting-in-rsi}{%
+\subsection{9. Adaptive Backtest Overfitting in RSI}\label{part-4-71-0001-adaptive-backtest-overfitting-in-rsi}}
+
+这是本阶段真正的研究前沿问题。
+
+\hypertarget{part-4-71-0001-classical-selection-vs.-adaptive-candidate-generation}{%
+\subsubsection{9.1 Classical Selection vs. Adaptive Candidate Generation}\label{part-4-71-0001-classical-selection-vs.-adaptive-candidate-generation}}
+
+经典策略选择通常可以抽象为：
+\[\mathcal A
+=
+\{A^{(1)},\ldots,A^{(m)}\},\]
+
+然后：
+\[A^*
+=
+\arg\max_{A\in\mathcal A}
+\widehat J_D(A).\]
+
+但是，RSI 的候选策略集合本身可能依赖于开发数据：
+\[\mathcal A(D)
+=
+\{A_0,A_1(D),\ldots,A_K(D)\}.\]
+
+沿用 II-D 和 III-C 的记号：
+\[F_k=\mathcal E(A_k,D),\]
+
+\[H_k=\{(A_i,F_i)\}_{i=0}^{k},\]
+
+\[A_{k+1}
+=
+\mathcal I_{A_k}(A_k,F_k,H_k).\]
+
+此时，数据不仅影响最终 Selection，还会影响：
+
+\begin{itemize}
+\tightlist
+\item
+  Candidate Generation；
+\item
+  Search Direction；
+\item
+  Memory；
+\item
+  Optimizer Structure。
+\end{itemize}
+
+这是传统固定候选集合分析所不能自动覆盖的部分。
+
+\hypertarget{part-4-71-0001-the-retrospective-cscv-trap}{%
+\subsubsection{9.2 The Retrospective CSCV Trap}\label{part-4-71-0001-the-retrospective-cscv-trap}}
+
+假设我们首先使用完整开发集 \(D\) 执行 RSI，生成 100 个 Agent Version。
+
+随后，将这 100 个版本的收益率矩阵进行 CSCV。
+
+乍看上去，我们已经建立了 IS/OOS Separation。
+
+但问题是：\textbf{每一个候选版本可能早已受到全部开发数据的影响，包括后来被划分为 OOS 的那些 Block。}
+
+\textbf{Protocol A --- Retrospective CSCV}
+
+\bookgraphic{0.659}{part-4-71-0001-020-01}{后来划分出来的 OOS 数据可能已经参与了候选版本的生成，因此并不是整个 RSI 流程意义上的独立测试集。}
+
+\textbf{Protocol B --- Nested RSI Evaluation}
+
+\bookgraphic{0.567}{part-4-71-0001-020-02}{每个外层划分内重新执行完整候选生成和选择过程。OOS 评价不参与 Agent 的优化反馈。}
+
+Protocol A 并非完全没有价值，它仍然能够分析已经生成的候选集合内部的排名稳定性。
+
+但是，它不能被解释为整个 Adaptive RSI Procedure 的无偏样本外评价。
+
+Protocol B 更接近我们在 II-F 中研究的 Nested Validation。对于预测未来金融收益的任务，还应优先使用具有时间顺序约束的 Outer Walk-forward Evaluation。
+
+\hypertarget{part-4-71-0001-the-search-adjusted-performance-problem}{%
+\subsection{10. The Search-adjusted Performance Problem}\label{part-4-71-0001-the-search-adjusted-performance-problem}}
+
+对于 RSI，我们能否直接用累计评估次数 \(Q_k\) 替代 DSR 中的独立试验数 \(m\)？
+
+目前不能无条件这样做。
+
+因为：
+\[Q_k=\sum_{i=1}^{k}q_i\]
+
+只描述了 Agent 执行过多少次评价，而没有描述它从反馈中获得了多少有效信息。
+
+考虑三个具有相同 Evaluation Budget 的系统：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.73}}@{}}
+\toprule
+System & 1,000 Evaluations \\
+\midrule
+\endhead
+A & 事先固定 1,000 个独立候选 \\
+B & 对同一策略重复进行确定性评价 \\
+C & 每次根据此前反馈生成新的 Agent \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+三个系统具有相同的 Query Count，但其统计复杂度明显不同。
+
+II-D 已经给出了理解这个问题的数学工具：
+\[T_K=(a_1,\ldots,a_K),\]
+
+其中 \(T_K\) 是 Feedback Transcript。
+
+在适当信息流条件下：
+\[I(D_n;A_K)
+\leq I(D_n;T_K).\]
+
+这意味着研究 RSI 的搜索偏差时，除了候选数量，还需要考虑：
+\[\underbrace{Q_k}_{\text{Search budget}},
+\qquad
+\underbrace{I(D_n;T_K)}_{\text{Information exposure}},
+\qquad
+\underbrace{\Omega(A_k)}_{\text{Complexity proxy}}.\]
+
+这些变量可能比单独使用 Iteration Count 更有解释力。
+
+但是，将 Mutual Information、Adaptive Query Budget 与 DSR 建立具有严格统计保证的联系，并不是我们目前已经解决的问题。这里应当作为研究方向，而不是直接宣称存在一个现成的 Adaptive DSR 公式。
+
+\hypertarget{part-4-71-0001-research-practice-null-model-calibration}{%
+\subsection{11. Research Practice --- Null-model Calibration}\label{part-4-71-0001-research-practice-null-model-calibration}}
+
+我认为这是 IV-E 中最有可能直接转化为本科生科研任务的部分。
+
+与其尝试立即发展新的理论修正公式，不如先通过受控实验研究现有方法的表现。
+
+\hypertarget{part-4-71-0001-experimental-design}{%
+\subsubsection{11.1 Experimental Design}\label{part-4-71-0001-experimental-design}}
+
+沿用 IV-B 中的 Synthetic DGP。
+
+首先构造完全不存在收益预测信号的环境：
+\[r_{t+1}=\varepsilon_{t+1}.\]
+
+即：
+\[\mathrm{SNR}_{\mathrm{task}}=0.\]
+
+然后比较三类不同的研究系统：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.76}}@{}}
+\toprule
+Group & Optimization Process \\
+\midrule
+\endhead
+A & Non-adaptive Random Search \\
+B & Adaptive Search with Fixed Improver \\
+C & Self-modifying RSI Optimizer \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+统一数据生成机制、开发样本量、候选评价预算及外部评价协议。
+
+对每个系统记录：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.52}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.44}}@{}}
+\toprule
+Metric & Research Purpose \\
+\midrule
+\endhead
+Maximum IS Sharpe & 衡量经验绩效膨胀 \\
+Population / Independent OOS Sharpe & 衡量真实性能 \\
+PSR & 普通统计置信度 \\
+DSR & 搜索规模修正后的评价 \\
+PBO & 候选选择的相对稳定性 \\
+False Positive Rate & 直接验证统计指标的可靠性 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-71-0001-calibration-experiment}{%
+\subsubsection{11.2 Calibration Experiment}\label{part-4-71-0001-calibration-experiment}}
+
+假设每组执行 \(B\) 次独立的 Null-model Experiments。
+
+由于 DGP 不包含真实预测信号，在适当的交易和成本设定下，我们可以知道系统不具备真正的正向预测优势。
+
+定义经验 False Positive Rate：
+\[\boxed{
+\widehat{\mathrm{FPR}}
+=
+\frac1B
+\sum_{b=1}^{B}
+\mathbf 1_{\{
+\widehat{\mathrm{DSR}}_b>0.95
+\}}
+}\]
+
+如果某种方法被解释为具有 5\% 的整体假阳性率控制能力，就可以检查这一解释在该零模型下是否成立。DSR 本身不保证这种控制，因此这里是在检验其阈值的实际校准程度。
+
+\textbf{Hypothetical Calibration Experiment}
+
+\bookgraphic{0.786}{part-4-71-0001-021-01}{完全假想的实验结果。目的是说明如何比较不同搜索机制下的错误发现频率，并非已经证实 DSR 在 RSI 中会出现这些数值。}
+
+如果 DSR 在固定候选集合中表现相对可靠，但在 Adaptive Search 或 RSI 中出现明显的过度置信，那么我们就获得了一个具体的研究问题：
+
+\textbf{现有的 Backtest Overfitting Correction 是否足以应对自适应的 Agent Evolution？}
+
+进一步，还可以引入完整 Search-process Bootstrap：不是只对最终选中策略的收益率重采样，而是在新的零模型数据上重新执行整个候选生成、评价和选择过程。
+
+两者之间的区别是：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Bootstrap Object & What It Can Capture \\
+\midrule
+\endhead
+Selected Strategy Returns & 固定最终策略的绩效估计误差 \\
+All Fixed Candidate Returns & 固定候选集合的选择偏差 \\
+Entire Research Process & 自适应生成、搜索与选择共同产生的偏差 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+第三种方法计算成本最高，但最贴近 RSI 的统计问题。实际使用时仍然必须证明所采用的 Null DGP 或重采样机制能够代表待检验的零假设。
+
+\hypertarget{part-4-71-0001-consolidated-comparison-psr-dsr-and-pbo}{%
+\subsection{12. Consolidated Comparison --- PSR, DSR and PBO}\label{part-4-71-0001-consolidated-comparison-psr-dsr-and-pbo}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.24}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.30}}@{}}
+\toprule
+Dimension & PSR & DSR & PBO \\
+\midrule
+\endhead
+Core Object & 单个策略 & 多次搜索后的策略 & 策略选择过程 \\
+Sample Length & 考虑 & 考虑 & 间接影响 \\
+Non-normality & 通过高阶矩 & 通过高阶矩 & 取决于评分指标 \\
+Multiple Testing & 不直接考虑 & 近似考虑 & 通过重复划分诊断 \\
+Temporal Dependence & 标准公式未修正 & 标准公式未修正 & Block 划分部分保留时间结构 \\
+Adaptive Generation & 未直接处理 & 未充分处理 & 需重新设计外层协议 \\
+Output & 0--1 & 0--1 & 0--1 \\
+Desired Direction & Higher & Higher & Lower \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-71-0001-which-method-answers-which-question}{%
+\paragraph{Which method answers which question?}\label{part-4-71-0001-which-method-answers-which-question}}
+
+\textbf{PSR}
+
+\textbf{我的策略是否显著优于某个基准？} \(\widehat{\mathrm{SR}}-\mathrm{SR}^*\)
+
+\textbf{DSR}
+
+\textbf{考虑此前的搜索规模之后，这个策略还具有多少统计说服力？} \(\widehat{\mathrm{SR}}-\mathrm{SR}_0\)
+
+\textbf{PBO}
+
+\textbf{我的 IS Selection 能否在 OOS 中选出相对较好的策略？} \(\mathbb P(\omega_c\leq0.5)\)
+
+\textbf{RSI}
+
+\textbf{不断演化的研究系统，在何时、为何开始失去泛化能力？} \(\{S_k^{\mathrm{IS}},S_k^{\mathrm{OOS}}\}_{k=0}^{K}\)
+
+第四个问题正是我们准备参与的课题所关注的方向。
+
+\hypertarget{part-4-71-0001-literature-index}{%
+\subsection{13. Literature Index}\label{part-4-71-0001-literature-index}}
+
+本阶段的三篇核心论文具有清晰的理论继承关系，建议按照发表时间阅读。
+
+\textbf{P0 --- The Sharpe Ratio Efficient Frontier}
+
+David H. Bailey \& Marcos López de Prado · 2012 · Journal of Risk, 15(2), 3--44
+
+重点阅读 PSR、Non-normality Adjustment 和 Minimum Track Record Length。
+
+\href{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1821643}{SSRN 全文入口} · \href{https://www.risk.net/journal-of-risk/volume-15-number-2-december-2012}{期刊出版记录}
+
+\textbf{P0 --- The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality}
+
+David H. Bailey \& Marcos López de Prado · 2014 · The Journal of Portfolio Management, 40(5), 94--107
+
+重点阅读 Expected Maximum Sharpe Ratio、Multiple Testing 和 Appendix 中的 Extreme Value Approximation。
+
+\href{https://www.davidhbailey.com/dhbpapers/deflated-sharpe.pdf}{作者提供的论文 PDF} · \href{https://doi.org/10.3905/jpm.2014.40.5.094}{DOI: 10.3905/jpm.2014.40.5.094}
+
+\textbf{P0 --- The Probability of Backtest Overfitting}
+
+Bailey, Borwein, López de Prado \& Zhu · 2017 · The Journal of Computational Finance, 20(4)
+
+本阶段最值得精读的论文。特别关注 §2.1 的形式化定义和 §2.2 的 Algorithm 2.3。
+
+\href{https://www.davidhbailey.com/dhbpapers/backtest-prob.pdf}{作者提供的论文 PDF} · \href{https://doi.org/10.21314/JCF.2016.322}{DOI: 10.21314/JCF.2016.322}
+
+上述出版记录已经检索核对，CSCV 的算法定义也已核对作者提供的原文。PSR、DSR 的教学推导主要建立在 IV-D 已经推导过的统计理论与本次检索到的文献定义上。
+
+\hypertarget{part-4-71-0001-iv-e-conclusion-index}{%
+\subsection{14. IV-E --- Conclusion Index}\label{part-4-71-0001-iv-e-conclusion-index}}
+
+\hypertarget{part-4-71-0001-core-conclusions}{%
+\subsubsection{14.1 Core Conclusions}\label{part-4-71-0001-core-conclusions}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.70}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+E1 & Backtest Selection 会改变最终统计量的抽样分布 & §1 \\
+E2 & PSR 考虑样本长度与收益率高阶矩 & §2 \\
+E3 & PSR 不等于 Bayesian Posterior Probability & §2.2 \\
+E4 & MinTRL 与绩效差距的平方成反比 & §2.4 \\
+E5 & 最大经验 Sharpe 会随独立搜索规模增加而提高 & §3.1 \\
+E6 & DSR 使用搜索规模调整后的 Benchmark & §3.3 \\
+E7 & DSR 不等于严格 FWER Correction & §3.5 \\
+E8 & 候选相关性会影响选择偏差 & §4 \\
+E9 & Effective Number of Trials 依赖具体统计定义 & §4.3 \\
+E10 & PBO 衡量 IS 选择者在 OOS 中的相对排名退化 & §5 \\
+E11 & CSCV 构造组合对称的数据划分 & §6 \\
+E12 & PBO 不等于绝对性能退化 & §8 \\
+E13 & 对已适应完整数据的候选进行 CSCV 存在局限 & §9 \\
+E14 & RSI 的 Query Count 不等于有效独立试验数 & §10 \\
+E15 & Null-model Calibration 可以检验现有修正方法的可靠性 & §11 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-71-0001-core-formula-sheet}{%
+\subsubsection{14.2 Core Formula Sheet}\label{part-4-71-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Probabilistic Sharpe Ratio}
+
+\[\boxed{
+\widehat{\mathrm{PSR}}(\mathrm{SR}^*)
+=
+\Phi\left(
+\frac{
+(\widehat{\mathrm{SR}}-\mathrm{SR}^*)\sqrt{n-1}
+}{
+\sqrt{
+1-\hat\gamma_3\widehat{\mathrm{SR}}
++
+\frac{\hat\gamma_4-1}{4}\widehat{\mathrm{SR}}^2
+}
+}
+\right)
+}\]
+
+\textbf{Result 2 --- Gaussian Maximum Distribution}
+
+\[F_{M_m}(x)=\Phi(x)^m.\]
+
+\textbf{Result 3 --- Expected Maximum Sharpe}
+
+\[\begin{aligned}
+\mathrm{SR}_0\approx
+\sigma_{\mathrm{SR}}\Bigg[
+&(1-\gamma_{\mathrm E})
+\Phi^{-1}(1-1/m)\\
+&+\gamma_{\mathrm E}
+\Phi^{-1}(1-1/(me))
+\Bigg].
+\end{aligned}\]
+
+\textbf{Result 4 --- Deflated Sharpe Ratio}
+
+\[\boxed{
+\widehat{\mathrm{DSR}}
+=
+\widehat{\mathrm{PSR}}(\mathrm{SR}_0)
+}\]
+
+\textbf{Result 5 --- Correlated Gaussian Maximum}
+
+\[\mathbb E[\max_j Z_j]
+=
+\sqrt{1-\rho}\,
+\mathbb E[\max_j V_j].\]
+
+\textbf{Result 6 --- CSCV Relative Rank and Logit}
+
+\[\omega_c=\frac{q_c}{m+1},
+\qquad
+\lambda_c=\log\frac{\omega_c}{1-\omega_c}.\]
+
+\textbf{Result 7 --- Probability of Backtest Overfitting}
+
+\[\boxed{
+\widehat{\mathrm{PBO}}
+=
+\frac{
+\sum_{c\in\mathcal C_S}
+\mathbf 1_{\{\lambda_c\leq0\}}
+}{
+\binom S{S/2}
+}
+}\]
+
+\hypertarget{part-4-71-0001-proof-index}{%
+\subsubsection{14.3 Proof Index}\label{part-4-71-0001-proof-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.57}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.24}}@{}}
+\toprule
+Proof & Mathematical Result & Location \\
+\midrule
+\endhead
+P1 & PSR 的渐近统计基础 & §2、IV-D §6 \\
+P2 & Minimum Track Record Length & §2.4 \\
+P3 & Gaussian Maximum 的 CDF 和 PDF & §3.1 \\
+P4 & Maximum-statistic FWER Threshold & §3.5 \\
+P5 & Equicorrelated Gaussian Maximum & §4.2 \\
+P6 & Effective Number of Trials 的教学近似 & §4.3 \\
+P7 & CSCV 的组合数 & §6.2 \\
+P8 & Logit 与中位数排名的等价关系 & §6.4 \\
+P9 & PBO 与绝对性能退化的区别 & §8 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-71-0001-the-most-important-research-insight}{%
+\subsection{15. The Most Important Research Insight}\label{part-4-71-0001-the-most-important-research-insight}}
+
+经过本阶段，我们可以将传统 Backtest Overfitting 与 RSI 的区别总结为：
+
+\textbf{Classical Backtest Optimization}
+
+Optimize among strategies
+
+\(A^*=\arg\max_A\widehat J_D(A)\) ↓ \textbf{Selection Bias}
+
+从有限数据中选择幸运的统计估计量
+
+\textbf{Recursive Self-Improvement}
+
+Optimize the strategy generator itself
+
+\(A_{k+1}=\mathcal I_{A_k}(A_k,F_k,H_k)\) ↓ \textbf{Adaptive \& Recursive Bias}
+
+搜索、反馈与修改机制共同演化
+
+↓
+
+\textbf{Research Question}
+
+\begin{verbatim}
+传统的金融统计修正方法，能否充分处理递归研究系统所产生的统计偏差？
+\end{verbatim}
+
+\textbf{传统 Backtest Overfitting 关注的是我们是否选择了一个错误的策略；RSI 研究还需要关注，我们是否逐渐演化出了一个越来越擅长选择错误策略的研究系统。}
+
+这是一个值得检验的研究假设，而不是已被证明的 RSI 普遍规律。
+
+目前仍然没有确认课题组实际使用的 Financial Task、评价指标和 RSI Framework。因此，本阶段提出的 Nested RSI Evaluation、Null-model Calibration 及搜索过程重采样均属于候选实验设计，尚未在课题组数据上验证。
+
+\hypertarget{part-4-71-0001-next-iv-f-market-regime-non-stationarity-robustness}{%
+\subsection{Next --- IV-F: Market Regime, Non-stationarity \& Robustness}\label{part-4-71-0001-next-iv-f-market-regime-non-stationarity-robustness}}
+
+IV-A --- Financial Time Series \& DGP
+
+IV-B --- Low SNR \& Predictability
+
+IV-C --- Financial Factors \& ML Models
+
+IV-D --- Returns, Sharpe Ratio \& Evaluation
+
+IV-E --- Backtest Overfitting, PBO \& DSR
+
+IV-F --- Market Regime \& Robustness
+
+下一阶段是 Part IV 的最后一个模块。
+
+此前我们主要研究的是：即使真实 DGP 保持不变，Agent 也可能由于过度搜索而损害 OOS Performance。
+
+但金融市场还有另一个更加棘手的问题：\textbf{真实 DGP 本身也可能发生变化。}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.61}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Market Regime & 如何描述不同市场状态？ \\
+Structural Break & 如何识别数据生成机制变化？ \\
+Hidden Markov Model & 如何建模不可直接观测的市场状态？ \\
+Regime-switching Model & 如何研究预测规律随市场状态改变？ \\
+Parameter Instability & 为什么历史回归系数可能失效？ \\
+Robust Optimization & 如何避免 Agent 过度适应单一市场环境？ \\
+Worst-group Performance & 如何评价不同市场状态下的最差表现？ \\
+Decay Attribution & 如何区分 RSI Overfitting 与 Market Distribution Shift？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+尤其是最后一个问题，我们将重新审视 II-E 中推导的 Risk Decomposition：
+\[\boxed{
+R_Q(h)-\widehat R_n(h)
+=
+\underbrace{
+R_P(h)-\widehat R_n(h)
+}_{\text{Generalization Gap}}
++
+\underbrace{
+R_Q(h)-R_P(h)
+}_{\text{Distribution Shift}}
+}\]
+
+IV-F 将研究如何利用受控 DGP、市场状态划分和跨环境实验，将这两个机制尽可能区分开来。
+
+完成 IV-F 后，我们将正式结束基础理论部分，进入 \textbf{Part V --- Literature \& Research Frontier}，着手系统整理现有研究与 X Program \#161 的潜在 Research Gap。

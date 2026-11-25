@@ -1,0 +1,69 @@
+% !TEX program = xelatex
+\documentclass[10pt,a4paper]{article}
+\newcommand{\ReaderPaletteFile}{../palette.tex}
+\input{../reader_prototype/latex/reader-layout.tex}
+\usepackage{fvextra,upquote,newunicodechar}
+\setmonofont{Consolas}
+\setCJKmonofont{SimSun}
+\providecommand{\blacksquare}{\mdblksquare}
+\providecommand{\square}{\mdlgwhtsquare}
+\newunicodechar{★}{\ensuremath{\bigstar}}
+\newunicodechar{☆}{\ensuremath{\star}}
+\newunicodechar{↓}{\ensuremath{\downarrow}}
+\newunicodechar{↑}{\ensuremath{\uparrow}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{ₘ}{\textsubscript{m}}
+\newunicodechar{ᵣ}{\textsubscript{r}}
+\newunicodechar{ⱼ}{\textsubscript{j}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true,breakanywhere=true,fontsize=\small}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{0}
+\renewcommand{\contentsname}{目录}
+\renewcommand{\partname}{Part}
+\renewcommand{\thepart}{\Roman{part}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+\fancyhead[R]{\runningfont\nouppercase{\rightmark}}
+\titleformat{\part}[display]{\Large\bfseries}{Part \thepart}{3pt}{}
+\titlespacing*{\part}{0pt}{16pt}{8pt}
+\titleformat{\paragraph}[block]{\normalsize\bfseries}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{4pt}{1pt}
+\DeclareCaptionLabelSeparator{quietspace}{\enspace}
+\captionsetup{labelsep=quietspace}
+\setlength{\LTcapwidth}{.95\linewidth}
+\newcommand{\bookgraphic}[3]{%
+  \begin{readerfigure}{#1}%
+  \includegraphics[width=\linewidth,height=.43\textheight,keepaspectratio]{figures/#2.pdf}%
+  \captionof{figure}{#3}%
+  \end{readerfigure}}
+\hypersetup{pdftitle={科研准备学习路线},pdfsubject={Mathematical Exploration · Personal Reader Edition}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{.23\textheight}
+{\Large X Program \#161 \enspace·\enspace Research Preparation\par}
+\vspace{9mm}
+{\fontsize{32}{39}\selectfont\bfseries 科研准备学习路线\par}
+\vspace{5mm}
+{\large Mathematical Exploration\par}
+{\large Personal Reader Edition\par}
+\vfill
+\end{titlepage}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\input{chapters/part-1}
+\clearpage
+\input{chapters/part-2}
+\clearpage
+\input{chapters/part-3}
+\clearpage
+\input{chapters/part-4}
+\end{document}

@@ -1,0 +1,824 @@
+% Archive record 31, line 1.
+\hypertarget{part-3-31-0001-iii-a-llm-agent-architecture-agent-harness}{%
+\section{III-A --- LLM Agent Architecture \& Agent Harness}\label{part-3-31-0001-iii-a-llm-agent-architecture-agent-harness}}
+
+经过 Part II 的学习，我们已经具备了相当完整的统计理论基础。现在可以转换视角，从 \textbf{Statistics-oriented Research} 转向 \textbf{System-oriented Research}。
+
+前面我们一直将 Agent \(A_k\) 视为一个抽象的统计研究对象，但实际上尚未充分解释：
+
+\begin{itemize}
+\tightlist
+\item
+  \(A_k\) 在计算机中究竟是什么？
+\item
+  从 \(A_k\) 到 \(A_{k+1}\)，代码层面发生了什么？
+\item
+  Agent 如何根据反馈修改自身？
+\item
+  改进过程中，哪些组件可能成为过拟合的来源？
+\end{itemize}
+
+Part III 就是为了打开这个 Black Box。
+
+\hypertarget{part-3-31-0001-part-iii-learning-roadmap}{%
+\subsection{0. Part III --- Learning Roadmap}\label{part-3-31-0001-part-iii-learning-roadmap}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.12}}@{}}
+\toprule
+Section & Topic & 核心问题 & Priority \\
+\midrule
+\endhead
+III-A & Agent Architecture \& Harness & Agent 究竟是怎样的计算系统？ & P0 \\
+III-B & Tools, Memory, Planning \& Reflection & Agent 如何利用环境与历史信息？ & P1 \\
+III-C & Self-Modification \& Recursive Optimization & Agent 如何改写自身？ & P0 \\
+III-D & Evaluation, Search \& Selection & 如何生成和选择新版本？ & P0 \\
+III-E & Automated Research Agents & AIDE、STOP、DGM 等系统如何实现？ & P0 \\
+III-F & Failure Modes \& Instrumentation & 如何监控、记录并诊断 RSI？ & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+相比 Part II，本部分会更侧重 \textbf{Software Architecture、Algorithms、System Design 和 Experimental Engineering}。
+
+我们暂时不深入 Transformer、LLM Pre-training 和 Reinforcement Learning，因为理解代码层面的 Agentic RSI 并不以掌握这些内容为必要前提。
+
+\hypertarget{part-3-31-0001-research-motivation}{%
+\subsection{1. Research Motivation}\label{part-3-31-0001-research-motivation}}
+
+我们首先回顾一个容易产生误解的概念：
+
+\textbf{LLM 的能力与 AI Agent 的能力不是同一个量。}
+
+两个使用完全相同 Foundation Model 的 Agent，可能因为 Prompt、工具、上下文组织、搜索算法和评估机制的不同，在同一项任务上表现出显著的性能差异。
+
+\bookgraphic{0.479}{part-3-31-0001-001-01}{底层模型完全相同，但系统层面的能力可能不同。复杂的 Agent B 也并不必然优于 Agent A。}
+
+实际上，你此前使用 DeepSeek Harness 完成 DSA 模拟项目，以及在 Truth Table to Circuit 项目中组织多轮代码修改、Evaluator 测试和版本回归的经历，已经涉及 Agentic System 的多个组成部分。
+
+尤其是后者的研究迭代方式：
+\[\text{Baseline}
+\rightarrow
+\text{Modification}
+\rightarrow
+\text{Evaluation}
+\rightarrow
+\text{Regression Check}
+\rightarrow
+\text{Next Version}.\]
+
+它与本课题的研究流程具有相似性。
+
+当然，你此前的项目主要由人类参与制定研究方向和选择最终方案，并不能直接称为严格意义上的 Autonomous RSI。但是，其中积累的版本管理、实验记录和评估经验是可以迁移的。
+
+\hypertarget{part-3-31-0001-ux4ece-llm-ux5230-ai-agent}{%
+\subsection{2. 从 LLM 到 AI Agent}\label{part-3-31-0001-ux4ece-llm-ux5230-ai-agent}}
+
+\hypertarget{part-3-31-0001-large-language-model}{%
+\subsubsection{2.1 Large Language Model}\label{part-3-31-0001-large-language-model}}
+
+从数学角度出发，一个 Autoregressive Language Model 可以表示为条件概率分布：
+\[p_\theta(y_t\mid y_1,\ldots,y_{t-1},x).\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(\theta\)：模型参数；
+\item
+  \(x\)：输入上下文；
+\item
+  \(y_t\)：当前生成的 Token。
+\end{itemize}
+
+整个输出序列的条件概率为：
+\[p_\theta(y_1,\ldots,y_T\mid x)
+=
+\prod_{t=1}^{T}
+p_\theta(y_t\mid y_{<t},x).\]
+
+这里不需要深入其内部 Transformer Architecture。
+
+我们只需要认识到，LLM 的基本功能是根据上下文生成 Token。
+
+单纯的 LLM 不会自行执行 Python、修改文件、运行实验或者持续管理科研项目。这些能力需要外部系统进行组织和执行。
+
+\hypertarget{part-3-31-0001-augmented-llmworkflow-ux4e0e-agent}{%
+\subsubsection{2.2 Augmented LLM、Workflow 与 Agent}\label{part-3-31-0001-augmented-llmworkflow-ux4e0e-agent}}
+
+三个概念值得区分。
+
+\bookgraphic{0.334}{part-3-31-0001-002-01}{}
+
+\textbf{Level 0 --- Standalone LLM}
+
+\begin{verbatim}
+  输入一段 Prompt，模型生成文本输出。通常没有外部执行过程。
+\end{verbatim}
+
+\bookgraphic{0.334}{part-3-31-0001-002-02}{}
+
+\textbf{Level 1 --- LLM Workflow}
+
+\begin{verbatim}
+  由程序预先规定多个 LLM 调用和工具执行步骤。模型参与任务，但整体流程通常由开发者确定。
+\end{verbatim}
+
+\bookgraphic{0.334}{part-3-31-0001-002-03}{}
+
+\textbf{Level 2 --- AI Agent}
+
+\begin{verbatim}
+  模型可以根据当前状态与环境反馈，动态决定下一步操作、调用哪些工具以及是否继续执行。
+\end{verbatim}
+
+Augmented LLM 则通常指能够使用 Retrieval、Tools 或 Memory 等外部能力的 LLM，它是构建 Workflow 和 Agent 的基础组件，但不一定具有自主的控制流程。
+
+这种 Workflow 与 Agent 的区分也出现在 Anthropic 于 2024 年发布的工程文章 \emph{Building Effective Agents} 中。
+
+\href{https://www.anthropic.com/research/building-effective-agents?aff=47lw0}{来源 1}
+
+这不是严格统一的学术分类，但非常适合我们理解 Agentic System 的基本架构。
+
+\textbf{Agent 的重要特征不是使用了多少次 LLM，而是系统具有多少动态决策能力。}
+
+\hypertarget{part-3-31-0001-agent-architecture-ux7cfbux7edfux7684ux7ec4ux6210}{%
+\subsection{3. Agent Architecture --- 系统的组成}\label{part-3-31-0001-agent-architecture-ux7cfbux7edfux7684ux7ec4ux6210}}
+
+\hypertarget{part-3-31-0001-formal-representation}{%
+\subsubsection{3.1 Formal Representation}\label{part-3-31-0001-formal-representation}}
+
+沿用 Part I 中已经定义的记号，不再重新更换符号：
+\[\boxed{
+A=(\mathcal L,P,M,T,C)
+}\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Component & Definition & Typical Implementation \\
+\midrule
+\endhead
+\(\mathcal L\) & Language Model & LLM API、Local Model \\
+\(P\) & Prompt & System Prompt、Task Instructions \\
+\(M\) & Memory & Context Window、Database、Experiment Logs \\
+\(T\) & Tools & Python、Shell、File System、Evaluator \\
+\(C\) & Control Logic & Python Loop、State Machine、Search Algorithm \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+除此之外，我们还需要定义 Agent 所处的 \textbf{Environment}。
+
+这里用 \(\mathcal E\) 表示外部环境，包括任务数据、执行环境和外部评价机制。它不属于上述 Agent 元组中的内部组件。
+
+\textbf{LLM Agent --- System Architecture}
+
+\bookgraphic{0.348}{part-3-31-0001-004-01}{简化架构。LLM 负责生成决策，Harness 负责组织和执行决策，Environment 提供实际反馈。}
+
+对于 X Program \#161，我们需要特别注意以下三个边界。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.60}}@{}}
+\toprule
+Boundary & Research Meaning \\
+\midrule
+\endhead
+LLM vs. Harness & 区分模型本身的能力与系统组织方式的贡献 \\
+Agent vs. Environment & 区分 Agent 可以修改的部分与外部实验条件 \\
+Agent vs. Evaluator & 防止被评价对象同时控制评价标准 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+第三个边界尤其重要。
+
+Agent 可以改进自身的内部评估方法，但研究人员用于衡量其真实性能的外部 Evaluator 应当受到独立控制。
+
+否则，Agent 可能不是在改进解决问题的能力，而是在改进获得高分的能力。
+
+\hypertarget{part-3-31-0001-agent-as-a-state-transition-system}{%
+\subsubsection{3.2 Agent as a State Transition System}\label{part-3-31-0001-agent-as-a-state-transition-system}}
+
+从 Computer Science 的角度，我们可以将 Agent 理解为一个具有状态的动态系统。
+
+为了避免与 RSI 的迭代轮次 \(k\) 混淆，这里使用 \(t\) 表示单次 Agent 运行内部的操作步骤。
+
+定义：
+
+\begin{itemize}
+\tightlist
+\item
+  \(s_t\)：Agent 在第 \(t\) 步的内部状态；
+\item
+  \(a_t\)：Agent 选择的 Action；
+\item
+  \(e_t\)：Environment 的状态；
+\item
+  \(o_{t+1}\)：执行 Action 后获得的 Observation。
+\end{itemize}
+
+Agent 根据当前状态产生 Action：
+\[a_t\sim\pi_A(\cdot\mid s_t).\]
+
+其中 \(\pi_A\) 表示整个 Agent 所实现的决策策略（Policy），不单指底层 LLM。
+
+Environment 根据 Action 产生新的状态和观察：
+\[(e_{t+1},o_{t+1})
+\sim
+\mathcal E(\cdot\mid e_t,a_t).\]
+
+Agent 随后更新内部状态：
+\[s_{t+1}
+=
+U_A(s_t,a_t,o_{t+1}),\]
+
+其中 \(U_A\) 为 State Update Function。
+
+因此，一个 Agent 的运行过程可以概括为：
+\[\boxed{
+s_t
+\xrightarrow{\text{Decision}}
+a_t
+\xrightarrow{\text{Execution}}
+o_{t+1}
+\xrightarrow{\text{Update}}
+s_{t+1}
+}\]
+
+这与 Reinforcement Learning 中的 Agent--Environment Interaction 具有相似结构。
+
+但这里不意味着 Agent 必须使用 RL 进行训练。\textbf{Policy 可以由固定权重的 LLM、Prompt 和 Python Control Logic 共同实现。}
+
+这套数学抽象只是为了描述 Agent 的行为，不是特定的训练算法。
+
+\hypertarget{part-3-31-0001-agent-harness}{%
+\subsection{4. Agent Harness}\label{part-3-31-0001-agent-harness}}
+
+\hypertarget{part-3-31-0001-ux4ec0ux4e48ux662f-harness}{%
+\subsubsection{4.1 什么是 Harness？}\label{part-3-31-0001-ux4ec0ux4e48ux662f-harness}}
+
+Agent Harness 可以理解为：
+
+\begin{quote}
+负责将语言模型的输出转化为实际系统行为，并管理整个执行过程的软件基础设施。
+\end{quote}
+
+例如，一个 Coding Agent 的 Harness 需要处理：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.57}}@{}}
+\toprule
+Function & Description \\
+\midrule
+\endhead
+Context Construction & 决定下一次 LLM 调用能够看到什么 \\
+Tool Dispatch & 解析并执行 Tool Calls \\
+State Management & 维护任务与实验状态 \\
+Error Handling & 处理执行失败、超时和异常 \\
+Permission Control & 限制文件、数据和网络访问 \\
+Budget Management & 管理 Token、时间和计算预算 \\
+Termination & 判断何时停止执行 \\
+Logging & 保存工具调用、修改记录和实验结果 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+从 Part II 的角度来看，其中最值得关注的并不只是 Tool Dispatch，而是 Context Construction、Permission Control 和 Logging。
+
+因为它们共同决定了 Agent 可以获取什么信息，以及这些信息如何影响未来的行为。
+
+\hypertarget{part-3-31-0001-ux6700ux5c0f-agent-harness-ux7684ux4f2aux4ee3ux7801}{%
+\subsubsection{4.2 最小 Agent Harness 的伪代码}\label{part-3-31-0001-ux6700ux5c0f-agent-harness-ux7684ux4f2aux4ee3ux7801}}
+
+下面是一个简化的 Agent Execution Loop：
+
+\begin{verbatim}
+def run_agent(task, model, tools, max_steps):
+
+    history = [task]
+
+    for step in range(max_steps):
+
+        action = model.generate(history)
+
+        if action.type == "finish":
+            return action.result
+
+        observation = tools.execute(action)
+
+        history.append(action)
+        history.append(observation)
+
+    return {"status": "budget_exhausted"}
+\end{verbatim}
+
+这不是任何特定框架的真实 API，也不是一个可以直接运行的完整 Agent，而是用于理解架构的伪代码。
+
+值得注意的是，LLM 在这里并不是持续运行的程序。
+
+实际发生的是：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Harness 构建 Context。
+\item
+  Harness 调用 LLM。
+\item
+  LLM 生成结构化 Action。
+\item
+  Harness 执行 Action。
+\item
+  Harness 将结果加入 Context。
+\item
+  发起下一次 LLM 调用。
+\end{enumerate}
+
+所以 Agent 所表现出来的持续行为，实际上是由外部程序维持的一系列模型调用和环境交互。
+
+2023 年发表于 ICLR 的 ReAct 论文便是一项代表性研究，它通过交替组织推理与行动，使语言模型能够根据外部观察调整后续操作。
+
+\href{https://arxiv.org/abs/2210.03629}{来源 1}
+
+\hypertarget{part-3-31-0001-running-an-agent-ux4e0e-improving-an-agent}{%
+\subsection{5. Running an Agent 与 Improving an Agent}\label{part-3-31-0001-running-an-agent-ux4e0e-improving-an-agent}}
+
+\textbf{这一节是 III-A 最重要的内容。}
+
+前面我们讨论的是 Agent 如何完成一项任务。
+
+但是，在 RSI 中还存在一个更外层的过程：如何改进负责完成任务的 Agent 本身。
+
+\hypertarget{part-3-31-0001-inner-loop-vs.-outer-loop}{%
+\subsubsection{5.1 Inner Loop vs. Outer Loop}\label{part-3-31-0001-inner-loop-vs.-outer-loop}}
+
+\bookgraphic{0.345}{part-3-31-0001-006-01}{Inner Loop 完成任务；Outer Loop 根据任务表现修改负责完成任务的系统。}
+
+对于第 \(k\) 轮 Agent \(A_k\)，Inner Loop 可以表示为：
+\[s_0^{(k)}
+\rightarrow
+s_1^{(k)}
+\rightarrow
+\cdots
+\rightarrow
+s_{T_k}^{(k)}.\]
+
+其中 \(T_k\) 表示第 \(k\) 轮 Agent 执行的操作步数。
+
+Outer Loop 则表示为：
+\[A_0\rightarrow A_1
+\rightarrow\cdots\rightarrow A_K.\]
+
+两者之间的区别是：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.41}}@{}}
+\toprule
+& Inner Loop & Outer Loop \\
+\midrule
+\endhead
+变化对象 & Agent State & Agent Architecture / Method \\
+迭代指标 & Operation Step \(t\) & Improvement Round \(k\) \\
+主要目的 & 完成当前任务 & 改进任务执行方式 \\
+优化结果 & Solution & New Agent Version \\
+例子 & 调用 Python 并训练模型 & 重写特征搜索算法 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+一个 Agent 可以在 Inner Loop 内完成复杂的规划、反思和纠错，却完全没有修改自身的持久方法。 因此：
+\[\boxed{
+\text{Agentic Behavior}
+\not\Rightarrow
+\text{Recursive Self-Improvement}
+}\]
+
+这是阅读 RSI 论文时需要始终保持的区分。
+
+\hypertarget{part-3-31-0001-concrete-example-financial-research-agent}{%
+\subsubsection{5.2 Concrete Example --- Financial Research Agent}\label{part-3-31-0001-concrete-example-financial-research-agent}}
+
+假设 \(A_0\) 的研究流程如下：
+
+\begin{verbatim}
+Generate one financial feature
+    ↓
+Train a regression model
+    ↓
+Run backtest
+    ↓
+Return result
+\end{verbatim}
+
+在一次普通的 Inner Loop 运行中，Agent 发现代码存在错误，于是修复错误并重新执行。
+
+这属于 Task-level Error Correction。
+
+现在假设 Agent 修改了自己未来所有任务所使用的研究方法：
+
+\begin{verbatim}
+- Generate one financial feature
++ Generate ten candidate financial features
++ Evaluate each candidate separately
++ Keep the best-performing feature
+
+  Train a regression model
+  Run backtest
+  Return result
+\end{verbatim}
+
+那么，我们就得到了一个新的 Agent Version：
+\[A_0\longrightarrow A_1.\]
+
+这次修改不是单纯地寻找一个更好的金融预测结果，而是改变了 Agent 寻找预测结果的方式。
+
+如果 \(A_1\) 又参与产生 \(A_2\)，则进入了更接近 RSI 的系统结构。
+
+同时，你应该已经能够利用 Part II 识别这次修改的潜在统计风险：
+
+\begin{itemize}
+\tightlist
+\item
+  Search Budget 扩大；
+\item
+  Model Selection Bias 增大；
+\item
+  对固定 Backtest Environment 的适应程度可能提高；
+\item
+  更好的搜索算法未必产生更好的 OOS Performance。
+\end{itemize}
+
+这就是系统结构与统计理论之间的连接。
+
+\hypertarget{part-3-31-0001-agent-architecture-ux5982ux4f55ux5f71ux54cd-generalization}{%
+\subsection{6. Agent Architecture 如何影响 Generalization？}\label{part-3-31-0001-agent-architecture-ux5982ux4f55ux5f71ux54cd-generalization}}
+
+现在重新审视我们的 Agent 定义：
+\[A=(\mathcal L,P,M,T,C).\]
+
+假设整个 RSI 过程中 Foundation Model 始终冻结：
+\[\mathcal L_{k+1}=\mathcal L_k.\]
+
+那么 Agent 的演化可以发生在其余四个组件中：
+\[A_k=(\mathcal L,P_k,M_k,T_k,C_k).\]
+
+对于每一类 Revision，我们都可以找到相应的统计机制。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}@{}}
+\toprule
+Modified Component & Example & Potential Statistical Effect \\
+\midrule
+\endhead
+Prompt \(P\) & 要求优先探索历史高收益规律 & 改变 Search Bias \\
+Memory \(M\) & 保存此前所有失败样本 & Adaptive Overfitting \\
+Tools \(T\) & 增加自动特征搜索工具 & Multiple Testing \\
+Control Logic \(C\) & 每轮尝试更多候选方法 & Selection Bias \\
+Control Logic \(C\) & 引入复杂度惩罚 & Potential Regularization \\
+Memory \(M\) & 隔离不同数据集的反馈 & 减少 Information Leakage \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里存在一个非常重要的 Insight：
+
+\textbf{Agent 的统计复杂度不等于底层 LLM 的参数数量。}
+
+即使底层 LLM 的参数数量始终不变，Agent 的有效 Hypothesis Space、Search Budget、Information Budget 和适应历史评估环境的能力，都可能随着 RSI 改变。
+
+甚至可能出现这样的情况：
+
+Agent A₀
+
+\textbf{1,000 行代码}
+
+\begin{verbatim}
+  固定候选方法
+
+  较少评估查询
+
+  有限的历史反馈
+\end{verbatim}
+
+Agent A₁
+
+\textbf{600 行代码}
+
+\begin{verbatim}
+  自适应候选生成
+
+  大规模评估查询
+
+  详细的历史反馈
+\end{verbatim}
+
+假想例子：代码规模减少，但有效搜索复杂度可能增加。
+
+因此，我们不能简单利用 Lines of Code 或 Model Parameter Count 来解释 RSI 的 Generalization Decay。
+
+更加合理的做法是同时研究：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.47}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.49}}@{}}
+\toprule
+Complexity Dimension & Measurement \\
+\midrule
+\endhead
+Structural Complexity & 代码结构、模型规模 \\
+Search Complexity & 候选数量、搜索深度与宽度 \\
+Information Complexity & 反馈内容及查询历史 \\
+Computational Complexity & Token、Runtime、计算资源 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些指标可能相关，但并不等价。
+
+\hypertarget{part-3-31-0001-a-minimal-rsi-research-architecture}{%
+\subsection{7. A Minimal RSI Research Architecture}\label{part-3-31-0001-a-minimal-rsi-research-architecture}}
+
+我们可以设想一个用于 X Program \#161 的最小研究系统。
+
+\begin{verbatim}
+rsi_finance/
+│
+├── agent/
+│   ├── prompts.py
+│   ├── memory.py
+│   ├── tools.py
+│   └── controller.py
+│
+├── optimizer/
+│   ├── generate_revision.py
+│   ├── select_candidate.py
+│   └── improvement_loop.py
+│
+├── evaluation/
+│   ├── development_evaluator.py
+│   └── backtest.py
+│
+├── data/
+│   ├── train/
+│   └── development/
+│
+├── versions/
+│   ├── round_000/
+│   ├── round_001/
+│   └── round_002/
+│
+└── logs/
+    ├── trajectory.jsonl
+    └── candidate_evaluations.csv
+\end{verbatim}
+
+此外，将独立的审计环境放在 Agent 无法访问的位置：
+
+\begin{verbatim}
+research_audit/
+│
+├── sealed_data/
+│   ├── audit/
+│   └── final_test/
+│
+├── independent_evaluator.py
+├── revision_classification.py
+├── decay_detection.py
+└── mitigation_analysis.py
+\end{verbatim}
+
+这里最重要的设计原则是：\textbf{将可修改的 Agent 与不可由 Agent 修改的外部评价系统隔离。}
+
+仅仅将文件放入不同目录并不能实现真正的隔离。实际系统还需要独立进程、文件访问权限或受限制的执行环境等措施。
+
+\hypertarget{part-3-31-0001-ux54eaux4e9bux7ec4ux4ef6ux5141ux8bb8ux88abux4feeux6539}{%
+\subsubsection{7.1 哪些组件允许被修改？}\label{part-3-31-0001-ux54eaux4e9bux7ec4ux4ef6ux5141ux8bb8ux88abux4feeux6539}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Component & Mutable? & Reason \\
+\midrule
+\endhead
+Agent Prompt & Yes & 研究自主改进指令的效果 \\
+Agent Memory & Yes & 研究历史信息利用方式 \\
+Agent Controller & Yes & 研究自主工作流程优化 \\
+Feature Engineering & Yes & 研究金融方法改进 \\
+Search Algorithm & Yes & 研究改进机制自身的演化 \\
+External Evaluation Metric & No & 保持各版本之间的可比性 \\
+OOS Dataset & No & 维护独立评估 \\
+Resource Accounting & No & 避免计算预算失去可比性 \\
+External Experiment Logs & No & 保留可信的研究证据 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 Mutable / Immutable Boundary 本身就是一项重要的实验设计决策。
+
+不同的边界会产生不同的 RSI 系统，也会影响我们可以得出的科研结论。
+
+这份目录结构和权限划分是我为学习与实验设计构造的参考方案，并非课题组现有代码架构。
+
+\hypertarget{part-3-31-0001-ux4e00ux4e2aux503cux5f97ux5173ux6ce8ux7684ux7814ux7a76ux89c6ux89d2ux5185ux751fux8bc4ux4f30ux4e0eux5916ux751fux8bc4ux4f30}{%
+\subsection{8. 一个值得关注的研究视角：内生评估与外生评估}\label{part-3-31-0001-ux4e00ux4e2aux503cux5f97ux5173ux6ce8ux7684ux7814ux7a76ux89c6ux89d2ux5185ux751fux8bc4ux4f30ux4e0eux5916ux751fux8bc4ux4f30}}
+
+假设 Agent 在执行任务时拥有自己的评估模块，称为 \textbf{Internal Evaluator}。
+
+研究人员还需要另外维护一个 \textbf{External Evaluator}。
+
+\bookgraphic{0.513}{part-3-31-0001-009-01}{}
+
+两者的职责并不相同。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+& Internal Evaluator & External Evaluator \\
+\midrule
+\endhead
+服务对象 & Agent & Researcher \\
+用途 & 选择下一步行动或候选方案 & 衡量 Agent 的真实性能 \\
+是否参与优化 & 可以 & OOS 审计不参与 \\
+是否允许自主修改 & 取决于研究设计 & 外部审计协议应固定 \\
+主要风险 & Overfitting、Metric Gaming & 研究人员过拟合审计数据 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+如果 Agent 可以不断改变自己的 Self-check Criterion，那么不同版本的 Self-check Score 可能甚至不再具有可比性。
+
+例如：
+
+\begin{itemize}
+\tightlist
+\item
+  \(A_0\) 使用包含交易成本的收益指标。
+\item
+  \(A_1\) 修改为不包含交易成本的收益指标。
+\end{itemize}
+
+即使 \(A_1\) 的报告得分更高，我们也无法直接判断性能是否改善。
+
+所以，除了记录每一轮 Agent 自己报告的分数，还可以考虑用固定的外部协议重新评价每一个版本的 IS 和 OOS 表现。
+
+这是一个值得向课题组确认的 Experimental Design Detail。
+
+\hypertarget{part-3-31-0001-preliminary-literature}{%
+\subsection{9. Preliminary Literature}\label{part-3-31-0001-preliminary-literature}}
+
+III-A 暂时只需要三项阅读材料。完整的 RSI 论文分析留到 III-E 和 Part V。
+
+\textbf{P0 --- Building Effective Agents}
+
+Anthropic · December 2024 · 工程技术文章，非同行评审论文
+
+介绍 Augmented LLM、Workflow、Agent、Evaluator--Optimizer 等常见架构。适合快速建立系统层面的整体认识。
+
+\href{https://www.anthropic.com/research/building-effective-agents}{阅读原文} \href{https://www.anthropic.com/research/building-effective-agents?hsLang=en}{来源 1}
+
+\textbf{P1 --- ReAct: Synergizing Reasoning and Acting in Language Models}
+
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao · ICLR 2023 · 同行评审
+
+理解语言模型如何在任务执行中结合推理、行动和环境反馈。重点阅读 Introduction 与 Method。
+
+\href{https://arxiv.org/abs/2210.03629}{arXiv:2210.03629} · \href{https://github.com/ysymyth/ReAct}{代码仓库} \href{https://arxiv.org/abs/2210.03629}{来源 1} \href{https://github.com/ysymyth/ReAct}{来源 2}
+
+\textbf{P0 --- Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation}
+
+Eric Zelikman, Eliana Lorch, Lester Mackey, Adam Tauman Kalai · COLM 2024 · 同行评审
+
+该研究展示了如何利用语言模型改进一个程序，再递归地使用该程序改进自身，而不修改底层语言模型的权重。
+
+\href{https://arxiv.org/abs/2310.02304}{arXiv:2310.02304} · \href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{正式会议论文} · \href{https://github.com/microsoft/STOP}{代码仓库} \href{https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html}{来源 1} \href{https://github.com/microsoft/STOP}{来源 2}
+
+目前建议优先阅读第一项。STOP 是之后 III-C 和 III-E 的重要研究对象。
+
+\hypertarget{part-3-31-0001-iii-a-conclusion-index}{%
+\subsection{10. III-A --- Conclusion Index}\label{part-3-31-0001-iii-a-conclusion-index}}
+
+按照前面确定的学习方式，保留以下核心结论即可。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.74}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+A1 & LLM Capability 不等于 Agent Capability & §1 \\
+A2 & Workflow 与 Agent 的重要区别是动态控制能力 & §2 \\
+A3 & Agent 由 Language Model、Prompt、Memory、Tools 和 Control Logic 等组件构成 & §3 \\
+A4 & Agent 可以抽象为 State Transition System & §3.2 \\
+A5 & Harness 负责维护上下文、执行工具和管理状态 & §4 \\
+A6 & Task Execution 与 Agent Improvement 属于不同层级 & §5 \\
+A7 & Self-Improvement 不要求修改 LLM 权重 & §5--6 \\
+A8 & Agent 统计复杂度不等于代码量或模型参数量 & §6 \\
+A9 & Mutable / Immutable Boundary 是重要的实验设计变量 & §7 \\
+A10 & Internal Evaluator 与 External Evaluator 应具有明确边界 & §8 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-31-0001-core-formula-sheet}{%
+\subsubsection{10.1 Core Formula Sheet}\label{part-3-31-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Agent Representation}
+
+\[A=(\mathcal L,P,M,T,C).\]
+
+\textbf{Result 2 --- Agent Execution}
+
+\[\begin{cases}
+a_t\sim\pi_A(\cdot\mid s_t),\\
+(e_{t+1},o_{t+1})\sim
+\mathcal E(\cdot\mid e_t,a_t),\\
+s_{t+1}=U_A(s_t,a_t,o_{t+1}).
+\end{cases}\]
+
+\textbf{Result 3 --- RSI with Frozen Foundation Model}
+
+\[A_k=(\mathcal L,P_k,M_k,T_k,C_k),\]
+
+\[A_k\longrightarrow A_{k+1}.\]
+
+以上主要是系统建模定义，而不是需要进行数学证明的统计定理。
+
+\hypertarget{part-3-31-0001-ux6700ux91cdux8981ux7684-research-takeaway}{%
+\subsubsection{10.2 最重要的 Research Takeaway}\label{part-3-31-0001-ux6700ux91cdux8981ux7684-research-takeaway}}
+
+如果将整个 III-A 压缩成一句话：
+
+\textbf{RSI 是对组织智能行为的方法进行优化，而不一定是对底层智能模型本身进行训练。}
+
+这也解释了为什么 X Program \#161 的入门要求可以仅仅是 Python Data Processing and Analysis。
+
+我们完全可以在不涉及 LLM Training 的情况下，研究 Agent 的版本演化、代码修改、搜索行为、反馈机制及统计泛化能力。
+
+\hypertarget{part-3-31-0001-next-iii-b-tools-memory-planning-reflection}{%
+\subsection{Next --- III-B: Tools, Memory, Planning \& Reflection}\label{part-3-31-0001-next-iii-b-tools-memory-planning-reflection}}
+
+III-A --- Agent Architecture \& Harness
+
+III-B --- Tools, Memory, Planning \& Reflection
+
+III-C --- Self-Modification \& Recursive Optimization
+
+III-D --- Evaluation, Search \& Selection
+
+III-E --- Automated Research Agents
+
+III-F --- Failure Modes \& Instrumentation
+
+下一阶段，我们将深入 Agent 的四项核心能力。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.67}}@{}}
+\toprule
+Component & Research Question \\
+\midrule
+\endhead
+Tools & Agent 如何真正执行科研实验？ \\
+Memory & Agent 如何积累和利用历史实验经验？ \\
+Planning & Agent 如何决定下一步搜索方向？ \\
+Reflection & Agent 如何根据失败结果调整方法？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中我认为 \textbf{Memory 与 Reflection} 最值得投入精力，因为它们与 II-D 中的 Adaptive Data Analysis 和 Information Accumulation 具有直接联系。
+
+Memory 可以帮助 Agent 避免重复失败、积累真正有效的研究经验；但同一机制也可能使它越来越精确地适应有限的评估环境。
+
+这种双重作用，是后续理解 RSI Performance Decay 的重要切入点。

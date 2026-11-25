@@ -1,0 +1,553 @@
+% Archive record 52, line 1.
+\hypertarget{part-4-52-0001-iv-a-financial-time-series-data-generating-process}{%
+\section{IV-A --- Financial Time Series \& Data Generating Process}\label{part-4-52-0001-iv-a-financial-time-series-data-generating-process}}
+
+经过 Part II 与 Part III，我们已经分别建立了 Statistical Learning Theory 和 Agentic AI 的知识框架。现在进入第三个核心领域：Finance。
+
+这一部分并不是为了让我们成为 Quantitative Trader，而是为了回答一个更加具体的科研问题：
+
+\textbf{为什么同一个 RSI Framework，在编程、数学等任务中可能持续获得性能提升，但在金融研究中却更容易出现 Better, Then Worse？}
+
+金融数据的特殊统计性质，很可能是理解这一现象的关键。
+
+\hypertarget{part-4-52-0001-part-iv-learning-roadmap}{%
+\subsection{0. Part IV --- Learning Roadmap}\label{part-4-52-0001-part-iv-learning-roadmap}}
+
+Part I --- Understanding the Research Problem
+
+Completed
+
+Part II --- Statistical Learning Theory
+
+Completed
+
+Part III --- Agentic AI \& Recursive Self-Improvement
+
+Completed
+
+Part IV --- Financial AI \& Quantitative Research
+
+Current
+
+Part V --- Literature \& Research Frontier
+
+Part VI --- Research Practice
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.61}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Section & Topic & Priority \\
+\midrule
+\endhead
+\textbf{IV-A} & \textbf{Financial Time Series \& Data Generating Process} & P0 \\
+IV-B & Low Signal-to-Noise Ratio \& Predictability & P0 \\
+IV-C & Financial Factors \& Machine Learning Models & P1 \\
+IV-D & Returns, Sharpe Ratio \& Performance Evaluation & P0 \\
+IV-E & Backtest Overfitting, PBO \& Deflated Sharpe Ratio & P0 \\
+IV-F & Market Regime, Non-stationarity \& Robustness & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+考虑到我们的研究目标，本部分暂时不涉及 Stochastic Calculus、Option Pricing、Black--Scholes Equation 等衍生品定价理论。
+
+本阶段需要建立五项基础认识：收益率、随机过程、平稳性、时间依赖性，以及金融数据的典型统计特征。
+
+\hypertarget{part-4-52-0001-price-and-return}{%
+\subsection{1. Price and Return}\label{part-4-52-0001-price-and-return}}
+
+\hypertarget{part-4-52-0001-ux4e3aux4ec0ux4e48ux91d1ux878dux7814ux7a76ux901aux5e38ux4e0dux76f4ux63a5ux7814ux7a76-price}{%
+\subsubsection{1.1 为什么金融研究通常不直接研究 Price？}\label{part-4-52-0001-ux4e3aux4ec0ux4e48ux91d1ux878dux7814ux7a76ux901aux5e38ux4e0dux76f4ux63a5ux7814ux7a76-price}}
+
+设某资产在时刻 \(t\) 的价格为 \(P_t\)。
+
+那么其历史价格构成一个 Time Series：
+\[\{P_t\}_{t=0}^{T}.\]
+
+但直接研究价格存在几个问题：不同资产的价格尺度不可比，价格序列可能存在长期趋势，而且绝对价格变化不能直接反映投资收益。
+
+因此，金融统计研究通常首先将 Price 转换为 Return。
+
+\hypertarget{part-4-52-0001-simple-returnux7b80ux5355ux6536ux76caux7387}{%
+\subsubsection{1.2 Simple Return（简单收益率）}\label{part-4-52-0001-simple-returnux7b80ux5355ux6536ux76caux7387}}
+
+沿用 Part II 中的记号：
+\[\boxed{
+r_t=\frac{P_t-P_{t-1}}{P_{t-1}}
+}\]
+
+等价地：
+\[P_t=P_{t-1}(1+r_t).\]
+
+连续多个时期的累计收益率为：
+\[\boxed{
+r_{0:T}
+=
+\prod_{t=1}^{T}(1+r_t)-1
+}\]
+
+注意，Simple Return 在时间维度上不是直接相加，而是通过 Compounding（复利）进行累积。
+
+\hypertarget{part-4-52-0001-log-returnux5bf9ux6570ux6536ux76caux7387}{%
+\subsubsection{1.3 Log Return（对数收益率）}\label{part-4-52-0001-log-returnux5bf9ux6570ux6536ux76caux7387}}
+
+定义：
+\[\boxed{
+r_t^{\log}
+=
+\log\frac{P_t}{P_{t-1}}
+=
+\log(1+r_t)
+}\]
+
+Log Return 最重要的数学性质是 \textbf{Time Additivity}：
+\[\begin{aligned}
+\sum_{t=1}^{T}r_t^{\log}
+&=
+\sum_{t=1}^{T}
+(\log P_t-\log P_{t-1})\\
+&=\log P_T-\log P_0\\
+&=\log\frac{P_T}{P_0}.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+r_{0:T}^{\log}
+=
+\sum_{t=1}^{T}r_t^{\log}
+}\]
+
+当单期收益率足够小时，根据 Taylor Expansion：
+\[\log(1+r_t)
+=
+r_t-\frac{r_t^2}{2}
++\frac{r_t^3}{3}-\cdots\]
+
+因此：
+\[r_t^{\log}\approx r_t.\]
+
+\textbf{Simple Return vs. Log Return}
+
+Period 1 return\\
+\textbf{+20\%}
+
+20（范围 0--50）
+
+Period 2 return\\
+\textbf{-20\%}
+
+-20（范围 -50--0）
+
+\bookgraphic{0.702}{part-4-52-0001-002-01}{}
+
+直接相加（错误）
+
+\textbf{0.00\%}
+
+Cumulative Return
+
+\textbf{-4.00\%}
+
+Cumulative Log Return
+
+\textbf{-4.08\%}
+
+初始价格固定为 100，忽略分红、交易成本等因素。
+
+up = 50
+
+\bookgraphic{0.702}{part-4-52-0001-002-state-01}{}
+
+这两种收益率各有用途。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}@{}}
+\toprule
+Property & Simple Return & Log Return \\
+\midrule
+\endhead
+时间累积 & 乘法 & 加法 \\
+经济解释 & 直接对应财富变化 & 对数财富变化 \\
+统计建模 & 常用 & 常用，便于推导 \\
+投资组合收益 & 可按期初权重线性加权 & 通常不能直接线性加权 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Research Implication：} RSI Agent 如果修改了 Return Definition，可能会直接改变研究目标与评价结果。因此，收益率定义也应当属于需要固定或明确记录的 Evaluation Protocol。
+
+\hypertarget{part-4-52-0001-financial-time-series-as-a-stochastic-process}{%
+\subsection{2. Financial Time Series as a Stochastic Process}\label{part-4-52-0001-financial-time-series-as-a-stochastic-process}}
+
+\hypertarget{part-4-52-0001-random-variable-vs.-stochastic-process}{%
+\subsubsection{2.1 Random Variable vs. Stochastic Process}\label{part-4-52-0001-random-variable-vs.-stochastic-process}}
+
+此前 Probability 课程主要研究：
+\[X\sim\mathcal D.\]
+
+而 Time-Series Analysis 研究的是一族由时间索引的随机变量：
+\[\boxed{
+\{X_t:t\in\mathcal T\}
+}\]
+
+称为 Stochastic Process（随机过程）。
+
+金融收益率自然构成一个随机过程：
+\[\{r_t:t=1,2,\ldots\}.\]
+
+这里需要区分三个概念。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Concept & Meaning \\
+\midrule
+\endhead
+Random Variable & 某一时刻的随机收益率 \(r_t\) \\
+Stochastic Process & 所有时刻的随机收益率集合 \\
+Realization / Sample Path & 实际观察到的一条历史收益率序列 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\bookgraphic{0.483}{part-4-52-0001-003-01}{}
+
+实际观察到的 Sample Path
+
+其他可能的 Sample Paths
+
+合成示意：现实中只能观察已经发生的一条市场历史，而不是所有可能发生的市场历史。
+
+这个区别具有很大的科研意义。
+
+假设我们拥有某一市场过去 20 年的数据。即使我们在其上运行了 1,000 次 Backtest，也没有因此获得 1,000 条独立的市场历史。
+
+我们只是对同一条 Sample Path 进行了大量分析。
+
+这正是金融 Adaptive Overfitting 难以处理的原因之一。
+
+\hypertarget{part-4-52-0001-filtrationux4fe1ux606fux6d41}{%
+\subsubsection{2.2 Filtration（信息流）}\label{part-4-52-0001-filtrationux4fe1ux606fux6d41}}
+
+你在 Probability 中已经学习过 \(\sigma\)-algebra。现在我们可以看到它在金融研究中的实际应用。
+
+定义：
+\[\mathcal F_t
+=
+\sigma(\text{information available by time }t).\]
+
+由于随着时间推进，可获得的信息通常不断增加，因此：
+\[\boxed{
+\mathcal F_0
+\subseteq\mathcal F_1
+\subseteq\cdots
+\subseteq\mathcal F_T
+}\]
+
+这样的递增 \(\sigma\)-algebra 序列称为 \textbf{Filtration}。
+
+\bookgraphic{0.573}{part-4-52-0001-004-01}{Filtration 描述信息随时间逐渐累积的过程。}
+
+那么在时刻 \(t\) 预测下一期收益率：
+\[\hat r_{t+1}=h(X_t),\]
+
+就必须要求：
+\[\boxed{
+\hat r_{t+1}
+\text{ is }\mathcal F_t\text{-measurable}.
+}\]
+
+这是此前 II-E 中 Look-Ahead Bias 的数学基础。
+
+Filtration 不只是一个理论概念。它可以成为金融 Agent 的 Data Access Policy：任何 Feature Engineering、Model Training 和 Trading Decision 都应遵守相应的信息可用性约束。
+
+\hypertarget{part-4-52-0001-data-generating-process-dgp}{%
+\subsection{3. Data Generating Process (DGP)}\label{part-4-52-0001-data-generating-process-dgp}}
+
+\hypertarget{part-4-52-0001-definition}{%
+\subsubsection{3.1 Definition}\label{part-4-52-0001-definition}}
+
+Data Generating Process 指产生观测数据的潜在随机机制。
+
+沿用 Part I 中的金融预测模型：
+\[\boxed{
+r_{t+1}
+=
+g(X_t)+\varepsilon_{t+1}
+}\]
+
+其中 \(X_t\) 是时刻 \(t\) 可以获得的特征，\(g\) 是真实但未知的预测规律，\(\varepsilon_{t+1}\) 是无法通过该信息预测的随机成分。
+
+如果进一步假设：
+\[g(X_t)
+=
+\mathbb E[r_{t+1}\mid\mathcal F_t],\]
+
+那么：
+\[\boxed{
+\mathbb E[\varepsilon_{t+1}\mid\mathcal F_t]=0
+}\]
+
+这里隐含了 \(X_t\) 足以描述相关条件均值的假设。
+
+这并不意味着误差是 IID Gaussian Noise，也不意味着误差的条件方差保持不变。
+
+\hypertarget{part-4-52-0001-conditional-mean-vs.-conditional-variance}{%
+\subsubsection{3.2 Conditional Mean vs. Conditional Variance}\label{part-4-52-0001-conditional-mean-vs.-conditional-variance}}
+
+可以进一步将 DGP 写为：
+\[\boxed{
+r_{t+1}
+=
+\mu_t+\sigma_t Z_{t+1}
+}\]
+
+其中：
+\[\mu_t=\mathbb E[r_{t+1}\mid\mathcal F_t],\]
+
+\[\sigma_t^2
+=
+\operatorname{Var}(r_{t+1}\mid\mathcal F_t).\]
+
+\(Z_{t+1}\) 为标准化随机创新项，假设其条件均值为 0、条件方差为 1。
+
+这就将金融预测分解为两个不同的问题：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.61}}@{}}
+\toprule
+Research Task & Mathematical Object \\
+\midrule
+\endhead
+Return Prediction & \(\mathbb E[r_{t+1}\mid\mathcal F_t]\) \\
+Volatility Prediction & \(\operatorname{Var}(r_{t+1}\mid\mathcal F_t)\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在许多金融市场中，收益率方向和条件均值较难预测，而波动率具有更加明显的时间依赖结构。
+
+因此，金融市场难以预测，并不意味着金融市场的所有统计性质都无法预测。
+
+\hypertarget{part-4-52-0001-stationarityux5e73ux7a33ux6027}{%
+\subsection{4. Stationarity（平稳性）}\label{part-4-52-0001-stationarityux5e73ux7a33ux6027}}
+
+这是整个 Time-Series Analysis 中最重要的概念之一。
+
+\hypertarget{part-4-52-0001-strict-stationarity}{%
+\subsubsection{4.1 Strict Stationarity}\label{part-4-52-0001-strict-stationarity}}
+
+如果对于任意时刻 \(t_1,\ldots,t_m\) 和时间偏移 \(h\)，都有：
+\[\boxed{
+(X_{t_1},\ldots,X_{t_m})
+\overset d=
+(X_{t_1+h},\ldots,X_{t_m+h})
+}\]
+
+那么称随机过程 \(\{X_t\}\) 是 Strictly Stationary。
+
+其含义是：整个联合分布不随时间平移而改变。
+
+\hypertarget{part-4-52-0001-weak-stationarity}{%
+\subsubsection{4.2 Weak Stationarity}\label{part-4-52-0001-weak-stationarity}}
+
+Weak Stationarity 又称 Covariance Stationarity，要求有限二阶矩，并满足：
+\[\boxed{
+\begin{aligned}
+\mathbb E[X_t]&=\mu,\\
+\operatorname{Var}(X_t)&=\sigma^2,\\
+\operatorname{Cov}(X_t,X_{t+h})&=\gamma_h.
+\end{aligned}
+}\]
+
+其中均值和方差不依赖绝对时刻，而协方差只依赖时间间隔 \(h\)。
+
+\textbf{Stationary Process}
+
+\bookgraphic{0.830}{part-4-52-0001-006-01}{均值及无条件方差保持稳定}
+
+\textbf{Non-stationary Mean}
+
+\bookgraphic{0.830}{part-4-52-0001-006-02}{统计均值随时间变化}
+
+\textbf{Non-stationary Variance}
+
+\bookgraphic{0.830}{part-4-52-0001-006-03}{无条件波动程度随时间变化}
+
+合成示意。平稳性是随机过程的分布性质，不能仅凭单条样本曲线的外观确定。
+
+Strict Stationarity 在存在有限二阶矩的情况下可以推出 Weak Stationarity，但反过来一般不成立。
+
+更重要的是：
+\[\boxed{
+\text{Stationary}
+\not\Rightarrow
+\text{Independent}
+}\]
+
+一个随机过程完全可以保持统计分布稳定，同时拥有很强的时间依赖性。
+
+\hypertarget{part-4-52-0001-random-walkux968fux673aux6e38ux8d70}{%
+\subsubsection{4.3 Random Walk（随机游走）}\label{part-4-52-0001-random-walkux968fux673aux6e38ux8d70}}
+
+这是理解金融价格与收益率之间区别的经典数学模型。
+
+设对数价格：
+\[L_t=\log P_t.\]
+
+假设：
+\[L_t=L_{t-1}+\varepsilon_t,\]
+
+其中：
+\[\varepsilon_t
+\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(0,\sigma^2).\]
+
+并假设 \(L_0\) 为常数。
+
+那么：
+\[L_t=L_0+\sum_{i=1}^{t}\varepsilon_i.\]
+
+于是：
+\[\mathbb E[L_t]=L_0,\]
+
+\[\boxed{
+\operatorname{Var}(L_t)=t\sigma^2
+}\]
+
+由于方差随时间增长，\(L_t\) 不是 Weakly Stationary。
+
+但是其 Log Return 为：
+\[r_t^{\log}
+=
+L_t-L_{t-1}
+=
+\varepsilon_t.\]
+
+因此在这个理想模型中：
+\[r_t^{\log}
+\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(0,\sigma^2).\]
+
+\textbf{Random Walk vs. First Difference}
+
+\bookgraphic{0.391}{part-4-52-0001-007-01}{教学示意：对累计序列进行一阶差分，可以恢复其增量序列。真实资产价格不一定严格遵循 Random Walk。}
+
+这解释了为什么金融建模经常使用 Return 而不是 Price。
+
+但必须强调：\textbf{对价格进行差分，不保证现实中的收益率序列一定平稳。}
+
+如果市场的均值、波动率或者条件分布发生结构性变化，Return 本身仍然可能是 Non-stationary。
+
+\hypertarget{part-4-52-0001-autocorrelationux81eaux76f8ux5173}{%
+\subsection{5. Autocorrelation（自相关）}\label{part-4-52-0001-autocorrelationux81eaux76f8ux5173}}
+
+\hypertarget{part-4-52-0001-definition-1}{%
+\subsubsection{5.1 Definition}\label{part-4-52-0001-definition-1}}
+
+对于弱平稳时间序列，定义 Autocovariance：
+\[\gamma_h
+=
+\operatorname{Cov}(X_t,X_{t+h}).\]
+
+进一步定义 Autocorrelation Function（ACF）：
+\[\boxed{
+\rho_h
+=
+\frac{\gamma_h}{\gamma_0}
+}\]
+
+其中 \(h\) 称为 Lag（滞后阶数），并假设 \(\gamma_0>0\)。
+
+例如：
+\[\rho_1
+=
+\operatorname{Corr}(r_t,r_{t+1}).\]
+
+它衡量当前收益率与下一期收益率之间的线性相关性。
+
+\hypertarget{part-4-52-0001-autoregressive-model-ar1}{%
+\subsubsection{5.2 Autoregressive Model --- AR(1)}\label{part-4-52-0001-autoregressive-model-ar1}}
+
+考虑最简单的时间序列模型：
+\[\boxed{
+X_t=\phi X_{t-1}+\varepsilon_t
+}\]
+
+其中 \(\varepsilon_t\) 是零均值、方差为 \(\sigma_\varepsilon^2\) 的 IID Noise，且：
+\[|\phi|<1.\]
+
+在因果平稳解的条件下：
+\[\mathbb E[X_t]=0,\]
+
+\[\operatorname{Var}(X_t)
+=
+\frac{\sigma_\varepsilon^2}{1-\phi^2},\]
+
+以及：
+\[\boxed{
+\rho_h=\phi^{|h|}
+}\]
+
+这些结论来自对递归方程不断展开，并利用独立随机变量的方差及协方差性质。
+
+\textbf{AR(1) --- Autocorrelation Explorer}
+
+Autoregressive coefficient \(\phi\)\\
+\textbf{0.70}
+
+0.7（范围 -0.95--0.95）
+
+\bookgraphic{0.526}{part-4-52-0001-008-01}{}
+
+\[\rho_h=(0.70)^h\]
+
+Positive persistence：正向冲击倾向于持续影响后续变量。
+
+phi = -0.95
+
+\bookgraphic{0.526}{part-4-52-0001-008-state-01}{}
+
+在金融研究中，正向收益率依赖可以与 Momentum 联系，负向依赖可以与短期 Reversal 或 Mean Reversion 联系。
+
+不过，实际 Momentum 和 Mean Reversion 策略的统计结构比简单 AR(1) 更复杂，不能直接将二者等同。
+
+\hypertarget{part-4-52-0001-stylized-facts-of-financial-returns}{%
+\subsection{6. Stylized Facts of Financial Returns}\label{part-4-52-0001-stylized-facts-of-financial-returns}}
+
+现在正式进入金融时间序列最具有代表性的统计性质。
+
+Stylized Facts（典型经验事实）指在大量现实数据中反复出现的统计现象，而不是从数学公理推出的定理。
+
+Rama Cont 在 2001 年发表于 \emph{Quantitative Finance} 的经典论文中，对金融资产收益率的这些经验性质进行了系统整理。后续研究也强调，不同资产、市场和时间尺度未必同时满足全部特征。
+
+\hypertarget{part-4-52-0001-weak-linear-autocorrelation}{%
+\subsubsection{6.1 Weak Linear Autocorrelation}\label{part-4-52-0001-weak-linear-autocorrelation}}
+
+许多资产的收益率序列具有较弱的线性自相关。
+
+即经验上经常观察到：
+\[\operatorname{Corr}(r_t,r_{t+h})
+\approx0,
+\qquad h>0.\]
+
+但这里存在一个非常重要的逻辑区别：
+\[\boxed{
+\operatorname{Corr}(X,Y)=0
+\not\Rightarrow
+X\perp Y
+}\]
+
+这一点与你此前学习的 Probability 中 Correlation 与 Independence 的区别完全对应。
+
+金融收益率可能缺乏明显的线性相关性，却拥有强烈的非线性依赖。

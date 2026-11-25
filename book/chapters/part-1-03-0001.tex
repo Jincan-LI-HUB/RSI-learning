@@ -1,0 +1,1430 @@
+% Archive record 3, line 1.
+\hypertarget{part-1-03-0001-ux7814ux7a76ux95eeux9898ux521dux63a2}{%
+\section{研究问题初探}\label{part-1-03-0001-ux7814ux7a76ux95eeux9898ux521dux63a2}}
+
+\textbf{Better, Then Worse: Diagnosing Out-of-Sample Performance Decay in Recursive Self-Improvement for Finance}
+
+这个课题处在三个研究领域的交叉位置：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Statistical Learning Theory}：如何判断性能提升是否具有真正的泛化能力？
+\item
+  \textbf{Agentic AI \& Recursive Self-Improvement}：如何让 AI 系统自主生成、评估和改进自身？
+\item
+  \textbf{Quantitative Finance}：如何在低信噪比、非平稳的金融环境中可靠地评估模型？
+\end{itemize}
+
+从课题标题来看，我认为我们应当优先将其理解为一个 \textbf{AI Model Evaluation and Generalization Problem in Finance}，而不是单纯的量化交易策略开发问题。
+
+这一区分非常重要。我们的研究重点并不是如何让一个 AI Agent 在历史数据上获得更高的收益，而是：
+
+\begin{quote}
+当一个 AI Agent 具备自主改进能力时，我们如何判断它究竟是在提高解决问题的能力，还是在提高对有限评估环境的适应能力？
+\end{quote}
+
+我初步检索了褚晓文教授的公开研究资料。其研究方向主要包括 Machine Learning Systems、GPU Computing、Embodied AI 和 AI4Science。不过，目前尚未找到能够直接确认 X Program \#161 具体实验框架的公开项目说明或对应论文。因此，接下来的内容会严格区分已有研究、我们根据课题标题提出的解释，以及需要向课题组确认的信息。
+
+\href{https://sites.google.com/view/chuxiaowen}{来源 1} \href{https://mbaplus.hkust-gz.edu.cn/zh/2026/11/02/xiaowen-chu/}{来源 2}
+
+\hypertarget{part-1-03-0001-research-roadmap}{%
+\subsection{0. Research Roadmap}\label{part-1-03-0001-research-roadmap}}
+
+\hypertarget{part-1-03-0001-ux5b66ux4e60ux8defux7ebfux7684ux6574ux4f53ux7ed3ux6784}{%
+\subsubsection{0.1 学习路线的整体结构}\label{part-1-03-0001-ux5b66ux4e60ux8defux7ebfux7684ux6574ux4f53ux7ed3ux6784}}
+
+\textbf{Part I --- Research Problem}
+
+研究动机 · RSI · 核心矛盾
+
+↓
+
+\textbf{Part II}
+
+\begin{verbatim}
+    **Statistical Learning**
+\end{verbatim}
+
+泛化、统计偏差、自适应过拟合
+
+\textbf{Part III}
+
+\begin{verbatim}
+    **Agentic AI**
+\end{verbatim}
+
+Agent 架构、自修改、反馈循环
+
+↓
+
+\textbf{Part IV --- Financial AI}
+
+金融时间序列 · Backtesting · 非平稳性
+
+↓
+
+\textbf{Part V --- Literature Review}
+
+经典理论 · 代表性工作 · Research Gap
+
+↓
+
+\textbf{Part VI --- Research Practice}
+
+复现实验 · Hypothesis Testing · Ablation Study
+
+↓
+
+\textbf{Research Discussion}
+
+能够与教授、博士生讨论研究问题、实验设计及潜在贡献
+
+\hypertarget{part-1-03-0001-ux5b66ux4e60ux4f18ux5148ux7ea7ux4e0eux65f6ux95f4ux6295ux5165}{%
+\subsubsection{0.2 学习优先级与时间投入}\label{part-1-03-0001-ux5b66ux4e60ux4f18ux5148ux7ea7ux4e0eux65f6ux95f4ux6295ux5165}}
+
+考虑到你目前的数学、统计和计算机科学基础，我们没有必要从完整的机器学习课程重新开始，而应当围绕 Research Question 进行定向学习。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.45}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.14}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Part & 核心内容 & 优先级 & 建议投入 \\
+\midrule
+\endhead
+I & Research Problem & P0 & 1--2 h \\
+II & Statistical Learning Theory & P0 & 4--6 h \\
+III & Agentic AI \& RSI & P0 & 3--4 h \\
+IV & Financial Evaluation & P1 & 3--4 h \\
+V & Literature Review & P1 & 5--8 h \\
+VI & Reproducible Experiment & P1 & 4--6 h \\
+Extension & Advanced ML、RL、复杂 Agent 系统 & P2 & 长期 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{P0}：第一次与课题组交流前，应当具备基本理解。
+\item
+  \textbf{P1}：进入课题组之前或之后一至两周重点掌握。
+\item
+  \textbf{P2}：根据实际研究任务逐渐补充，不作为联系导师的前置条件。
+\end{itemize}
+
+尤其是 Part II，我认为这是整个学习过程中最值得投入精力的部分。Adaptive Overfitting、Selection Bias、Multiple Testing 等问题具有很强的数学统计内核，也与你已有的知识基础直接衔接。
+
+\hypertarget{part-1-03-0001-ux6700ux7ec8ux5b66ux4e60ux6210ux679c}{%
+\subsubsection{0.3 最终学习成果}\label{part-1-03-0001-ux6700ux7ec8ux5b66ux4e60ux6210ux679c}}
+
+完成这六个部分后，我们应当能够形成以下研究材料：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Deliverable & 内容 \\
+\midrule
+\endhead
+Research Problem Statement & 准确描述研究问题及其重要性 \\
+Conceptual Framework & 建立 RSI 与泛化误差之间的理论联系 \\
+Annotated Bibliography & 经过核实的核心论文及阅读笔记 \\
+Research Hypotheses & 若干可以被实验检验的研究假设 \\
+Python Prototype & 最小可行的递归模型选择实验 \\
+Experimental Protocol & 数据划分、Baseline、Metrics、Ablation \\
+Discussion Questions & 与导师或博士生交流的实质性问题 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+我们不需要等到全部完成才联系教授。掌握 Part I--III 的主要内容后，就已经可以开始有一定技术深度的交流。
+
+\hypertarget{part-1-03-0001-research-motivationux6211ux4eecux7a76ux7adfux5728ux7814ux7a76ux4ec0ux4e48}{%
+\subsection{1. Research Motivation：我们究竟在研究什么？}\label{part-1-03-0001-research-motivationux6211ux4eecux7a76ux7adfux5728ux7814ux7a76ux4ec0ux4e48}}
+
+首先拆解课题标题。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.57}}@{}}
+\toprule
+关键词 & 对应的研究含义 \\
+\midrule
+\endhead
+Better, Then Worse & 性能先改善、后退化的潜在现象 \\
+Diagnosing & 不仅描述现象，而且尝试识别其产生机制 \\
+Out-of-Sample & 未参与模型开发与选择的数据 \\
+Performance Decay & 泛化性能随迭代推进而下降 \\
+Recursive Self-Improvement & 系统迭代改进自身，并可能改进自身的改进机制 \\
+Finance & 研究所处的高噪声、动态变化的应用环境 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+注意，\textbf{Diagnosing} 可能是整个标题中研究意味最浓的词。
+
+假设我们构建了一个 AI Agent，让它自动研究股票收益率预测问题。Agent 每一轮都可以分析上一次实验结果，修改预测模型，随后进行新的实验。
+
+我们得到如下假想结果：
+
+\textbf{Performance during recursive self-improvement}
+
+示意数据，不是课题组真实实验结果
+
+Development score
+
+Out-of-sample score
+
+\bookgraphic{0.483}{part-1-03-0001-003-01}{}
+
+\textbf{Phase A --- Better}
+
+开发集与样本外表现共同提升，可能来自有效的结构改进。
+
+\textbf{Phase B --- Worse}
+
+开发集继续改善，但样本外表现下降，可能出现过度适应。
+
+这就是课题标题所暗示的一种典型研究现象。
+
+然而，观察到这种曲线之后，真正的科研工作才刚刚开始。
+
+我们需要知道性能退化究竟来自：
+
+\begin{itemize}
+\tightlist
+\item
+  对历史数据中随机噪声的拟合；
+\item
+  反复评估引起的 Adaptive Overfitting；
+\item
+  Agent 的改进方向发生偏移；
+\item
+  模型结构越来越复杂；
+\item
+  金融市场本身发生变化；
+\item
+  或者以上多种因素之间的交互作用。
+\end{itemize}
+
+\textbf{观察到 Performance Decay 并不等于证明了 Overfitting。} 区分这些可能的机制，才是 Diagnosing 的核心。
+
+\hypertarget{part-1-03-0001-recursive-self-improvement-rsi}{%
+\subsection{2. Recursive Self-Improvement (RSI)}\label{part-1-03-0001-recursive-self-improvement-rsi}}
+
+\hypertarget{part-1-03-0001-ux4eceux666eux901a-ai-ux7cfbux7edfux5230-self-improving-ai}{%
+\subsubsection{2.1 从普通 AI 系统到 Self-Improving AI}\label{part-1-03-0001-ux4eceux666eux901a-ai-ux7cfbux7edfux5230-self-improving-ai}}
+
+我们首先考虑一个最普通的 AI 系统。
+
+设输入为 \(x\)，模型参数为 \(\theta\)，输出为：
+\[y=f_\theta(x).\]
+
+在这里，AI 的任务是根据输入产生合适的输出。
+
+例如，给定过去一段时间的股票价格、成交量等信息，模型预测下一交易日的收益率。
+
+但是，这个模型本身并不知道：
+
+\begin{itemize}
+\tightlist
+\item
+  应该选择什么样的特征；
+\item
+  应该使用什么模型结构；
+\item
+  应该采用什么训练方式；
+\item
+  应该如何根据失败的实验设计下一轮实验。
+\end{itemize}
+
+这些通常是由研究人员决定的。
+
+Self-Improving Agent 的基本思想，就是将部分原本由研究人员负责的工作交给 AI 系统自身。
+
+换言之，AI 不仅负责 \textbf{solving the problem}，还开始负责 \textbf{improving the way it solves the problem}。
+
+\hypertarget{part-1-03-0001-ai-agent-ux4e0e-llm-ux7684ux533aux522b}{%
+\subsubsection{2.2 AI Agent 与 LLM 的区别}\label{part-1-03-0001-ai-agent-ux4e0e-llm-ux7684ux533aux522b}}
+
+在理解 Self-Improvement 之前，需要先明确一个概念：
+
+\textbf{LLM 不等于 AI Agent。}
+
+LLM 可以被视为一个根据上下文生成输出的模型，而 Agent 是一个利用模型、工具、记忆和控制逻辑完成任务的系统。
+
+\textbf{Simplified AI Agent Architecture}
+
+\bookgraphic{0.373}{part-1-03-0001-004-01}{LLM 是 Agent 的一个组成部分。Agent 的行为还取决于外部程序、工具、上下文和控制机制。}
+
+我们可以抽象地表示一个 Agent：
+\[A=(f_\theta,P,M,T,C)\]
+
+其中：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.63}}@{}}
+\toprule
+Component & Meaning \\
+\midrule
+\endhead
+\(f_\theta\) & Foundation Model \\
+\(P\) & Prompts and Instructions \\
+\(M\) & Memory System \\
+\(T\) & Available Tools \\
+\(C\) & Control Logic \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这不是一个统一的行业标准定义，而是我们为了研究问题建立的简化表示。
+
+其中，由代码、Prompt、工具接口和控制逻辑等构成的外围系统，通常被称为 \textbf{Agent Scaffold} 或 \textbf{Agent Harness}。
+
+一个非常重要的事实是：即使 Foundation Model 的参数 \(\theta\) 完全不变，修改其他组件，也可能显著改变整个 Agent 的表现。
+
+因此，Agent Self-Improvement 不一定涉及 LLM 的重新训练。
+
+\hypertarget{part-1-03-0001-ux4ec0ux4e48ux662f-self-improvement}{%
+\subsubsection{2.3 什么是 Self-Improvement？}\label{part-1-03-0001-ux4ec0ux4e48ux662f-self-improvement}}
+
+假设初始 Agent 为 \(A_0\)。
+
+我们允许它：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  执行任务；
+\item
+  观察实验结果；
+\item
+  分析失败原因；
+\item
+  修改自己的工作流程或程序；
+\item
+  测试修改后的版本；
+\item
+  保留表现更好的版本。
+\end{enumerate}
+
+经过一轮改进，我们得到：
+\[A_0\longrightarrow A_1.\]
+
+重复这个过程：
+\[A_0\longrightarrow A_1
+\longrightarrow A_2
+\longrightarrow\cdots
+\longrightarrow A_K.\]
+
+这构成了一种迭代式的 Self-Improvement。
+
+\textbf{Self-Improvement Feedback Loop}
+
+\bookgraphic{0.422}{part-1-03-0001-005-01}{}
+
+其中最需要关注的模块并不是 Generate，而是 \textbf{Evaluate and Select}。
+
+因为无论 Agent 能够产生多么复杂的改进方案，最终保留下来的版本，都在很大程度上取决于 Evaluation Criterion。
+
+如果评估标准存在偏差，整个系统就可能不断朝着错误的方向优化。
+
+\hypertarget{part-1-03-0001-self-improvement-ux4e2dux7684-recursive-ux7a76ux7adfux662fux4ec0ux4e48ux610fux601d}{%
+\subsubsection{2.4 Self-Improvement 中的 Recursive 究竟是什么意思？}\label{part-1-03-0001-self-improvement-ux4e2dux7684-recursive-ux7a76ux7adfux662fux4ec0ux4e48ux610fux601d}}
+
+这里存在三个不同层次，需要严格区分。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.60}}@{}}
+\toprule
+Level & 改进对象 & 示例 \\
+\midrule
+\endhead
+Level 1 & Solution & Agent 修改一个股票预测模型 \\
+Level 2 & Agent & Agent 修改自己的研究流程、Prompt 或工具 \\
+Level 3 & Improver & Agent 改进自己产生和评估改进方案的能力 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+第一层更接近 Automated Machine Learning 或 Automated Research。
+
+第二层属于 Agent-level Self-Improvement。
+
+第三层才最接近严格意义上的 Recursive Self-Improvement。
+
+我们设：
+
+\begin{itemize}
+\tightlist
+\item
+  \(A_k\)：第 \(k\) 轮的 Agent；
+\item
+  \(\mathcal I_k\)：第 \(k\) 轮使用的 Improvement Operator；
+\item
+  \(F_k\)：第 \(k\) 轮获得的实验反馈。
+\end{itemize}
+
+普通的迭代改进可以表示为：
+\[A_{k+1}=\mathcal I_0(A_k,F_k).\]
+
+这里 Improvement Operator 始终固定。
+
+而更强意义上的 Recursive Self-Improvement 可以表示为：
+\[\begin{cases}
+A_{k+1}=\mathcal I_k(A_k,F_k),\\[4pt]
+\mathcal I_{k+1}=\mathcal J(\mathcal I_k,A_k,F_k).
+\end{cases}\]
+
+其中 \(\mathcal J\) 表示更新改进机制的操作。
+
+核心区别在于，负责改进的机制本身也成为了被改进的对象。
+
+这使得系统不仅可能越来越擅长完成任务，也可能越来越擅长寻找新的优化方法。
+
+但同样地，它也可能越来越擅长寻找评估体系中的漏洞，或者捕捉不具有泛化能力的统计规律。
+
+目前我们尚不知道 X Program \#161 使用的是上述哪个层次的 RSI。这应该是之后与博士生交流时首先确认的技术问题之一。
+
+\hypertarget{part-1-03-0001-self-improvement-ux4e0eux4f20ux7edf-machine-learning-ux7684ux533aux522b}{%
+\subsection{3. Self-Improvement 与传统 Machine Learning 的区别}\label{part-1-03-0001-self-improvement-ux4e0eux4f20ux7edf-machine-learning-ux7684ux533aux522b}}
+
+\hypertarget{part-1-03-0001-ordinary-machine-learning-training}{%
+\subsubsection{3.1 Ordinary Machine Learning Training}\label{part-1-03-0001-ordinary-machine-learning-training}}
+
+传统机器学习通常考虑如下优化问题：
+\[\theta^*
+=
+\arg\min_{\theta\in\Theta}
+\frac{1}{n}
+\sum_{i=1}^{n}
+\ell(f_\theta(x_i),y_i).\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(\Theta\) 是参数空间；
+\item
+  \(\ell\) 是 Loss Function；
+\item
+  \(f_\theta\) 是预先给定结构的模型。
+\end{itemize}
+
+以 Linear Regression 为例：
+\[\hat y=\beta_0+\beta_1x_1+\cdots+\beta_px_p.\]
+
+我们寻找最合适的 Regression Coefficients：
+\[\hat{\boldsymbol\beta}
+=
+\arg\min_{\boldsymbol\beta}
+\|\mathbf y-\mathbf X\boldsymbol\beta\|_2^2.\]
+
+在这个过程中，模型结构、损失函数和训练方法通常已经确定。
+
+优化发生在 Parameter Space 中。
+
+\hypertarget{part-1-03-0001-hyperparameter-tuning}{%
+\subsubsection{3.2 Hyperparameter Tuning}\label{part-1-03-0001-hyperparameter-tuning}}
+
+假设我们采用 Ridge Regression：
+\[\hat{\boldsymbol\beta}_{\lambda}
+=
+\arg\min_{\boldsymbol\beta}
+\left(
+\|\mathbf y-\mathbf X\boldsymbol\beta\|_2^2
++
+\lambda\|\boldsymbol\beta\|_2^2
+\right).\]
+
+这里不仅需要确定 \(\boldsymbol\beta\)，还需要选择 Regularization Parameter \(\lambda\)。
+
+我们可以通过 Validation Set 选择：
+\[\lambda^*
+=
+\arg\min_{\lambda\in\Lambda}
+\widehat R_{\mathrm{val}}
+(\hat{\boldsymbol\beta}_{\lambda}).\]
+
+这实际上构成了一个 Two-Level Optimization Problem：
+
+\textbf{Outer Optimization}
+
+\begin{verbatim}
+$\min_{\lambda\in\Lambda}\;\widehat R_{\mathrm{val}}(\hat{\boldsymbol\beta}_{\lambda})$
+\end{verbatim}
+
+选择超参数
+
+\textbf{Inner Optimization}
+
+\begin{verbatim}
+$\min_{\boldsymbol\beta}\;\widehat R_{\mathrm{train}}(\boldsymbol\beta)+\lambda\|\boldsymbol\beta\|_2^2$
+\end{verbatim}
+
+训练模型参数
+
+这里优化的空间扩大了，但仍然受到预先定义的 Hyperparameter Space 和 Search Algorithm 约束。
+
+\hypertarget{part-1-03-0001-agentic-self-improvement}{%
+\subsubsection{3.3 Agentic Self-Improvement}\label{part-1-03-0001-agentic-self-improvement}}
+
+相比之下，一个具有 Self-Improvement 能力的研究 Agent，可能自主决定：
+
+\begin{itemize}
+\tightlist
+\item
+  从 Linear Regression 切换为 Random Forest；
+\item
+  构造新的金融特征；
+\item
+  修改数据预处理方法；
+\item
+  修改 Loss Function；
+\item
+  编写新的模型选择算法；
+\item
+  重写实验执行程序；
+\item
+  修改自身分析失败实验的方式。
+\end{itemize}
+
+因此，其优化对象不再只是参数或超参数，而可能是整个可执行的研究系统。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.25}}@{}}
+\toprule
+Dimension & Model Training & Hyperparameter Tuning & Agentic RSI \\
+\midrule
+\endhead
+优化对象 & Parameters & Hyperparameters & Programs / Agents \\
+搜索空间 & Parameter Space & Configuration Space & Potentially open-ended program space \\
+模型结构 & 通常固定 & 可能变化 & 可以自主变化 \\
+优化算法 & 通常固定 & 通常固定 & 某些 RSI 系统允许修改 \\
+评估次数 & 多 & 多 & 可能大量且自适应 \\
+过拟合对象 & Training Data & Validation Data & Evaluation Environment \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+不过，这三者并不是彼此割裂的。
+
+从数学意义上来看，它们都可以被理解为某种 Optimization Problem。RSI 带来的重要变化，是搜索空间更加开放，模型选择过程更加自主，并且历史反馈可能持续影响未来候选模型的生成。
+
+\textbf{RSI 并没有创造一种全新的统计问题，而是可能将既有的 Model Selection 和 Adaptive Data Analysis 问题显著放大。}
+
+\hypertarget{part-1-03-0001-mathematical-principlesux4e3aux4ec0ux4e48ux8d8aux6539ux8fdbux53cdux800cux53efux80fdux8d8aux5dee}{%
+\subsection{4. Mathematical Principles：为什么越改进，反而可能越差？}\label{part-1-03-0001-mathematical-principlesux4e3aux4ec0ux4e48ux8d8aux6539ux8fdbux53cdux800cux53efux80fdux8d8aux5dee}}
+
+这是今天最重要的一部分，也是我们进入 Part II 的理论基础。
+
+\hypertarget{part-1-03-0001-true-performance-ux4e0e-observed-performance}{%
+\subsubsection{4.1 True Performance 与 Observed Performance}\label{part-1-03-0001-true-performance-ux4e0e-observed-performance}}
+
+假设我们希望评价一个 Agent \(A\)。
+
+定义它在目标数据分布 \(\mathcal D\) 上的真实期望表现：
+\[J(A)
+=
+\mathbb E_{Z\sim\mathcal D}[s(A,Z)].\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(Z\) 表示一个随机任务或数据样本；
+\item
+  \(s(A,Z)\) 表示 Agent 在该样本上的得分；
+\item
+  \(J(A)\) 表示其总体期望表现。
+\end{itemize}
+
+然而，我们并不知道整个真实数据分布，也无法穷举所有未来任务。
+
+因此，只能使用有限的数据集：
+\[D=\{Z_1,Z_2,\ldots,Z_n\}.\]
+
+并计算：
+\[\widehat J_D(A)
+=
+\frac{1}{n}
+\sum_{i=1}^{n}s(A,Z_i).\]
+
+于是：
+\[\boxed{
+\widehat J_D(A)=J(A)+\varepsilon_D(A)
+}\]
+
+其中 \(\varepsilon_D(A)\) 是有限样本导致的评估误差。
+
+对于一个事先固定、独立于评估数据的 Agent，在样本具有相同边际分布且期望存在的条件下：
+\[\mathbb E_D[\widehat J_D(A)]=J(A).\]
+
+也就是说，Observed Performance 可以是 True Performance 的无偏估计。
+
+但是，一旦我们根据 Observed Performance 来选择 Agent，情况就发生了变化。
+
+\hypertarget{part-1-03-0001-ux4e00ux4e2aux7b80ux5355ux5374ux975eux5e38ux91cdux8981ux7684-model-selection-ux95eeux9898}{%
+\subsubsection{4.2 一个简单却非常重要的 Model Selection 问题}\label{part-1-03-0001-ux4e00ux4e2aux7b80ux5355ux5374ux975eux5e38ux91cdux8981ux7684-model-selection-ux95eeux9898}}
+
+假设我们有 \(m\) 个候选 Agent：
+\[A_1,A_2,\ldots,A_m.\]
+
+为了简化问题，假设它们的真实能力完全相同：
+\[J(A_1)=\cdots=J(A_m)=\mu.\]
+
+但是它们在 Validation Set 上的表现分别为：
+\[\widehat J_D(A_j)=\mu+\varepsilon_j.\]
+
+其中：
+\[\mathbb E[\varepsilon_j]=0.\]
+
+我们自然会选择：
+\[j^*=
+\arg\max_{1\leq j\leq m}
+\widehat J_D(A_j).\]
+
+因此：
+\[\begin{aligned}
+\mathbb E[\widehat J_D(A_{j^*})]
+&=
+\mathbb E\left[
+\max_{1\leq j\leq m}
+(\mu+\varepsilon_j)
+\right]\\
+&=
+\mu+
+\mathbb E\left[
+\max_{1\leq j\leq m}\varepsilon_j
+\right].
+\end{aligned}\]
+
+由于 maximum 是凸函数，根据 Jensen's Inequality：
+\[\begin{aligned}
+\mathbb E[\max_j\varepsilon_j]
+&\geq
+\max_j\mathbb E[\varepsilon_j]\\
+&=0.
+\end{aligned}\]
+
+于是得到：
+\[\boxed{
+\mathbb E[\widehat J_D(A_{j^*})]
+\geq
+\mu
+}\]
+
+而被选中的 Agent 的真实表现仍然为：
+\[J(A_{j^*})=\mu.\]
+
+这意味着：
+
+\textbf{即使所有候选模型的真实能力完全相同，只要反复比较并选择最好的模型，就可能制造出虚假的性能提升。}
+
+这个现象与以下概念密切相关：
+
+\begin{itemize}
+\tightlist
+\item
+  Selection Bias
+\item
+  Winner's Curse
+\item
+  Multiple Comparisons
+\item
+  Model Selection Overfitting
+\end{itemize}
+
+它并不需要复杂的深度学习模型，也不需要金融市场发生变化。
+
+仅仅通过有限样本上的反复选择，就足以产生。
+
+\hypertarget{part-1-03-0001-search-budget-ux5982ux4f55ux5f71ux54cd-selection-bias}{%
+\subsubsection{4.3 Search Budget 如何影响 Selection Bias？}\label{part-1-03-0001-search-budget-ux5982ux4f55ux5f71ux54cd-selection-bias}}
+
+我们进一步假设评估误差独立且服从正态分布：
+\[\varepsilon_j
+\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(0,\sigma^2).\]
+
+当 \(m\) 足够大时，由 Gaussian Extreme Value Theory 可得一阶渐近近似：
+\[\mathbb E\left[\max_{1\leq j\leq m}
+\varepsilon_j\right]
+\sim
+\sigma\sqrt{2\log m}.\]
+
+因此：
+\[\mathbb E[\widehat J_D(A_{j^*})]
+\approx
+\mu+\sigma\sqrt{2\log m}.\]
+
+这个式子揭示了一个非常有研究价值的关系：即使候选模型的真实性能没有提高，扩大搜索规模也可能提高被观察到的最优性能。
+
+\textbf{Explore Selection Bias}
+
+所有候选模型的真实得分均为 0.50。采用 Gaussian Maximum 的一阶渐近近似，非实际实验结果。
+
+候选模型数量 \(m\)
+
+\textbf{100}
+
+2（范围 1--5）
+
+评估误差标准差 \(\sigma\)\\
+\textbf{0.10}
+
+0.1（范围 0.01--0.2）
+
+True Score
+
+\textbf{0.500}
+
+Best Observed
+
+\textbf{0.803}
+
+Selection Bias
+
+\textbf{+0.303}
+
+\bookgraphic{0.588}{part-1-03-0001-007-01}{这里使用无界的抽象 performance score。真实 Agent 的误差往往相关，且候选模型是自适应生成的，因此不能直接将该近似应用于真实实验。}
+
+logM = 5
+
+\bookgraphic{0.588}{part-1-03-0001-007-state-01}{}
+
+这个结论给出了三个潜在的研究变量：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.71}}@{}}
+\toprule
+Variable & Research Meaning \\
+\midrule
+\endhead
+\(m\) & Search Budget：搜索了多少候选版本 \\
+\(\sigma\) & Evaluation Noise：评估结果有多不稳定 \\
+\(n\) & Evaluation Sample Size：评估样本量 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在独立同分布等适当条件下，样本均值的标准误差满足：
+\[\sigma\propto\frac{1}{\sqrt n}.\]
+
+于是我们可以得到一个启发性的尺度关系：
+\[\text{Selection Bias}
+\approx
+O\left(
+\sqrt{\frac{\log m}{n}}
+\right).\]
+
+对于有限的固定候选集合，在适当的独立采样、次高斯误差等假设下，也可以建立类似尺度的严格上界。
+
+但在实际 RSI 中，候选模型之间存在相关性，并且生成过程可能依赖评估数据，不能直接把上述近似当成普遍成立的 RSI 定理。
+
+我们将在 Part II 进一步研究这些条件。
+
+\hypertarget{part-1-03-0001-recursive-self-improvement-ux4e3aux4ec0ux4e48ux53efux80fdux66f4ux52a0ux4e25ux91cd}{%
+\subsubsection{4.4 Recursive Self-Improvement 为什么可能更加严重？}\label{part-1-03-0001-recursive-self-improvement-ux4e3aux4ec0ux4e48ux53efux80fdux66f4ux52a0ux4e25ux91cd}}
+
+上面的分析实际上只考虑了普通的 Model Selection：
+\[A_1,A_2,\ldots,A_m
+\longrightarrow A_{j^*}.\]
+
+这些候选模型可以事先确定。
+
+但是，在 RSI 中，第 \(k+1\) 轮的候选模型可能根据第 \(k\) 轮的评估结果生成：
+\[A_{k+1}
+=
+\mathcal I_k
+\left(
+A_k,\widehat J_D(A_k),H_k
+\right).\]
+
+其中 \(H_k\) 表示此前所有实验的历史记录。
+
+例如：
+\[H_k=
+\left\{
+(A_i,\widehat J_D(A_i))
+\right\}_{i=0}^{k}.\]
+
+这样一来，每一次 Evaluation 都在向 Agent 提供关于数据集 \(D\) 的信息。
+
+即使 Agent 从未直接读取 Validation Set 的原始标签，它仍然可能通过反复观察得分、错误样本或实验反馈，逐渐学习该数据集的特殊性。
+
+\textbf{Non-adaptive Selection}
+
+\bookgraphic{0.256}{part-1-03-0001-008-01}{候选模型预先生成，再进行比较。}
+
+\textbf{Adaptive Selection}
+
+\bookgraphic{0.256}{part-1-03-0001-008-02}{评估结果影响下一轮候选模型的生成。}
+
+这就是 \textbf{Adaptive Overfitting} 背后的重要机制。
+
+Dwork 等人在 2015 年发表的 Adaptive Data Analysis 研究已经明确讨论过：当后续统计分析依赖此前在同一数据集上获得的结果时，传统的泛化保证可能失效，反复使用 Holdout Set 也可能导致对 Holdout Set 本身的过拟合。
+
+\href{https://pubmed.ncbi.nlm.nih.gov/26250683/}{来源 1} \href{https://proceedings.neurips.cc/paper/2015/hash/bad5f33780c42f2588878a9d07405083-Abstract.html}{来源 2}
+
+AI Agent 将原本由人类执行的自适应研究过程自动化了。
+
+从统计学角度来看，我们甚至可以将一个自动化研究 Agent 理解为：
+
+\begin{quote}
+A sequential, adaptive statistical analyst with a potentially large search budget.
+\end{quote}
+
+一个具有较大搜索预算、能够根据历史反馈不断提出新假设的自适应统计分析者。
+
+\hypertarget{part-1-03-0001-ux4e00ux4e2aux5173ux952eux533aux522bgeneralization-gap-ux589eux5927ux4e0dux7b49ux4e8e-oos-performance-ux4e0bux964d}{%
+\subsubsection{4.5 一个关键区别：Generalization Gap 增大不等于 OOS Performance 下降}\label{part-1-03-0001-ux4e00ux4e2aux5173ux952eux533aux522bgeneralization-gap-ux589eux5927ux4e0dux7b49ux4e8e-oos-performance-ux4e0bux964d}}
+
+这里必须特别严谨。
+
+此前的数学分析证明了，即使真实能力不变，模型选择也可能造成 Observed Performance 的系统性高估。
+
+但这还不足以证明真实能力会下降。
+
+考虑两种不同的情况：
+
+\textbf{Case A --- Score Inflation}
+
+\bookgraphic{0.403}{part-1-03-0001-010-01}{开发集得分提高，但真实能力基本不变。}
+
+\textbf{Case B --- Actual Decay}
+
+\bookgraphic{0.403}{part-1-03-0001-010-02}{开发集得分提高，但真实能力先升后降。}
+
+Development Performance
+
+True Performance
+
+Case A 说明性能提升的估计出现了偏差。
+
+Case B 则说明优化过程选择了真实性能更差的模型。
+
+后者才是这个 X Program 标题特别值得关注的现象。
+
+假设有两个候选模型：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+& Robust Model A & Overfitted Model B \\
+\midrule
+\endhead
+True Performance & 0.80 & 0.70 \\
+Evaluation Error & 0.01 & 0.15 \\
+Observed Performance & 0.81 & \textbf{0.85} \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+假如 Agent 根据 Observed Performance 进行选择，那么 Model B 就会被保留下来。
+
+此次迭代的观察表现变化为：
+\[\Delta\widehat J=0.85-0.81=0.04.\]
+
+然而真实性能变化为：
+\[\Delta J=0.70-0.80=-0.10.\]
+
+因此：
+\[\boxed{
+\Delta\widehat J>0
+\quad\not\Rightarrow\quad
+\Delta J>0
+}\]
+
+如果后续 Agent 又基于 Model B 进行进一步的修改，那么这个错误选择可能继续影响未来的搜索轨迹。
+
+这是一种潜在的 \textbf{Path Dependence（路径依赖）}。
+
+但其是否一定发生、是否会累积以及累积速度如何，都需要通过理论或实验研究加以确认。
+
+\hypertarget{part-1-03-0001-exampleux4e00ux4e2aux81eaux4e3bux7814ux7a76ux91d1ux878dux7b56ux7565ux7684-ai-agent}{%
+\subsection{5. Example：一个自主研究金融策略的 AI Agent}\label{part-1-03-0001-exampleux4e00ux4e2aux81eaux4e3bux7814ux7a76ux91d1ux878dux7b56ux7565ux7684-ai-agent}}
+
+现在我们将前面的数学分析具体化。
+
+假设我们给 AI Agent 一个任务：
+
+\begin{quote}
+根据历史股票数据，构建能够预测下一交易日收益率的模型。
+\end{quote}
+
+我们首先进行严格的时间顺序划分。
+
+\textbf{Chronological Data Split}
+
+假想实验设置
+
+\bookgraphic{0.830}{part-1-03-0001-012-01}{}
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  Training Set 用于训练模型。
+\item
+  Validation Set 用于 Agent 选择特征、修改结构和迭代改进。
+\item
+  Test Set 在整个改进过程中保持封闭，仅用于独立评估。
+\end{itemize}
+
+假设 Agent 进行了如下迭代。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.74}}@{}}
+\toprule
+Round & Agent Modification \\
+\midrule
+\endhead
+R0 & Linear Regression \\
+R1 & 加入 Momentum Features \\
+R2 & 加入 Volatility Features \\
+R3 & 改用 Regularized Regression \\
+R4 & 改用 Gradient Boosting \\
+R5 & 自动搜索技术指标组合 \\
+R6 & 修改特征选择算法 \\
+R7 & 加入大量非线性交互项 \\
+R8 & 根据历史失败记录构建特殊规则 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+我们使用 Sharpe Ratio 作为策略评价指标之一：
+\[\operatorname{SR}
+=
+\frac{\mathbb E[R-R_f]}
+{\sqrt{\operatorname{Var}(R-R_f)}}.\]
+
+这里 \(R\) 为策略在给定频率下的收益率，\(R_f\) 为相应频率的无风险收益率。Sharpe Ratio 衡量单位波动风险对应的平均超额收益。
+
+假设最终得到如下结果：
+
+\textbf{Recursive Financial Strategy Optimization}
+
+假想的年化 Sharpe Ratio，仅用于解释研究问题
+
+\bookgraphic{0.786}{part-1-03-0001-013-01}{}
+
+Validation-optimal version
+
+\textbf{R8}
+
+Validation Sharpe = 2.83
+
+Retrospective OOS-optimal version
+
+\textbf{R3}
+
+Test Sharpe = 1.08
+
+这个例子中，Agent 始终在履行我们给它的任务：寻找能够提高 Validation Sharpe Ratio 的策略。
+
+从优化算法的角度来看，它似乎运行得非常成功。
+
+但从 Statistical Learning 的角度来看，它可能已经出现严重的过拟合。
+
+尤其需要注意，R3 是我们事后观察 Test Set 才发现的最佳版本。如果我们据此选择 R3 并继续改进，那么这个 Test Set 也将不再是独立的最终评估集。
+
+这就引出了一个非常重要的开放问题：
+
+\textbf{在不提前观察真正的未来数据的情况下，能否判断 Agent 何时应该停止 Self-Improvement？}
+
+这类似于 Deep Learning 中的 Early Stopping，但这里过拟合的对象可能是 Validation Set 本身，因此不能直接照搬传统的 Early Stopping 方法。
+
+\hypertarget{part-1-03-0001-ux4e3aux4ec0ux4e48ux8fd9ux4e2aux95eeux9898ux5728-finance-ux4e2dux5c24ux5176ux91cdux8981}{%
+\subsection{6. 为什么这个问题在 Finance 中尤其重要？}\label{part-1-03-0001-ux4e3aux4ec0ux4e48ux8fd9ux4e2aux95eeux9898ux5728-finance-ux4e2dux5c24ux5176ux91cdux8981}}
+
+虽然 RSI 造成的评估问题同样存在于数学推理、代码生成、科学发现等领域，但金融场景具有几个特殊性质。
+
+\hypertarget{part-1-03-0001-low-signal-to-noise-ratio}{%
+\subsubsection{6.1 Low Signal-to-Noise Ratio}\label{part-1-03-0001-low-signal-to-noise-ratio}}
+
+考虑一个简化的金融收益率模型：
+\[r_{t+1}=g(X_t)+\varepsilon_{t+1}.\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(X_t\) 是时刻 \(t\) 已经获得的信息；
+\item
+  \(g(X_t)\) 是可预测的结构性信号；
+\item
+  \(\varepsilon_{t+1}\) 是不可预测的噪声。
+\end{itemize}
+
+金融预测中的一个困难是，许多任务中可预测信号相对于噪声非常微弱。
+
+\textbf{Signal and Noise in Financial Prediction}
+
+合成数据示意
+
+\bookgraphic{0.702}{part-1-03-0001-014-01}{}
+
+Underlying signal
+
+Observed returns
+
+我们可以定义一个信噪比：
+\[\mathrm{SNR}
+=
+\frac{\operatorname{Var}(g(X_t))}
+{\operatorname{Var}(\varepsilon_{t+1})}.\]
+
+当 SNR 较低时，很难区分：
+
+\begin{itemize}
+\tightlist
+\item
+  真正具有预测能力的金融规律；
+\item
+  历史数据中偶然出现的相关关系。
+\end{itemize}
+
+假如 Agent 可以自由搜索数千种指标组合，就可能发现大量在历史数据上有效、但未来完全失效的策略。
+
+\hypertarget{part-1-03-0001-non-stationarity}{%
+\subsubsection{6.2 Non-stationarity}\label{part-1-03-0001-non-stationarity}}
+
+许多经典 Statistical Learning Theory 结果假设训练与测试数据来自相同分布：
+\[Z_{\mathrm{train}}\sim\mathcal D,
+\qquad
+Z_{\mathrm{test}}\sim\mathcal D.\]
+
+但金融市场中，数据生成分布可能随时间改变：
+\[Z_t\sim\mathcal D_t.\]
+
+于是可能有：
+\[\mathcal D_{\mathrm{past}}
+\neq
+\mathcal D_{\mathrm{future}}.\]
+
+例如：
+
+\textbf{Bull Market}
+
+\bookgraphic{0.533}{part-1-03-0001-015-01}{趋势上涨环境}
+
+\textbf{Bear Market}
+
+\bookgraphic{0.533}{part-1-03-0001-015-02}{趋势下跌环境}
+
+\textbf{Sideways}
+
+\bookgraphic{0.533}{part-1-03-0001-015-03}{震荡市场环境}
+
+在上涨市场中表现很好的策略，可能并不适用于下跌或震荡市场。
+
+因此，即使没有 Adaptive Overfitting，金融 Agent 的样本外表现仍然可能下降。
+
+这是一个必须分离的 Confounding Factor（混杂因素）。
+
+\hypertarget{part-1-03-0001-time-series-dependence}{%
+\subsubsection{6.3 Time-Series Dependence}\label{part-1-03-0001-time-series-dependence}}
+
+金融时间序列可能具有：
+
+\begin{itemize}
+\tightlist
+\item
+  Serial Dependence；
+\item
+  Volatility Clustering；
+\item
+  Cross-asset Dependence；
+\item
+  Heavy-tailed Returns。
+\end{itemize}
+
+这意味着 1,000 个金融观测值未必包含与 1,000 个独立观测值相同的信息量。
+
+以弱平稳时间序列的样本均值估计为例，在自协方差绝对可和等条件下，一个常见的渐近方差关系是：
+\[\operatorname{Var}(\bar X_n)
+\approx
+\frac{\sigma_X^2}{n}
+\left(
+1+2\sum_{h=1}^{\infty}\rho_h
+\right).\]
+
+其中 \(\rho_h\) 为 lag-\(h\) autocorrelation。
+
+当括号中的值大于 1 时，可以定义相应的 Effective Sample Size：
+\[n_{\mathrm{eff}}
+\approx
+\frac{n}
+{1+2\sum_{h=1}^{\infty}\rho_h}.\]
+
+此时 \(n_{\mathrm{eff}}\) 小于 \(n\)。
+
+这可能进一步放大 Evaluation Noise 和 Selection Bias。
+
+当然，具体有效样本量取决于所估计的统计量和依赖结构，并不是金融数据一律满足上述关系。
+
+\hypertarget{part-1-03-0001-backtesting-overfitting}{%
+\subsubsection{6.4 Backtesting Overfitting}\label{part-1-03-0001-backtesting-overfitting}}
+
+Backtesting 本质上是利用历史市场数据模拟策略的表现。
+
+但一个能够自主进行大量实验的金融研究 Agent，可能在同一段历史数据上测试成百上千种策略。
+
+最终报告的却只有表现最好的那一个。
+
+这个问题在量化金融中早已有系统研究。Bailey、Borwein、López de Prado 和 Zhu 提出的 Probability of Backtest Overfitting（PBO），就是为了评价历史回测中的最优策略在样本外表现不佳的可能性。
+
+\href{https://www.risk.net/journal-of-computational-finance/2471206/the-probability-of-backtest-overfitting}{来源 1} \href{https://scholarworks.wmich.edu/math_pubs/40/}{来源 2}
+
+因此，RSI for Finance 可以被视为一个经典问题与新兴技术的结合：
+\[\boxed{
+\begin{aligned}
+&\text{Agentic Self-Improvement}\\
+&+\text{Adaptive Model Selection}\\
+&+\text{Backtesting Overfitting}\\
+&+\text{Financial Distribution Shift}
+\end{aligned}
+}\]
+
+这种交叉性质，也正是课题在研究上比较有意思的地方。
+
+\hypertarget{part-1-03-0001-ux5c06ux73b0ux8c61ux8f6cux5316ux4e3a-research-questions}{%
+\subsection{7. 将现象转化为 Research Questions}\label{part-1-03-0001-ux5c06ux73b0ux8c61ux8f6cux5316ux4e3a-research-questions}}
+
+我们现在尝试站在研究人员的角度，而不仅仅是学习者的角度，思考这个问题。
+
+\hypertarget{part-1-03-0001-ux4e00ux4e2aux91cdux8981ux7684ux6570ux5b66ux5206ux89e3}{%
+\subsubsection{7.1 一个重要的数学分解}\label{part-1-03-0001-ux4e00ux4e2aux91cdux8981ux7684ux6570ux5b66ux5206ux89e3}}
+
+设：
+\[J_P(A)=\mathbb E_{Z\sim P}[s(A,Z)]\]
+
+表示 Agent 在开发阶段对应总体分布 \(P\) 上的真实表现。 设：
+\[J_Q(A)=\mathbb E_{Z\sim Q}[s(A,Z)]\]
+
+表示 Agent 在未来目标分布 \(Q\) 上的真实表现。
+
+对于第 \(k\) 轮 Agent \(A_k\)，其 Validation Performance 与 OOS Performance 的差异可以分解为：
+\[\boxed{
+\begin{aligned}
+\widehat J_D(A_k)-J_Q(A_k)
+={}&
+\underbrace{
+\widehat J_D(A_k)-J_P(A_k)
+}_{\text{Statistical Generalization Gap}}
+\\
+&+
+\underbrace{
+J_P(A_k)-J_Q(A_k)
+}_{\text{Distribution Shift Gap}}
+\end{aligned}
+}\]
+
+这是一个严格成立的代数恒等式。
+
+但两个差值都可能为正或为负，且两个总体期望通常不可直接观测。
+
+它的意义在于，将两个容易混淆的问题区分开来：
+
+\textbf{Statistical Generalization Gap}：模型是否过度适应了有限的评估数据？
+
+\textbf{Distribution Shift Gap}：模型所面对的目标环境是否发生了变化？
+
+如果我们要 Diagnosing Performance Decay，就不能简单地将两者混为一谈。
+
+\hypertarget{part-1-03-0001-ux521dux6b65ux7814ux7a76ux5047ux8bberesearch-hypotheses}{%
+\subsubsection{7.2 初步研究假设（Research Hypotheses）}\label{part-1-03-0001-ux521dux6b65ux7814ux7a76ux5047ux8bberesearch-hypotheses}}
+
+基于目前的理解，我们可以提出如下候选假设。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.54}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}@{}}
+\toprule
+Hypothesis & 内容 & 潜在实验变量 \\
+\midrule
+\endhead
+H1 & RSI 的后期迭代可能出现 OOS Performance Decay & Iteration \\
+H2 & 更大的候选模型搜索预算可能扩大 Selection Bias & Search Budget \\
+H3 & 重复使用固定 Validation Set 可能加剧 Adaptive Overfitting & Data Reuse \\
+H4 & 更高的 Evaluation Noise 可能使错误模型更容易被保留 & Sample Size、Noise \\
+H5 & Distribution Shift 可能放大或改变性能退化现象 & Market Regime \\
+H6 & 改进评估机制可能缓解后期性能退化 & Evaluation Protocol \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些是我们目前提出的 Research Hypotheses，不是已经被该课题组验证的结论。
+
+而且 H1 并非一定成立。某些 Self-Improving Agents 可能持续获得真实的能力提升，也可能在长时间迭代后趋于稳定，而没有明显的 OOS Decay。
+
+我们同样需要解释不发生退化的情况。
+
+\hypertarget{part-1-03-0001-ux521dux6b65-experimental-design}{%
+\subsection{8. 初步 Experimental Design}\label{part-1-03-0001-ux521dux6b65-experimental-design}}
+
+虽然我们还没有正式进入 Part VI，但现在可以先建立一个实验框架，以明确未来的理论学习服务于什么目标。
+
+我建议按照以下三个层次进行研究。
+
+\textbf{Experiment 1 --- Synthetic Stationary Environment}
+
+人工生成具有已知真实规律的数据，排除市场分布变化，检验反复模型选择是否产生统计性过拟合。
+
+主要工具：NumPy、Regression、Monte Carlo Simulation
+
+\textbf{Experiment 2 --- Agentic Optimization}
+
+引入 LLM Agent，使其根据实验历史自主生成新模型，比较自适应搜索与固定搜索的差异。
+
+主要工具：Python、LLM API、Experiment Logging
+
+\textbf{Experiment 3 --- Real Financial Environment}
+
+引入真实金融数据、时间依赖、市场状态变化及交易约束，检验已有结论的外部有效性。
+
+主要工具：Time-Series Validation、Backtesting
+
+这样设计的优点是，我们不需要从第一天开始就同时解决 Agent Architecture、Advanced ML、Financial Time Series 等所有问题。
+
+先隔离统计机制，再引入 Agent 的自适应性，最后考虑金融市场的复杂性。
+
+未来尤其值得进行如下 Controlled Experiments：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.43}}@{}}
+\toprule
+Experimental Group & Search Method & Evaluation \\
+\midrule
+\endhead
+A & Random Search & Fixed Validation \\
+B & Adaptive Search & Fixed Validation \\
+C & Recursive Agent & Fixed Validation \\
+D & Recursive Agent & Independent or Rolling Validation \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在尽可能控制候选模型数量、搜索空间、基础模型、计算预算和评估样本规模的条件下，我们就可以尝试判断：
+
+\begin{itemize}
+\tightlist
+\item
+  性能退化究竟是否需要 RSI 才会出现？
+\item
+  普通 Random Search 是否也能够产生类似的退化？
+\item
+  RSI 是否显著加剧了过拟合？
+\item
+  退化能否通过修改 Evaluation Protocol 得到缓解？
+\end{itemize}
+
+\textbf{我认为 Random Search Baseline 尤其重要。}
+
+因为如果一个完全不使用 LLM 的随机搜索算法也能够产生类似现象，那么就不能简单地将性能退化归因于 AI Agent 的某种独特性质。
+
+\hypertarget{part-1-03-0001-preliminary-reading-list}{%
+\subsection{9. Preliminary Reading List}\label{part-1-03-0001-preliminary-reading-list}}
+
+完整的文献检索和研究进展梳理，我们留到 Part V。现在先给出五篇经过初步核实、能够支撑目前知识框架的真实论文。
+
+\textbf{01. On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation}
+
+Gavin C. Cawley \& Nicola L. C. Talbot · 2010
+
+Journal of Machine Learning Research · 同行评审
+
+\begin{verbatim}
+  研究模型选择阶段本身的过拟合，以及由此导致的性能评估偏差。这篇最适合以你目前的统计学基础开始阅读。
+
+  [JMLR 正式论文](https://www.jmlr.org/papers/v11/cawley10a.html)  [来源 1](https://www.jmlr.org/beta/papers/v11/cawley10a.html)
+\end{verbatim}
+
+\textbf{02. The Reusable Holdout: Preserving Validity in Adaptive Data Analysis}
+
+Cynthia Dwork, Vitaly Feldman, Moritz Hardt, Toniann Pitassi, Omer Reingold \& Aaron Roth · 2015
+
+Science · 同行评审
+
+\begin{verbatim}
+  为理解反复使用 Holdout Set 和自适应统计分析提供理论基础。初次阅读不必深入 Differential Privacy 的全部数学细节。
+
+  [DOI: 10.1126/science.aaa9375](https://doi.org/10.1126/science.aaa9375)  [来源 1](https://pubmed.ncbi.nlm.nih.gov/26250683/)
+\end{verbatim}
+
+\textbf{03. Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation}
+
+Eric Zelikman, Eliana Lorch, Lester Mackey \& Adam Tauman Kalai · 2024
+
+COLM 2024 · 同行评审
+
+\begin{verbatim}
+  非常适合用于理解 Recursive 中的自指性质，即优化器如何利用自身改进自身。论文也明确指出，其方法没有修改底层语言模型的权重。
+
+  [arXiv:2310.02304](https://arxiv.org/abs/2310.02304) · [正式会议论文](https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html)  [来源 1](https://proceedings.colm.cc/paper_files/paper/2024/hash/52eb24c316c78cc144dfa54f1f4bb4ec-Abstract-Conference.html)
+\end{verbatim}
+
+\textbf{04. Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents}
+
+Jenny Zhang, Shengran Hu, Cong Lu, Robert Lange \& Jeff Clune · 2025 preprint / 2026 publication
+
+ICLR 2026 · 同行评审
+
+\begin{verbatim}
+  Agent 自主修改代码并利用 Benchmark 评估新版本的代表性工作。适合重点研究 Candidate Generation、Evaluation、Archive 和 Selection Mechanism。
+
+  [arXiv:2505.22954](https://arxiv.org/abs/2505.22954) · [OpenReview](https://openreview.net/forum?id=pUpzQZTvGY)  [来源 1](https://arxiv.org/abs/2505.22954) [来源 2](https://openreview.net/pdf?id=pUpzQZTvGY) [来源 3](https://openreview.net/pdf/98932dd098fa5b83419746439f3e35a4e3cf54a3.pdf)
+\end{verbatim}
+
+\textbf{05. The Probability of Backtest Overfitting}
+
+David H. Bailey, Jonathan M. Borwein, Marcos López de Prado \& Qiji Jim Zhu · 2017
+
+Journal of Computational Finance · 同行评审
+
+\begin{verbatim}
+  将统计模型选择与金融策略评估联系起来的核心论文。重点关注 In-Sample 最优策略为何可能在 Out-of-Sample 中表现不佳，以及如何量化这种风险。
+
+  [期刊正式出版页面](https://www.risk.net/journal-of-computational-finance/2471206/the-probability-of-backtest-overfitting)  [来源 1](https://www.risk.net/journal-of-computational-finance/2471206/the-probability-of-backtest-overfitting) [来源 2](https://scholarworks.wmich.edu/math_pubs/42/)
+\end{verbatim}
+
+上述论文都是相关研究的参考文献，并不意味着 X Program \#161 已经确定使用这些方法。
+
+目前不必全部通读。建议优先看第 1 篇和第 3 篇的 Abstract、Introduction 和主要方法，分别建立统计学和 RSI 两条知识主线。
+
+\hypertarget{part-1-03-0001-part-i-research-takeaways}{%
+\subsection{10. Part I --- Research Takeaways}\label{part-1-03-0001-part-i-research-takeaways}}
+
+今天需要真正理解的并不是大量 Agentic AI 的专业名词，而是以下五个核心观点。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.66}}@{}}
+\toprule
+Core Concept & 应当掌握的理解 \\
+\midrule
+\endhead
+Self-Improvement & Agent 可以改进自身的程序、工具和工作流程，而不必重新训练 LLM \\
+Recursive & 负责产生改进的机制本身也可能被改进 \\
+Selection Bias & 选择观察表现最好的版本，会引入统计性的乐观偏差 \\
+Adaptive Overfitting & 历史评估反馈能够使未来的候选模型逐渐适应有限的数据集 \\
+Performance Decay & 必须区分统计过拟合、真实能力下降与分布变化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-1-03-0001-ux4e0eux535aux58ebux751fux4ea4ux6d41ux65f6ux53efux4ee5ux63d0ux51faux7684ux95eeux9898}{%
+\subsubsection{10.1 与博士生交流时可以提出的问题}\label{part-1-03-0001-ux4e0eux535aux58ebux751fux4ea4ux6d41ux65f6ux53efux4ee5ux63d0ux51faux7684ux95eeux9898}}
+
+仅仅基于 Part I 的理解，我们就已经能够提出一些具有研究意义的问题：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{What exactly is being recursively improved in this project?}
+
+  是底层模型、交易策略、Agent Scaffold，还是负责改进 Agent 的 Meta-Agent？
+\item
+  \textbf{How is the evaluation dataset used throughout the recursive optimization process?}
+
+  Agent 是否反复获得同一个 Validation Set 上的反馈？能够看到完整的实验结果还是仅能看到标量得分？
+\item
+  \textbf{How do we distinguish adaptive overfitting from financial distribution shift?}
+
+  是否已经考虑在平稳的 Synthetic Environment 中进行对照实验？
+\item
+  \textbf{Is the observed performance decay specific to recursive self-improvement, or can it also be reproduced using conventional model selection?}
+
+  有没有与传统 Random Search、Hyperparameter Optimization 或固定 Improvement Operator 进行对照？
+\item
+  \textbf{Are we primarily interested in diagnosing performance decay or developing methods to prevent it?}
+
+  项目的目标是解释现象、建立诊断指标，还是进一步设计缓解方法？
+\end{enumerate}
+
+这些问题比单纯询问课题使用哪个大模型、使用什么金融数据集更能够触及研究本身。
+
+\hypertarget{part-1-03-0001-next-part-ii-statistical-learning-theory}{%
+\subsection{Next --- Part II: Statistical Learning Theory}\label{part-1-03-0001-next-part-ii-statistical-learning-theory}}
+
+接下来，我们将暂时减少对 Agent Architecture 的讨论，回到数学统计的基础。
+
+Part II 可以进一步划分为四个阶段：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}@{}}
+\toprule
+Section & Topics & Priority \\
+\midrule
+\endhead
+II-A & Population Risk、Empirical Risk、Generalization Gap、Generalization Bounds & ★★★★★ \\
+II-B & Model Selection Bias、Multiple Testing、Winner's Curse & ★★★★★ \\
+II-C & Adaptive Overfitting、Holdout Reuse、Information Leakage & ★★★★★ \\
+II-D & Distribution Shift、Time-Series Validation、Look-Ahead Bias & ★★★★☆ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+特别是 II-A，我们将从 Population Risk 与 Empirical Risk 的区别出发，利用你已经学过的 LLN、Concentration Inequalities、Jensen's Inequality 和 Union Bound，建立有限模型集合下的 Uniform Generalization Bound：
+\[\mathbb P\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|
+>\epsilon
+\right)
+\leq
+2|\mathcal H|e^{-2n\epsilon^2}.\]
+
+这是在独立同分布采样、固定有限假设空间和损失函数取值于 \([0,1]\) 等条件下可以严格推导出来的结果。
+
+它将帮助我们理解：
+
+\begin{itemize}
+\tightlist
+\item
+  为什么单个模型的无偏评估不足以保证模型选择的可靠性；
+\item
+  为什么搜索空间越大，泛化控制越困难；
+\item
+  为什么自适应生成的 Agent 不能简单地套用固定有限模型集合的统计保证。
+\end{itemize}
+
+这将是整个课题真正的数学切入点。

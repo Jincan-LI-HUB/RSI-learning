@@ -1,0 +1,1265 @@
+% Archive record 27, line 1.
+\hypertarget{part-2-27-0001-ii-f-time-series-cross-validation-and-backtesting}{%
+\section{II-F --- Time-Series Cross-Validation and Backtesting}\label{part-2-27-0001-ii-f-time-series-cross-validation-and-backtesting}}
+
+这是 Part II 的最后一个模块，也是从 Statistical Learning Theory 向实际金融实验过渡的一节。
+
+II-A 至 II-E 解决的是为什么会发生过拟合，以及如何区分不同的退化机制；II-F 解决的是：
+
+\textbf{我们应该如何设计 Evaluation Protocol，才能可靠地观察和研究这些现象？}
+
+本阶段以实验方法为主，不再引入大量数学证明。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.57}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Section & Topics & Progress \\
+\midrule
+\endhead
+II-A & Risk and Generalization & \\
+II-B & Concentration Inequalities & \\
+II-C & Model Selection Bias \& Multiple Testing & \\
+II-D & Adaptive Overfitting \& Holdout Reuse & \\
+II-E & Data Leakage \& Distribution Shift & \\
+\textbf{II-F} & \textbf{Time-Series Validation \& Backtesting} & 当前 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-27-0001-ux4e3aux4ec0ux4e48ux666eux901a-cross-validation-ux53efux80fdux4e0dux9002ux5408ux91d1ux878dux4efbux52a1}{%
+\subsection{1. 为什么普通 Cross-Validation 可能不适合金融任务？}\label{part-2-27-0001-ux4e3aux4ec0ux4e48ux666eux901a-cross-validation-ux53efux80fdux4e0dux9002ux5408ux91d1ux878dux4efbux52a1}}
+
+\hypertarget{part-2-27-0001-ordinary-k-fold-cross-validation}{%
+\subsubsection{1.1 Ordinary K-fold Cross-Validation}\label{part-2-27-0001-ordinary-k-fold-cross-validation}}
+
+假设我们拥有一个数据集：
+\[D_n=\{Z_1,\ldots,Z_n\}.\]
+
+将其划分为 \(K\) 个互不相交的子集：
+\[D_n=D_1\sqcup D_2\sqcup\cdots\sqcup D_K.\]
+
+每次使用其中一个子集进行验证，其余子集用于训练。
+
+最终计算：
+\[\boxed{
+\widehat R_{\mathrm{CV}}
+=
+\frac1K\sum_{k=1}^{K}
+\widehat R_{D_k}(h^{(-k)})
+}\]
+
+其中 \(h^{(-k)}\) 表示不使用第 \(k\) 个子集训练得到的模型。这里假设各子集大小相同。
+
+\textbf{Ordinary 5-fold Cross-Validation}
+
+\bookgraphic{0.830}{part-2-27-0001-006-01}{}
+
+Training
+
+Validation
+
+即使不进行 Shuffle，普通 K-fold 也可能使用时间上更晚的数据训练模型，再评价更早的数据。
+
+对于许多 IID 数据任务，这种方法能够提供有用的泛化性能估计。
+
+但是，对于金融预测任务，我们通常希望模拟的是：
+\[\text{Learn from the past}
+\longrightarrow
+\text{Predict the future}.\]
+
+如果我们使用 2025 年的数据训练模型，然后评价它在 2022 年的预测表现，就没有忠实地模拟当时可以实现的预测过程。
+
+\hypertarget{part-2-27-0001-ux4e09ux4e2aux6839ux672cux95eeux9898}{%
+\subsubsection{1.2 三个根本问题}\label{part-2-27-0001-ux4e09ux4e2aux6839ux672cux95eeux9898}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.61}}@{}}
+\toprule
+Problem & Statistical Consequence \\
+\midrule
+\endhead
+Temporal Dependence & 训练集与验证集之间可能存在较强依赖 \\
+Non-stationarity & 不同时间段的数据可能来自不同分布 \\
+Look-Ahead Bias & 训练过程可能使用预测时尚不可获得的信息 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+不过，不能因此得出「时间序列绝对不能使用普通 K-fold」的结论。
+
+Bergmeir、Hyndman 和 Koo（2018）证明，在某些自回归预测模型、误差满足相应不相关条件的情况下，普通交叉验证仍然可以有效估计预测误差。
+
+\href{https://robjhyndman.com/publications/cv-time-series/}{来源 1} \href{https://doi.org/10.1016\%2Fj.csda.2017.11.003}{来源 2}
+
+关键在于我们希望评价什么：
+
+\begin{itemize}
+\tightlist
+\item
+  如果目标是估计稳定统计环境中的预测误差，某些非时间顺序的划分可能是合理的。
+\item
+  如果目标是模拟真实金融系统从过去预测未来的过程，则应优先采用 Chronological Validation。
+\end{itemize}
+
+\hypertarget{part-2-27-0001-time-series-cross-validation}{%
+\subsection{2. Time-Series Cross-Validation}\label{part-2-27-0001-time-series-cross-validation}}
+
+\hypertarget{part-2-27-0001-expanding-windowux6269ux5c55ux7a97ux53e3}{%
+\subsubsection{2.1 Expanding Window（扩展窗口）}\label{part-2-27-0001-expanding-windowux6269ux5c55ux7a97ux53e3}}
+
+假设我们拥有按时间排列的数据：
+\[D=\{Z_1,\ldots,Z_T\}.\]
+
+对于第 \(k\) 个验证窗口，定义：
+\[D_{\mathrm{train}}^{(k)}
+=
+\{Z_1,\ldots,Z_{t_k}\},\]
+
+\[D_{\mathrm{val}}^{(k)}
+=
+\{Z_{t_k+1},\ldots,Z_{t_k+H}\},\]
+
+其中 \(H\) 为验证窗口长度。
+
+随着时间推进，训练集不断扩大。
+
+\textbf{Expanding Window Validation}
+
+Fold 1
+
+Fold 2
+
+Fold 3
+
+Fold 4
+
+Fold 5
+
+Earlier
+
+Time →
+
+Later
+
+Training
+
+Validation
+
+Unused
+
+其基本假设是历史数据仍然具有一定参考价值，因此随着时间推移，更多的数据有助于模型估计。
+
+优点是充分利用历史数据，可能降低参数估计的方差；缺点是在发生 Concept Drift 时，过于久远的数据可能干扰当前模型。
+
+\hypertarget{part-2-27-0001-rolling-windowux6edaux52a8ux7a97ux53e3}{%
+\subsubsection{2.2 Rolling Window（滚动窗口）}\label{part-2-27-0001-rolling-windowux6edaux52a8ux7a97ux53e3}}
+
+与 Expanding Window 不同，Rolling Window 保持训练窗口长度 \(W\) 固定：
+\[D_{\mathrm{train}}^{(k)}
+=
+\{Z_{t_k-W+1},\ldots,Z_{t_k}\},\]
+
+\[D_{\mathrm{val}}^{(k)}
+=
+\{Z_{t_k+1},\ldots,Z_{t_k+H}\}.\]
+
+\textbf{Rolling Window Validation}
+
+Fold 1
+
+Fold 2
+
+Fold 3
+
+Fold 4
+
+Fold 5
+
+Earlier
+
+Time →
+
+Later
+
+Training
+
+Validation
+
+Unused
+
+Rolling Window 的基本思想是：较近期的数据可能更能代表当前环境。
+
+但这会引入一个新的 Trade-off。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}@{}}
+\toprule
+& Shorter Window & Longer Window \\
+\midrule
+\endhead
+参数估计方差 & 通常较高 & 通常较低 \\
+对市场变化的响应 & 较快 & 较慢 \\
+数据利用量 & 较少 & 较多 \\
+对陈旧规律的依赖 & 较低 & 较高 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+可以将其理解为 Non-stationary Environment 下的一种 Bias--Variance Trade-off。
+
+不过，窗口长度 \(W\) 本身也是 Hyperparameter。如果 Agent 在同一批历史数据上反复选择最优窗口长度，依然会产生我们在 II-C 和 II-D 中讨论的统计问题。
+
+\hypertarget{part-2-27-0001-walk-forward-validation}{%
+\subsubsection{2.3 Walk-forward Validation}\label{part-2-27-0001-walk-forward-validation}}
+
+Walk-forward Validation 更强调完整的时间顺序执行过程：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  使用当前可获得的历史数据训练模型。
+\item
+  预测接下来的一个或多个时间点。
+\item
+  保存预测结果。
+\item
+  时间向前推进，等待新的真实结果可用。
+\item
+  根据预先规定的更新规则重新训练或更新模型。
+\end{enumerate}
+
+Expanding Window 和 Rolling Window 都可以用于实现 Walk-forward Validation。
+
+\textbf{Walk-forward Validation Explorer}
+
+Expanding / Rolling
+
+Evaluation step\\
+\textbf{3 / 8}
+
+2（范围 0--7）
+
+\bookgraphic{0.830}{part-2-27-0001-010-01}{}
+
+Training
+
+Prediction
+
+Unused
+
+Training periods
+
+\textbf{1--7}
+
+Prediction period
+
+\textbf{8}
+
+这里假设上一期标签在下一次训练前已知。多期预测时需要额外处理标签可用时间。
+
+step = 7
+
+\bookgraphic{0.830}{part-2-27-0001-010-state-01}{}
+
+在 Python 中，scikit-learn 的 \texttt{TimeSeriesSplit} 支持按时间顺序划分数据，也提供 \texttt{max\_train\_size} 和 \texttt{gap} 等参数，可以用于实现上述基本机制。
+
+\href{https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit}{来源 1}
+
+\begin{verbatim}
+from sklearn.model_selection import TimeSeriesSplit
+
+# Expanding window
+expanding_cv = TimeSeriesSplit(
+    n_splits=5,
+    test_size=60
+)
+
+# Rolling window
+rolling_cv = TimeSeriesSplit(
+    n_splits=5,
+    max_train_size=252,
+    test_size=60
+)
+\end{verbatim}
+
+这里的 252 和 60 仅为示例参数，不代表最优的金融训练窗口。
+
+\hypertarget{part-2-27-0001-purged-cross-validation-and-embargo}{%
+\subsection{3. Purged Cross-Validation and Embargo}\label{part-2-27-0001-purged-cross-validation-and-embargo}}
+
+这是金融时间序列与普通机器学习评估之间一个比较 Nontrivial 的区别。
+
+即使我们已经按照时间顺序划分数据，仍然可能发生 Data Leakage。
+
+\hypertarget{part-2-27-0001-overlapping-labelsux6807ux7b7eux91cdux53e0}{%
+\subsubsection{3.1 Overlapping Labels（标签重叠）}\label{part-2-27-0001-overlapping-labelsux6807ux7b7eux91cdux53e0}}
+
+假设我们不是预测下一日收益率，而是预测未来五个交易日的累计收益率。
+
+定义：
+\[Y_t=\frac{P_{t+5}-P_t}{P_t}.\]
+
+其中 \(P_t\) 为第 \(t\) 个交易日的价格。
+
+于是，第 \(t\) 个样本的标签并不是在时刻 \(t\) 就能够获得的，而是需要等到时刻 \(t+5\)。
+
+假设我们的验证集从第 11 天开始。
+
+\textbf{Overlapping Label Horizons}
+
+\bookgraphic{0.514}{part-2-27-0001-012-01}{}
+
+Available labels
+
+Unavailable labels
+
+Validation labels
+
+假设在第 11 天收盘后进行预测。红色训练标签在此时尚未完整获得。
+
+例如：
+\[Y_{10}=\frac{P_{15}-P_{10}}{P_{10}}.\]
+
+虽然该样本的时间索引为 10，但它使用了第 15 天的价格。
+
+如果我们在第 11 天进行模型训练，却使用了 \(Y_{10}\)，就相当于利用了未来信息。
+
+因此，真正需要关注的不只是 Sample Timestamp，还包括 \textbf{Label Availability Time}。
+
+\hypertarget{part-2-27-0001-purgingux6e05ux9664ux91cdux53e0ux6837ux672c}{%
+\subsubsection{3.2 Purging（清除重叠样本）}\label{part-2-27-0001-purgingux6e05ux9664ux91cdux53e0ux6837ux672c}}
+
+对于第 \(i\) 个样本，定义其标签所依赖的信息区间：
+\[I_i=[t_i^{\mathrm{start}},t_i^{\mathrm{end}}).\]
+
+在 Purged Cross-Validation 中，我们移除标签信息区间与测试标签区间重叠的训练样本：
+\[\boxed{
+I_i\cap I_j\neq\varnothing
+\quad\Longrightarrow\quad
+\text{remove training sample }i
+}\]
+
+其中 \(j\) 为测试样本。
+
+在严格的 Walk-forward Validation 中，更直接的要求是：
+\[\boxed{
+t_i^{\mathrm{available}}
+\leq t_{\mathrm{prediction}}
+}\]
+
+即所有用于训练的标签，都必须在预测时刻之前或当时已经可以获得。
+
+这里采用半开区间表示信息覆盖范围；实际实现时需要根据价格时间戳、标签生成方式和执行时刻处理边界条件。
+
+\hypertarget{part-2-27-0001-embargoux9694ux79bbux671f}{%
+\subsubsection{3.3 Embargo（隔离期）}\label{part-2-27-0001-embargoux9694ux79bbux671f}}
+
+在允许测试窗口之后的数据进入训练集的 Purged K-fold 中，即使已经删除标签重叠的样本，相邻的数据仍然可能存在较强的信息依赖。
+
+Embargo 的思想是，在测试窗口结束之后，再额外排除一小段训练数据。
+
+\textbf{Purging and Embargo}
+
+Before adjustment
+
+After purging
+
+After purging and embargo
+
+Training
+
+Testing
+
+Purged
+
+Embargoed
+
+示意图：实际移除范围取决于标签信息区间与数据依赖结构。
+
+这两个方法在 Marcos López de Prado 的 \emph{Advances in Financial Machine Learning}（2018）第七章中得到了系统介绍。
+
+\href{https://www.wiley.com/en-us/Advances\%2Bin\%2BFinancial\%2BMachine\%2BLearning-p-9781119482086}{来源 1} \href{https://studylib.net/doc/28617353/advances-in-financial-machine-learning-1nbsped-9781119482...}{来源 2}
+
+需要区分三个概念：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.76}}@{}}
+\toprule
+Method & 解决的问题 \\
+\midrule
+\endhead
+Purging & 删除标签信息区间重叠的训练样本 \\
+Embargo & 降低测试窗口之后相邻训练样本带来的信息依赖风险 \\
+Gap & 在时间顺序划分中人为预留一段间隔 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+它们都不能保证金融数据完全独立。
+
+此外，Purged K-fold 即使消除了标签重叠，也不一定忠实模拟真实的历史预测过程，因为它仍可能允许使用时间上更晚的数据进行训练。
+
+对于初期的 RSI 金融实验，我更倾向于优先使用 \textbf{Walk-forward Validation + Label Availability Check}，而不是一开始就采用更复杂的 Purged K-fold。
+
+\hypertarget{part-2-27-0001-backtestingux56deux6d4b}{%
+\subsection{4. Backtesting（回测）}\label{part-2-27-0001-backtestingux56deux6d4b}}
+
+\hypertarget{part-2-27-0001-definition}{%
+\subsubsection{4.1 Definition}\label{part-2-27-0001-definition}}
+
+Backtesting 是利用历史市场数据，按照预先定义的策略和执行规则，模拟策略在历史时期的表现。
+
+注意，Backtesting 不完全等于 Model Evaluation。
+
+一个预测模型可能具有很低的 MSE，但根据它构建的交易策略未必能够获得良好的收益。
+
+\textbf{Market Information} \(X_t\) ↓ \textbf{Prediction Model} \(\hat r_{t+1}=h(X_t)\) ↓ \textbf{Trading Decision} \(w_t=g(\hat r_{t+1})\) ↓ \textbf{Execution \& Transaction Costs} ↓ \textbf{Strategy Returns} \(R_{t+1}^{\mathrm{net}}\) ↓ \textbf{Performance Evaluation}
+
+Sharpe Ratio、Cumulative Return、Maximum Drawdown
+
+其中 \(w_t\) 表示时刻 \(t\) 决定的资产持仓权重，\(g\) 表示将预测结果转换为交易决策的规则。
+
+因此，金融 Agent 可能优化不同层次的对象：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.54}}@{}}
+\toprule
+Optimization Target & Evaluation Metric \\
+\midrule
+\endhead
+Return Prediction & MSE、MAE \\
+Direction Prediction & Accuracy、AUC \\
+Factor Construction & Information Coefficient \\
+Trading Strategy & Sharpe Ratio、Net Return \\
+Portfolio Construction & Risk-adjusted Return、Drawdown \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+目前项目描述尚未明确具体 Financial Task，因此我们不能预先认定它一定是交易策略优化任务。
+
+\hypertarget{part-2-27-0001-ux4e00ux4e2aux7b80ux5316ux7684-backtesting-model}{%
+\subsubsection{4.2 一个简化的 Backtesting Model}\label{part-2-27-0001-ux4e00ux4e2aux7b80ux5316ux7684-backtesting-model}}
+
+假设只有一个风险资产，下一期收益率为 \(r_{t+1}\)。
+
+在时刻 \(t\)，模型决定持仓：
+\[w_t\in[-1,1].\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(w_t=1\)：持有完整多头头寸；
+\item
+  \(w_t=0\)：不持有风险资产；
+\item
+  \(w_t=-1\)：持有完整空头头寸。
+\end{itemize}
+
+忽略现金利息、融资及借券成本等因素，策略的毛收益率为：
+\[R_{t+1}^{\mathrm{gross}}
+=
+w_t r_{t+1}.\]
+
+如果使用简化的线性交易成本模型：
+\[C_t=c|w_t-w_{t-1}|,\]
+
+那么：
+\[\boxed{
+R_{t+1}^{\mathrm{net}}
+=
+w_t r_{t+1}
+-
+c|w_t-w_{t-1}|
+}\]
+
+其中 \(c\) 为单位持仓权重调整所产生的成本。这里暂不考虑价格变动引起的持仓权重漂移。
+
+\textbf{Transaction Cost Illustration}
+
+假设每日平均毛收益为 0.10\%，采用简化线性成本模型。
+
+Unit transaction cost\\
+\textbf{10 bps}
+
+10（范围 0--30）
+
+Daily average turnover\\
+\textbf{80\%}
+
+0.8（范围 0--2）
+
+Gross Return
+
+\textbf{0.100\%}
+
+Cost
+
+\textbf{0.080\%}
+
+Net Return
+
+\textbf{0.020\%}
+
+1 basis point (bp) = 0.01\%。此处为单期平均收益示意，不是实际交易结果。
+
+这也为 Revision Classification 提供了一个新的维度。
+
+某次 Revision 可能增加了策略的交易频率，从而提高 Gross Return，却降低了 Net Return。
+
+这种性能损失未必来自统计过拟合，而可能是优化目标与实际经济目标不一致。
+
+\hypertarget{part-2-27-0001-backtest-overfitting}{%
+\subsection{5. Backtest Overfitting}\label{part-2-27-0001-backtest-overfitting}}
+
+\hypertarget{part-2-27-0001-ux4e3aux4ec0ux4e48ux6b63ux786eux7684-backtesting-ux4ecdux7136ux53efux80fdux8fc7ux62dfux5408}{%
+\subsubsection{5.1 为什么正确的 Backtesting 仍然可能过拟合？}\label{part-2-27-0001-ux4e3aux4ec0ux4e48ux6b63ux786eux7684-backtesting-ux4ecdux7136ux53efux80fdux8fc7ux62dfux5408}}
+
+假设我们已经确保：
+
+\begin{itemize}
+\tightlist
+\item
+  没有 Look-Ahead Bias；
+\item
+  所有交易成本均已纳入；
+\item
+  所有模型都按照 Walk-forward Protocol 运行；
+\item
+  所有历史预测都遵守信息可用性约束。
+\end{itemize}
+
+那么是否意味着 Backtesting 一定可靠？
+
+\textbf{不是。}
+
+假设 Agent 在上述完全合法的 Backtesting Environment 中尝试了 10,000 种策略，并选择历史 Sharpe Ratio 最高的策略。
+
+这仍然会产生 II-C 所讨论的 Selection Bias。
+
+如果 Agent 后续又根据这些结果生成新的策略，就进一步进入 II-D 所讨论的 Adaptive Overfitting。 因此：
+\[\boxed{
+\text{Valid Backtest}
+\not\Rightarrow
+\text{Valid Model Selection}
+}\]
+
+这是本阶段最重要的结论之一。
+
+Backtest 可以在执行层面完全正确，却因为被反复用于优化而在统计层面失去独立评估能力。
+
+\hypertarget{part-2-27-0001-probability-of-backtest-overfitting-pbo}{%
+\subsubsection{5.2 Probability of Backtest Overfitting (PBO)}\label{part-2-27-0001-probability-of-backtest-overfitting-pbo}}
+
+Bailey、Borwein、López de Prado 和 Zhu 在 2017 年发表的 \emph{The Probability of Backtest Overfitting} 中提出了衡量 Backtest Overfitting 的统计框架。
+
+\href{https://scholarworks.wmich.edu/math_pubs/42/}{来源 1}
+
+其核心思想是：在多个 IS/OOS 划分下，反复选择 IS 表现最好的策略，并观察该策略在 OOS 环境中的相对排名。
+
+\textbf{Backtest Overfitting --- Ranking Illustration}
+
+\bookgraphic{0.461}{part-2-27-0001-018-01}{假想案例：IS 排名第一的策略，在 OOS 中排名最后。}
+
+PBO 的核心关注点可以概括为：
+\[\mathrm{PBO}
+=
+\mathbb P
+\left(
+\text{IS winner ranks below median OOS}
+\right).\]
+
+这只是其核心概率的概念化表达。原论文使用 Combinatorially Symmetric Cross-Validation（CSCV）、相对排名及 Logit Transformation 构建具体估计方法。
+
+我们暂时不展开 CSCV，留到 Part IV 再详细讨论。
+
+但有一个值得提前注意的研究限制：经典 PBO 方法通常需要候选策略的完整历史表现矩阵。如果 RSI 的候选版本本身已经根据全量开发数据自适应生成，就不能简单地事后重新划分这些策略的收益记录，并声称完全消除了 Agent-level Overfitting。
+
+更严格的做法可能需要在每一个外层数据划分内，重新执行完整的 Agent Optimization。
+
+\hypertarget{part-2-27-0001-nested-validation-rsi-ux4e2dux6700ux91cdux8981ux7684ux5b9eux9a8cux7ed3ux6784}{%
+\subsection{6. Nested Validation --- RSI 中最重要的实验结构}\label{part-2-27-0001-nested-validation-rsi-ux4e2dux6700ux91cdux8981ux7684ux5b9eux9a8cux7ed3ux6784}}
+
+\hypertarget{part-2-27-0001-ux4e3aux4ec0ux4e48ux9700ux8981-nested-validation}{%
+\subsubsection{6.1 为什么需要 Nested Validation？}\label{part-2-27-0001-ux4e3aux4ec0ux4e48ux9700ux8981-nested-validation}}
+
+在 II-A 中，我们已经强调过：
+
+\begin{quote}
+一个数据集是否属于 Out-of-Sample，取决于它是否参与当前层级的优化。
+\end{quote}
+
+对于普通机器学习，我们可能只需要区分模型训练和超参数选择。
+
+但是对于 RSI，我们至少可能存在三个优化层次。
+
+\textbf{Level 3 --- Researcher Optimization}
+
+研究人员根据实验结果修改 RSI Framework、Mitigation Mechanism 和研究协议。
+
+\textbf{Level 2 --- Agent Optimization}
+
+\begin{verbatim}
+  $A_0\rightarrow A_1\rightarrow\cdots\rightarrow A_K$
+\end{verbatim}
+
+Agent 根据 IS Feedback 修改自身研究方法。
+
+\textbf{Level 1 --- Financial Model Training}
+
+\begin{verbatim}
+    $\theta_0\rightarrow\theta^*$
+\end{verbatim}
+
+拟合预测模型参数、构建金融特征。
+
+越外层的优化需要越独立的评估数据，否则内部 OOS 数据会逐渐变成外层 IS 数据。
+
+这三个层次都可能发生过拟合。
+
+特别是第三个层次经常被忽略：研究人员本身也可能因为反复观察 OOS 曲线，而对用于研究 RSI 的数据集过拟合。
+
+\hypertarget{part-2-27-0001-four-stage-evaluation-protocol}{%
+\subsubsection{6.2 Four-stage Evaluation Protocol}\label{part-2-27-0001-four-stage-evaluation-protocol}}
+
+结合本项目的研究目标，我建议采用如下四层数据职责划分作为初步实验框架。
+
+\bookgraphic{0.761}{part-2-27-0001-020-01}{}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.67}}@{}}
+\toprule
+\(D_{\mathrm{train}}\) & 用于金融预测模型的参数估计。 \\
+\midrule
+\endhead
+\(D_{\mathrm{IS}}\) & 提供 RSI Feedback，决定哪些 Revision 被接受。 \\
+\(D_{\mathrm{audit}}\) & 评估每一个版本、识别退化点、分析修改类型及设计缓解机制。 \\
+\(D_{\mathrm{test}}\) & 在研究方案确定后，独立确认最终研究结论。 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+数据块长度仅用于示意。真实金融任务需要考虑时间依赖、标签可用性和样本量。
+
+严格来说，四层数据职责不一定要求四个永久固定的数据文件，也可以通过适当的 Nested Walk-forward Protocol 实现。
+
+关键是各层级的信息流动必须受到约束。
+
+\hypertarget{part-2-27-0001-ux4e00ux4e2aux5178ux578bux7684ux7814ux7a76ux9519ux8bef}{%
+\subsubsection{6.3 一个典型的研究错误}\label{part-2-27-0001-ux4e00ux4e2aux5178ux578bux7684ux7814ux7a76ux9519ux8bef}}
+
+假设研究人员观察到 20 轮 RSI 的 OOS Score：
+
+\bookgraphic{0.786}{part-2-27-0001-021-01}{}
+
+假想 RSI 实验结果。
+
+研究人员发现第 8 轮是样本外峰值，于是提出：
+\[\text{Stop RSI at Round 8}.\]
+
+然后又使用同一条 OOS 曲线证明，该方法能够获得比第 20 轮更好的表现。
+
+这里的问题在于：
+
+\textbf{Round 8 本身就是通过 OOS Audit Dataset 选择出来的。}
+
+此时我们可以说，第 8 轮在已有实验中表现较好，但不能仅凭该曲线证明「第 8 轮停止」是一种能够泛化的 Mitigation Mechanism。
+
+真正需要做的是：
+
+在 Audit Dataset 上发现规律 → 提出可执行的停止规则 → 固定规则 → 在新的独立实验环境中检验。
+
+而且停止规则最好不依赖实际运行时无法获得的未来 OOS Performance，否则就会形成一种 Oracle Stopping Rule，只能作为事后参考基准，而不能直接部署。
+
+\hypertarget{part-2-27-0001-paired-evaluation-and-statistical-uncertainty}{%
+\subsection{7. Paired Evaluation and Statistical Uncertainty}\label{part-2-27-0001-paired-evaluation-and-statistical-uncertainty}}
+
+这是我们从理论过渡到实际 Trajectory Analysis 时需要补充的一个知识点。
+
+\hypertarget{part-2-27-0001-ux4e3aux4ec0ux4e48ux8981ux5bf9ux4e0dux540cux7248ux672cux8fdbux884cux914dux5bf9ux8bc4ux4ef7}{%
+\subsubsection{7.1 为什么要对不同版本进行配对评价？}\label{part-2-27-0001-ux4e3aux4ec0ux4e48ux8981ux5bf9ux4e0dux540cux7248ux672cux8fdbux884cux914dux5bf9ux8bc4ux4ef7}}
+
+假设我们需要比较 \(A_{k-1}\) 与 \(A_k\) 在同一个 OOS Dataset 上的表现。
+
+定义第 \(t\) 个测试样本上的损失差：
+\[d_t=
+\ell(A_{k-1},Z_t)-\ell(A_k,Z_t).\]
+
+这里将 \(\ell(A_k,Z_t)\) 简写为 Agent 版本 \(A_k\) 在样本 \(Z_t\) 上产生的损失。
+
+其平均风险改善量为：
+\[\bar d_n=\frac1n\sum_{t=1}^n d_t.\]
+
+若 \(\bar d_n>0\)，则新版本的经验表现更好。
+
+相比于分别估计两个模型的风险并比较，Paired Evaluation 可以直接分析同一个市场环境中两者表现的差异。
+
+根据你已经熟悉的 Variance Identity：
+\[\begin{aligned}
+\operatorname{Var}(d_t)
+={}&
+\operatorname{Var}(\ell_{k-1,t})
++\operatorname{Var}(\ell_{k,t})\\
+&-2\operatorname{Cov}
+(\ell_{k-1,t},\ell_{k,t}).
+\end{aligned}\]
+
+当两个版本的损失具有正相关性时，共同的市场波动可能在求差过程中部分抵消，从而提高比较精度。
+
+\hypertarget{part-2-27-0001-ux4e3aux4ec0ux4e48ux4e0dux80fdux76f4ux63a5ux4f7fux7528ux666eux901a-bootstrap}{%
+\subsubsection{7.2 为什么不能直接使用普通 Bootstrap？}\label{part-2-27-0001-ux4e3aux4ec0ux4e48ux4e0dux80fdux76f4ux63a5ux4f7fux7528ux666eux901a-bootstrap}}
+
+金融时间序列中的观测值可能存在 Serial Dependence。
+
+对于弱平稳的损失差序列 \(d_t\)，定义：
+\[\gamma_h=\operatorname{Cov}(d_t,d_{t+h}).\]
+
+那么样本均值的方差可以写为：
+\[\boxed{
+\operatorname{Var}(\bar d_n)
+=
+\frac1n
+\left[
+\gamma_0+
+2\sum_{h=1}^{n-1}
+\left(1-\frac hn\right)\gamma_h
+\right]
+}\]
+
+这个公式来自对随机变量之和的方差展开。
+
+如果直接采用 IID Bootstrap，就可能破坏原始序列中的时间依赖结构。
+
+因此，我们可能需要使用 \textbf{Block Bootstrap}。
+
+\textbf{Moving Block Bootstrap}
+
+假设原序列包含 12 个时间点，Block Length = 3。
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+12
+
+↓
+
+抽取连续的数据块，而不是独立抽取每个时间点。
+
+\bookgraphic{0.830}{part-2-27-0001-023-01}{}
+
+↓
+
+\bookgraphic{0.830}{part-2-27-0001-023-02}{}
+
+重采样后的序列保留了每个数据块内部的时间顺序。
+
+Block Bootstrap 的思想与你已经掌握的 Bootstrap 完全一致，只是重新定义了 Resampling Unit。
+
+不过，Block Bootstrap 也有平稳性、依赖强度及 Block Length 等条件，不能自动解决所有 Non-stationarity 问题。
+
+对于 RSI 实验，可以利用它估计：
+
+\begin{itemize}
+\tightlist
+\item
+  相邻版本 Performance Difference 的置信区间；
+\item
+  峰值至最终版本的性能损失；
+\item
+  不同 Mitigation Mechanism 的性能差异。
+\end{itemize}
+
+如果峰值或变点是根据观察结果选择的，还需要处理额外的 Selection Uncertainty。
+
+\hypertarget{part-2-27-0001-research-connections-ux63a8ux8350ux7684-rsi-evaluation-pipeline}{%
+\subsection{8. Research Connections --- 推荐的 RSI Evaluation Pipeline}\label{part-2-27-0001-research-connections-ux63a8ux8350ux7684-rsi-evaluation-pipeline}}
+
+结合 Part II 的全部理论，我们现在可以构建一套初步实验流程。
+
+\bookgraphic{.62}{part-2-27-0001-evaluation-pipeline}{}
+
+如果课题组已经提供了 RSI Framework，那么我们最先需要熟悉的未必是 LLM API 或 Agent 的全部源码，而可能是它的 \textbf{Evaluator、Dataset Interface 和 Experiment Logs}。
+
+建议每一次实验至少记录：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.53}}@{}}
+\toprule
+Field & Purpose \\
+\midrule
+\endhead
+\texttt{run\_id} & 区分独立 RSI 实验 \\
+\texttt{version\_id} & 标识 Agent 版本 \\
+\texttt{parent\_version\_id} & 重建演化轨迹 \\
+\texttt{train\_window} & 记录训练时期 \\
+\texttt{evaluation\_window} & 记录评估时期 \\
+\texttt{label\_horizon} & 检查标签时间依赖 \\
+\texttt{feedback\_type} & 分析 Adaptive Overfitting \\
+\texttt{query\_count} & 衡量 Search Budget \\
+\texttt{is\_score} & 记录开发环境表现 \\
+\texttt{oos\_audit\_score} & 记录独立审计表现 \\
+\texttt{revision\_type} & 分析修改类型 \\
+\texttt{random\_seed} & 支持可复现性 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 OOS Audit Score 应当保存在 Agent 无法访问的独立日志中。
+
+同样重要的是，整个实验必须考虑多个 Independent Runs，而不是只运行一次 RSI，然后根据一条曲线得出普遍性结论。
+
+\hypertarget{part-2-27-0001-ii-f-literature-index}{%
+\subsection{9. II-F --- Literature Index}\label{part-2-27-0001-ii-f-literature-index}}
+
+本阶段推荐三篇同行评审论文和一本专业教材，具体出版信息已核对。
+
+\textbf{P0 --- A Note on the Validity of Cross-Validation for Evaluating Autoregressive Time Series Prediction}
+
+Christoph Bergmeir, Rob J. Hyndman, Bonsoo Koo · 2018 · Computational Statistics \& Data Analysis, 120, 70--83
+
+理解普通 Cross-Validation 在时间序列中的适用条件，避免将经验性的划分原则误认为无条件的统计定理。
+
+\href{https://doi.org/10.1016/j.csda.2017.11.003}{DOI: 10.1016/j.csda.2017.11.003} \href{https://doi.org/10.1016\%2Fj.csda.2017.11.003}{来源 1}
+
+\textbf{P0 --- The Probability of Backtest Overfitting}
+
+David H. Bailey, Jonathan M. Borwein, Marcos López de Prado, Qiji Jim Zhu · 2017 · Journal of Computational Finance
+
+与本项目直接相关的金融统计研究，重点关注 IS 最优策略的 OOS 相对表现。
+
+\href{https://doi.org/10.21314/JCF.2016.322}{DOI: 10.21314/JCF.2016.322} \href{https://scholarworks.wmich.edu/math_pubs/42/}{来源 1}
+
+\textbf{P1 --- The Statistics of Sharpe Ratios}
+
+Andrew W. Lo · 2002 · Financial Analysts Journal, 58(4), 36--52
+
+研究 Sharpe Ratio 的统计性质、估计误差及时间相关性对年化指标的影响。
+
+\href{https://doi.org/10.2469/faj.v58.n4.2453}{DOI: 10.2469/faj.v58.n4.2453} \href{https://rpc.cfainstitute.org/research/financial-analysts-journal/2002/the-statistics-of-sharpe-ratios}{来源 1}
+
+\textbf{P1 --- Advances in Financial Machine Learning}
+
+Marcos López de Prado · 2018 · Wiley · 专业教材
+
+优先索引 Chapter 7 --- Cross-Validation in Finance，后续再阅读 Backtesting 相关章节。
+
+\href{https://www.wiley.com/en-us/Advances\%2Bin\%2BFinancial\%2BMachine\%2BLearning-p-9781119482086}{Wiley 正式出版页面} \href{https://www.wiley.com/en-us/Advances\%2Bin\%2BFinancial\%2BMachine\%2BLearning-p-9781119482086}{来源 1}
+
+目前不需要深入全部论文的数学证明，尤其是第三篇，我们会在 Part IV 讨论 Sharpe Ratio 时重新索引。
+
+\hypertarget{part-2-27-0001-ii-f-conclusion-index}{%
+\subsection{10. II-F --- Conclusion Index}\label{part-2-27-0001-ii-f-conclusion-index}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.71}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.14}}@{}}
+\toprule
+ID & Key Result & Index \\
+\midrule
+\endhead
+F1 & 普通 K-fold 不一定能模拟真实金融预测过程 & §1 \\
+F2 & Expanding Window 与 Rolling Window 对历史数据的利用方式不同 & §2 \\
+F3 & Walk-forward Validation 必须尊重时间顺序与信息可用性 & §2.3 \\
+F4 & 样本时间戳不等于标签可获得时间 & §3.1 \\
+F5 & Purging 和 Embargo 处理不同的时间信息依赖问题 & §3.2--3 \\
+F6 & 预测模型表现不等于实际交易策略表现 & §4 \\
+F7 & 正确执行的 Backtest 仍然可能发生 Model Selection Overfitting & §5 \\
+F8 & PBO 衡量 IS Winner 在 OOS 中表现不佳的风险 & §5.2 \\
+F9 & Nested Validation 必须覆盖 Agent 和 Researcher 两个外层优化过程 & §6 \\
+F10 & Paired Evaluation 与 Block Bootstrap 有助于分析版本差异 & §7 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-27-0001-part-ii-consolidated-conclusion-index}{%
+\subsection{Part II --- Consolidated Conclusion Index}\label{part-2-27-0001-part-ii-consolidated-conclusion-index}}
+
+至此，我们正式完成 Part II。
+
+按照之前约定的方式，下面不再重复全部数学推导，而是将六个模块整理成一份统一的知识索引。
+
+\hypertarget{part-2-27-0001-core-knowledge-map}{%
+\subsection{11. Core Knowledge Map}\label{part-2-27-0001-core-knowledge-map}}
+
+II-A
+
+\textbf{Risk \& Generalization}
+
+定义我们真正关心的真实性能
+
+↓
+
+II-B
+
+\textbf{Concentration Inequalities}
+
+控制有限数据产生的评估误差
+
+↓
+
+II-C
+
+\textbf{Model Selection Bias}
+
+解释选择机制产生的系统性偏差
+
+↓
+
+II-D
+
+\textbf{Adaptive Data Analysis}
+
+解释反复反馈为什么损害评估独立性
+
+↓
+
+II-E
+
+\textbf{Leakage \& Distribution Shift}
+
+区分统计过拟合与其他退化机制
+
+↓
+
+II-F
+
+\textbf{Time-Series Evaluation}
+
+构建可靠的实验和验证协议
+
+\hypertarget{part-2-27-0001-core-mathematical-results}{%
+\subsection{12. Core Mathematical Results}\label{part-2-27-0001-core-mathematical-results}}
+
+以下十项结果是整个 Part II 中最值得保留的。之后遇到相应问题时，可以直接通过 Index 返回证明。
+
+\hypertarget{part-2-27-0001-result-1-population-risk-and-empirical-risk}{%
+\paragraph{Result 1 --- Population Risk and Empirical Risk}\label{part-2-27-0001-result-1-population-risk-and-empirical-risk}}
+
+\[\begin{aligned}
+R(h)&=\mathbb E[\ell(h(X),Y)],\\
+\widehat R_n(h)&=\frac1n\sum_{i=1}^n
+\ell(h(X_i),Y_i).
+\end{aligned}\]
+
+\textbf{意义：} 经验表现是我们能够观察的量，总体表现才是真正希望优化的量。
+
+Index：II-A §3
+
+\hypertarget{part-2-27-0001-result-2-excess-risk-bound}{%
+\paragraph{Result 2 --- Excess Risk Bound}\label{part-2-27-0001-result-2-excess-risk-bound}}
+
+\[\boxed{
+R(\tilde h_n)-R(h^*)
+\leq
+2\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|+\delta
+}\]
+
+\textbf{意义：} 模型选择的质量同时受到 Statistical Error 与 Optimization Error 的影响。
+
+Index：II-A §6
+
+\hypertarget{part-2-27-0001-result-3-uniform-generalization-bound}{%
+\paragraph{Result 3 --- Uniform Generalization Bound}\label{part-2-27-0001-result-3-uniform-generalization-bound}}
+
+\[\boxed{
+\mathbb P
+\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq2Me^{-2n\epsilon^2}
+}\]
+
+\textbf{条件：} 固定有限假设空间、IID Sampling、有界损失。
+
+\textbf{意义：} 评估样本量和候选空间规模共同决定泛化保证。
+
+Index：II-B §5--7
+
+\hypertarget{part-2-27-0001-result-4-optimistic-selection-bias}{%
+\paragraph{Result 4 --- Optimistic Selection Bias}\label{part-2-27-0001-result-4-optimistic-selection-bias}}
+
+\[\boxed{
+\mathbb E[\widehat R_n(\hat h_n)]
+\leq R(h^*)
+\leq\mathbb E[R(\hat h_n)]
+}\]
+
+\textbf{条件：} 固定有限候选集合、各模型具有无偏且可积的风险估计、ERM Selection。
+
+\textbf{意义：} 无偏的个体评估不保证无偏的模型选择。
+
+Index：II-C §2
+
+\hypertarget{part-2-27-0001-result-5-wrong-selection-probability}{%
+\paragraph{Result 5 --- Wrong Selection Probability}\label{part-2-27-0001-result-5-wrong-selection-probability}}
+
+\[\boxed{
+\mathbb P(\text{Wrong Selection})
+=
+\Phi\left(-\frac{\Delta}{\sqrt2\sigma}\right)
+}\]
+
+\textbf{条件：} 两个真实性能不同的模型，独立同方差 Gaussian Evaluation Errors。
+
+\textbf{意义：} 当真实改进幅度相对于评估噪声较小时，模型选择将变得不可靠。
+
+Index：II-C §4
+
+\hypertarget{part-2-27-0001-result-6-multiple-testing}{%
+\paragraph{Result 6 --- Multiple Testing}\label{part-2-27-0001-result-6-multiple-testing}}
+
+\[\mathrm{FWER}=1-(1-\alpha)^M.\]
+
+该等式要求所有零假设成立、检验独立且单次错误率恰为 \(\alpha\)。
+
+Bonferroni Correction 则使用：
+\[\alpha_{\mathrm{individual}}=\frac{\alpha}{M}.\]
+
+\textbf{意义：} 大量搜索会累积虚假发现风险，但校正方法仍依赖单次检验的有效性。
+
+Index：II-C §5--6
+
+\hypertarget{part-2-27-0001-result-7-adaptive-generalization-bound}{%
+\paragraph{Result 7 --- Adaptive Generalization Bound}\label{part-2-27-0001-result-7-adaptive-generalization-bound}}
+
+\[\boxed{
+|\widehat R_n(h_{T_K})-R(h_{T_K})|
+\leq
+\sqrt{
+\frac{bK\log2+\log(2/\alpha)}{2n}
+}
+}\]
+
+\textbf{条件：} IID Sampling、有界损失、每次反馈至多 \(b\) bits、固定 \(K\) 次查询预算，以及不存在其他评估数据访问渠道等条件。
+
+\textbf{意义：} 不仅搜索空间大小，而且反馈所能携带的信息量，也会影响泛化保证。
+
+Index：II-D §3--4
+
+\hypertarget{part-2-27-0001-result-8-mutual-information-generalization-bound}{%
+\paragraph{Result 8 --- Mutual Information Generalization Bound}\label{part-2-27-0001-result-8-mutual-information-generalization-bound}}
+
+\[\boxed{
+|\mathbb E[G_n(h_{T_K})]|
+\leq
+\sqrt{\frac{I(D_n;h_{T_K})}{2n}}
+}\]
+
+\textbf{意义：} 可以利用模型与评估数据之间的 Mutual Information 刻画期望泛化偏差。
+
+注意这里的互信息单位为 nat，且该式是期望偏差上界，不是单次实验的误差上界。
+
+Index：II-D §4.3
+
+\hypertarget{part-2-27-0001-result-9-observed-gap-decomposition}{%
+\paragraph{Result 9 --- Observed Gap Decomposition}\label{part-2-27-0001-result-9-observed-gap-decomposition}}
+
+\[\boxed{
+\begin{aligned}
+\widehat R_m^Q(h)-\widehat R_n(h)
+={}&
+\underbrace{R_P(h)-\widehat R_n(h)}
+_{\text{Statistical Gap}}\\
+&+
+\underbrace{R_Q(h)-R_P(h)}
+_{\text{Distribution Shift}}\\
+&+
+\underbrace{\widehat R_m^Q(h)-R_Q(h)}
+_{\text{OOS Evaluation Noise}}
+\end{aligned}
+}\]
+
+\textbf{意义：} 观察到的 IS/OOS Gap 不能全部归因于 Overfitting。
+
+Index：II-E §5
+
+\hypertarget{part-2-27-0001-result-10-variance-under-time-series-dependence}{%
+\paragraph{Result 10 --- Variance under Time-Series Dependence}\label{part-2-27-0001-result-10-variance-under-time-series-dependence}}
+
+\[\boxed{
+\operatorname{Var}(\bar d_n)
+=
+\frac1n
+\left[
+\gamma_0+
+2\sum_{h=1}^{n-1}
+\left(1-\frac hn\right)\gamma_h
+\right]
+}\]
+
+\textbf{条件：} 损失差序列弱平稳且具有有限二阶矩。
+
+\textbf{意义：} 时间相关性会改变估计量的方差，因此金融任务不能无条件采用 IID Statistical Inference。
+
+Index：II-F §7.2
+
+\hypertarget{part-2-27-0001-x-program-161-consolidated-research-hypotheses}{%
+\subsection{13. X Program \#161 --- Consolidated Research Hypotheses}\label{part-2-27-0001-x-program-161-consolidated-research-hypotheses}}
+
+经过 Part I 与 Part II，我们实际上已经可以提出一组具有理论依据、能够通过实验检验的研究假设。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.10}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.57}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}@{}}
+\toprule
+ID & Research Hypothesis & Theoretical Foundation \\
+\midrule
+\endhead
+H1 & RSI 后期的真实边际收益下降，使版本选择更容易受噪声影响 & II-C \\
+H2 & 扩大 Search Budget 可能加剧模型选择偏差 & II-B、II-C \\
+H3 & 自适应反馈可能产生额外的统计过拟合 & II-D \\
+H4 & 限制反馈信息量可能改善泛化，但存在优化效率损失 & II-D \\
+H5 & 某些 Revision Categories 可能更容易造成 OOS Decay & II-C、II-D、II-E \\
+H6 & Distribution Shift 可能放大后期版本的性能退化 & II-E \\
+H7 & 改进 Evaluation Protocol 可能缓解 RSI Overfitting & II-D、II-F \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这些都是候选 Research Hypotheses，而不是我们已经证明的 RSI 定理。
+
+尤其需要警惕把 H2、H3 直接当成 OOS Performance 必然下降的充分条件。
+
+\hypertarget{part-2-27-0001-diagnostic-framework-ux5982ux679cux771fux7684ux89c2ux5bdfux5230ux4e86-oos-decay}{%
+\subsection{14. Diagnostic Framework --- 如果真的观察到了 OOS Decay}\label{part-2-27-0001-diagnostic-framework-ux5982ux679cux771fux7684ux89c2ux5bdfux5230ux4e86-oos-decay}}
+
+假设课题组向我们提供如下实验曲线。
+
+\bookgraphic{0.786}{part-2-27-0001-036-01}{}
+
+假想实验结果。
+
+现在我们已经知道应该从哪些方面展开调查。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Diagnostic Question & Method & Knowledge Index \\
+\midrule
+\endhead
+退化是否超出了随机波动范围？ & Paired Analysis、Bootstrap & II-B、II-F \\
+是否存在 Data Leakage？ & Code Audit、Information Availability Check & II-E \\
+普通模型选择能否产生同样现象？ & Random Search Baseline & II-C \\
+自适应搜索是否加重退化？ & Adaptive vs. Non-adaptive Experiment & II-D \\
+反馈机制是否释放了过多信息？ & Feedback Ablation & II-D \\
+是否由市场环境变化引起？ & Same-distribution vs. Shifted Evaluation & II-E \\
+是否由特定 Revision 造成？ & Rollback、Ablation Study & Part I \\
+缓解机制是否真正有效？ & Nested Independent Evaluation & II-F \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这张表可能比前面的任何单独公式都更具有实际科研价值。
+
+因为我们的最终目标不是证明某个经典统计定理，而是利用已有理论，将一个复杂的实验现象转化为一系列可检验的科学问题。
+
+\hypertarget{part-2-27-0001-part-ii-final-knowledge-checklist}{%
+\subsection{15. Part II --- Final Knowledge Checklist}\label{part-2-27-0001-part-ii-final-knowledge-checklist}}
+
+\textbf{Statistical Learning Theory --- Review}
+
+\begin{itemize}
+\item
+  \textbf{II-A} --- 理解 Population Risk、ERM、Generalization Gap 和 Excess Risk
+\item
+  \textbf{II-B} --- 理解样本量、搜索空间与泛化保证的关系
+\item
+  \textbf{II-C} --- 理解 Winner's Curse、Selection Regret 和 Multiple Testing
+\item
+  \textbf{II-D} --- 理解 Adaptive Feedback、Information Budget 和 Reusable Holdout
+\item
+  \textbf{II-E} --- 区分 Overfitting、Data Leakage 和 Distribution Shift
+\item
+  \textbf{II-F} --- 掌握 Walk-forward、Purging、Backtesting 和 Nested Evaluation
+\end{itemize}
+
+目前没有必要因为某一个不等式的证明尚未完全掌握，而阻塞后续学习。对于本科生科研准备而言，理解每个定理能够解释什么、不能解释什么，以及如何转化为实验设计，更为重要。
+
+需要保留的限制是：目前我们已经建立了一个理论和实验方法框架，但尚未获得课题组的具体代码、数据集、任务定义与评估协议，也尚未实际运行复现实验。因此，我们提出的四层验证结构、Revision Taxonomy 和 Mitigation Hypotheses 都是候选研究方案。
+
+\hypertarget{part-2-27-0001-next-part-iii-agentic-ai-and-recursive-self-improvement}{%
+\subsection{Next --- Part III: Agentic AI and Recursive Self-Improvement}\label{part-2-27-0001-next-part-iii-agentic-ai-and-recursive-self-improvement}}
+
+Part I --- Understanding the Research Problem
+
+Part II --- Statistical Learning Theory
+
+Part III --- Agentic AI \& Recursive Self-Improvement
+
+Part IV --- Financial AI
+
+Part V --- Literature \& Research Frontier
+
+Part VI --- Research Practice
+
+接下来 Part III 的学习路线如下。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.61}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}@{}}
+\toprule
+Section & Topic & Priority \\
+\midrule
+\endhead
+III-A & LLM Agent Architecture \& Agent Harness & P0 \\
+III-B & Tools, Memory, Planning \& Reflection & P1 \\
+III-C & Self-Modification \& Recursive Optimization & P0 \\
+III-D & Agent Evaluation, Search \& Selection & P0 \\
+III-E & Automated Research Agents: AIDE, STOP, DGM & P0 \\
+III-F & RSI Failure Modes \& Experimental Instrumentation & P0 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+Part III 的数学密度会比 Part II 明显降低，重心转向 Computer Science、Software Architecture 和 Algorithm Design。
+
+\textbf{Part II 解释了 RSI 为什么可能出现统计上的性能退化；Part III 则需要解释 RSI 系统实际上是如何运行的，以及这些统计问题发生在系统的哪个环节。}

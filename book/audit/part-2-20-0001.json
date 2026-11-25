@@ -1,0 +1,136 @@
+{
+  "chapter": {
+    "part": 2,
+    "message": 20,
+    "first_line": 1,
+    "last_line": 1152,
+    "chapter": "part-2-20-0001",
+    "chosen_title": "II-D — Adaptive Overfitting and Holdout Reuse",
+    "tables": 10,
+    "source_sha256": "ff3475110d2bae9b7557dda1c3b93e3912c13e7ecd7e5d8b39f7e48966ebafb7",
+    "source_math": 97,
+    "matched_math": 97
+  },
+  "components": [
+    {
+      "part": 2,
+      "message": 20,
+      "line": 9,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 10,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 11,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 40,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 276,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 481,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 536,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 682,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 688,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 755,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 791,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 891,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 968,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 1103,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 2,
+      "message": 20,
+      "line": 1130,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

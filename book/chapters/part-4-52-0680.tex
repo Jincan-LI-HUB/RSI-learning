@@ -1,0 +1,633 @@
+% Archive record 52, line 680.
+\hypertarget{part-4-52-0680-iv-a-ux521dux7a3fux4e2dux7684ux8865ux5145ux63a8ux5bfcux4e0eux4f8bux56fe}{%
+\section{IV-A --- 初稿中的补充推导与例图}\label{part-4-52-0680-iv-a-ux521dux7a3fux4e2dux7684ux8865ux5145ux63a8ux5bfcux4e0eux4f8bux56fe}}
+
+\hypertarget{part-4-52-0680-volatility-clusteringux6ce2ux52a8ux7387ux805aux96c6}{%
+\subsubsection{6.2 Volatility Clustering（波动率聚集）}\label{part-4-52-0680-volatility-clusteringux6ce2ux52a8ux7387ux805aux96c6}}
+
+金融市场中的高波动通常倾向于连续出现，低波动时期也可能持续一段时间。
+
+\textbf{Volatility Clustering}
+
+\bookgraphic{0.455}{part-4-52-0680-001-01}{合成示意：下方序列的收益率方向仍然难以预测，但波动幅度具有明显的持续性。}
+
+因此，我们可能同时观察到：
+\[\operatorname{Corr}(r_t,r_{t+h})\approx0,\]
+
+但：
+\[\operatorname{Corr}(|r_t|,|r_{t+h}|)>0,\]
+
+或者：
+\[\operatorname{Corr}(r_t^2,r_{t+h}^2)>0.\]
+
+这意味着：
+
+\textbf{收益率本身可能不具有明显的线性可预测性，但其波动程度具有可预测性。}
+
+\hypertarget{part-4-52-0680-ux4e00ux4e2aux4e25ux683cux7684ux6982ux7387ux53cdux4f8b}{%
+\subsubsection{6.3 一个严格的概率反例}\label{part-4-52-0680-ux4e00ux4e2aux4e25ux683cux7684ux6982ux7387ux53cdux4f8b}}
+
+为了进一步理解这一点，我们构造一个非常简洁的随机过程。 设：
+\[Z_t\overset{\mathrm{i.i.d.}}{\sim}\mathcal N(0,1),\]
+
+并定义：
+\[r_t=Z_tZ_{t-1}.\]
+
+首先：
+\[\mathbb E[r_t]=0.\]
+
+相邻收益率的协方差为：
+\[\begin{aligned}
+\operatorname{Cov}(r_t,r_{t+1})
+&=\mathbb E[Z_t^2Z_{t-1}Z_{t+1}]\\
+&=\mathbb E[Z_t^2]
+\mathbb E[Z_{t-1}]
+\mathbb E[Z_{t+1}]\\
+&=0.
+\end{aligned}\]
+
+但如果计算平方收益率：
+\[r_t^2=Z_t^2Z_{t-1}^2,\]
+
+由于标准正态分布满足：
+\[\mathbb E[Z_t^2]=1,\qquad
+\mathbb E[Z_t^4]=3,\]
+
+可以得到：
+\[\begin{aligned}
+\operatorname{Cov}(r_t^2,r_{t+1}^2)
+&=\mathbb E[Z_t^4Z_{t-1}^2Z_{t+1}^2]-1\\
+&=3-1\\
+&=2.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+\begin{aligned}
+\operatorname{Cov}(r_t,r_{t+1})&=0,\\
+\operatorname{Cov}(r_t^2,r_{t+1}^2)&=2.
+\end{aligned}
+}\]
+
+这严格证明了一个随机过程可以不存在收益率的线性相关性，却存在波动幅度的统计依赖。
+
+当然，这只是一个教学反例，不是完整的金融市场模型。
+
+\hypertarget{part-4-52-0680-arch-and-garch}{%
+\subsubsection{6.4 ARCH and GARCH}\label{part-4-52-0680-arch-and-garch}}
+
+为了描述 Volatility Clustering，金融计量经济学发展出了 ARCH 和 GARCH 模型。
+
+目前只需要掌握 GARCH(1,1) 的基本结构。
+
+\[r_t=\mu+\varepsilon_t,\]
+
+\[\varepsilon_t=\sigma_tZ_t,\]
+
+其中 \(Z_t\) 是均值为 0、方差为 1 的 IID Innovation。
+
+条件方差由下式决定：
+\[\boxed{
+\sigma_t^2
+=
+\omega
++a\varepsilon_{t-1}^2
++b\sigma_{t-1}^2
+}\]
+
+这里新定义的参数满足：
+\[\omega>0,\qquad a,b\geq0.\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.32}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.64}}@{}}
+\toprule
+Parameter & Meaning \\
+\midrule
+\endhead
+\(\omega\) & 基础波动水平 \\
+\(a\) & 对近期市场冲击的敏感程度 \\
+\(b\) & 历史波动率的持续程度 \\
+\(a+b\) & 波动冲击的持续性 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+在具有有限二阶矩的平稳解条件下，若 \(a+b<1\)，对条件方差方程两侧取期望：
+\[\mathbb E[\sigma_t^2]
+=
+\omega
++(a+b)\mathbb E[\sigma_t^2].\]
+
+于是：
+\[\boxed{
+\mathbb E[\sigma_t^2]
+=
+\frac{\omega}{1-a-b}
+}\]
+
+\textbf{GARCH --- Volatility Shock Persistence}
+
+Persistence \(a+b\)\\
+\textbf{0.90}
+
+0.9（范围 0--0.99）
+
+\bookgraphic{0.523}{part-4-52-0680-002-01}{}
+
+Shock half-life
+
+\textbf{6.58}
+
+Periods
+
+Remaining shock after 20 periods
+
+\textbf{12.2\%}
+
+归一化条件方差预测示意：长期方差为 1，初始超额冲击为 3。曲线描述预期方差的恢复过程，而非实际市场轨迹。
+
+persistence = 0
+
+\bookgraphic{0.523}{part-4-52-0680-002-state-01}{}
+
+这里还有一个相当 Nontrivial 的观点：
+
+\textbf{Conditional Variance 随时间变化，并不意味着 Unconditional Variance 一定随时间变化。}
+
+GARCH 可以同时具有：
+
+\begin{itemize}
+\tightlist
+\item
+  Time-varying Conditional Variance；
+\item
+  Constant Unconditional Variance；
+\item
+  Weak Stationarity。
+\end{itemize}
+
+因此，Volatility Clustering 本身并不足以证明 Non-stationarity。
+
+\hypertarget{part-4-52-0680-heavy-tailsux539aux5c3eux5206ux5e03}{%
+\subsection{7. Heavy Tails（厚尾分布）}\label{part-4-52-0680-heavy-tailsux539aux5c3eux5206ux5e03}}
+
+\hypertarget{part-4-52-0680-gaussian-assumption-ux7684ux5c40ux9650}{%
+\subsubsection{7.1 Gaussian Assumption 的局限}\label{part-4-52-0680-gaussian-assumption-ux7684ux5c40ux9650}}
+
+我们此前大量使用 Normal Distribution，因为它具有非常好的数学性质。
+
+但真实金融收益率往往比正态分布产生更多极端观测值，这也是经典金融 Stylized Facts 之一。
+
+\bookgraphic{0.473}{part-4-52-0680-004-01}{}
+
+Standard Normal
+
+Standardized Student's t (ν=3)
+
+两个分布具有相同均值和方差，但 Student's t 在极端区域具有更高概率密度。
+
+例如，将 Standard Normal Distribution 与标准化为单位方差的 Student's t Distribution（自由度为 3）进行比较。
+
+Normal：超过 5 个标准差
+
+\textbf{0.0000573\%}
+
+Student's t：超过 5 个标准差
+
+\textbf{0.324\%}
+
+双侧尾部概率，基于理论分布计算，并非实际金融市场的实测频率。
+
+即使均值和方差完全相同，两者的 Extreme Event Probability 也可能存在数量级差异。
+
+\hypertarget{part-4-52-0680-moment-existence}{%
+\subsubsection{7.2 Moment Existence}\label{part-4-52-0680-moment-existence}}
+
+Student's t Distribution 还有一个值得关注的数学性质。
+
+对于：
+\[X\sim t_\nu,\]
+
+其 \(p\) 阶绝对矩存在的条件为：
+\[\boxed{
+\mathbb E[|X|^p]<\infty
+\iff p<\nu,\qquad p>0.
+}\]
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.27}}@{}}
+\toprule
+Degrees of Freedom & Mean & Variance & Fourth Moment \\
+\midrule
+\endhead
+\(\nu=1\) & 不存在 & 不存在 & 不存在 \\
+\(\nu=2\) & 存在 & 不存在 & 不存在 \\
+\(\nu=3\) & 存在 & 存在 & 不存在 \\
+\(\nu=5\) & 存在 & 存在 & 存在 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 \(t_1\) 就是你此前在 Probability 中学习过的 Cauchy Distribution。
+
+这与 Part II 的统计理论产生直接联系：
+
+如果某个 DGP 不满足有限方差或者有界损失条件，那么此前使用的 Classical CLT、Chebyshev Inequality、Hoeffding Inequality 等工具就不能无条件应用。
+
+但也不能仅仅因为金融数据具有厚尾，就断言它一定没有有限方差。具体矩是否存在，取决于真实尾部分布。
+
+\hypertarget{part-4-52-0680-temporal-dependence-ux4e0e-effective-sample-size}{%
+\subsection{8. Temporal Dependence 与 Effective Sample Size}\label{part-4-52-0680-temporal-dependence-ux4e0e-effective-sample-size}}
+
+\hypertarget{part-4-52-0680-ux4e2aux89c2ux6d4bux503cux4e0dux4e00ux5b9aux5bf9ux5e94-1000-ux4efdux72ecux7acbux4fe1ux606f}{%
+\subsubsection{8.1 1,000 个观测值不一定对应 1,000 份独立信息}\label{part-4-52-0680-ux4e2aux89c2ux6d4bux503cux4e0dux4e00ux5b9aux5bf9ux5e94-1000-ux4efdux72ecux7acbux4fe1ux606f}}
+
+此前 II-F 已经推导过，对于弱平稳序列：
+\[\operatorname{Var}(\bar X_n)
+=
+\frac{\gamma_0}{n}
+\left[
+1+
+2\sum_{h=1}^{n-1}
+\left(1-\frac hn\right)\rho_h
+\right].\]
+
+如果所有非零阶自相关均为零，则恢复熟悉的：
+\[\operatorname{Var}(\bar X_n)=\frac{\gamma_0}{n}.\]
+
+为了刻画时间依赖对样本均值估计的影响，可以定义 Effective Sample Size：
+\[\boxed{
+n_{\mathrm{eff}}
+=
+\frac{n}{
+1+
+2\sum_{h=1}^{n-1}
+(1-h/n)\rho_h
+}
+}\]
+
+使得：
+\[\operatorname{Var}(\bar X_n)
+=
+\frac{\gamma_0}{n_{\mathrm{eff}}}.\]
+
+注意，这里的 Effective Sample Size 是针对样本均值方差定义的，不是所有统计量通用的有效样本数量。
+
+\hypertarget{part-4-52-0680-ar1-example}{%
+\subsubsection{8.2 AR(1) Example}\label{part-4-52-0680-ar1-example}}
+
+如果：
+\[\rho_h=\phi^h,\]
+
+当 \(n\) 足够大且 \(|\phi|<1\) 时：
+\[\begin{aligned}
+1+2\sum_{h=1}^{\infty}\phi^h
+&=1+\frac{2\phi}{1-\phi}\\
+&=\frac{1+\phi}{1-\phi}.
+\end{aligned}\]
+
+因此：
+\[\boxed{
+n_{\mathrm{eff}}
+\approx
+n\frac{1-\phi}{1+\phi}
+}\]
+
+\textbf{Effective Sample Size Explorer}
+
+Observed sample size \(n\)\\
+\textbf{1,000}
+
+1000（范围 100--5000）
+
+Positive autocorrelation parameter \(\phi\)\\
+\textbf{0.80}
+
+0.8（范围 0--0.95）
+
+Nominal sample size
+
+\begin{verbatim}
+  **1,000**
+\end{verbatim}
+
+Effective sample size
+
+\begin{verbatim}
+  **112**
+\end{verbatim}
+
+Effective information ratio
+
+\textbf{11.2\%}
+
+Standard error multiplier
+
+\textbf{2.99×}
+
+基于平稳 AR(1) 的有限样本均值方差公式计算。不是对真实金融数据有效样本量的估计。
+
+这提供了一个非常有价值的 Research Insight。
+
+在金融任务中，即使原始收益率的线性自相关很弱，模型损失、策略收益、波动率以及重叠预测标签仍然可能具有显著的时间依赖性。
+
+因此，我们不能直接将原始数据的行数视为独立统计信息的数量。
+
+\hypertarget{part-4-52-0680-ux4e3aux4ec0ux4e48ux91d1ux878dux73afux5883ux7279ux522bux5bb9ux6613ux4ea7ux751f-rsi-overfitting}{%
+\subsection{9. 为什么金融环境特别容易产生 RSI Overfitting？}\label{part-4-52-0680-ux4e3aux4ec0ux4e48ux91d1ux878dux73afux5883ux7279ux522bux5bb9ux6613ux4ea7ux751f-rsi-overfitting}}
+
+现在可以将本阶段的内容与此前的 Part II、Part III 连接起来。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}@{}}
+\toprule
+Financial Property & Statistical Consequence & RSI Consequence \\
+\midrule
+\endhead
+Weak Predictability & 真实模型差异可能很小 & 容易选择噪声驱动的修改 \\
+Temporal Dependence & 有效样本信息减少 & 评估可靠性下降 \\
+Heavy Tails & 极端观测可能主导指标 & Agent 可能过度优化偶然事件 \\
+Volatility Clustering & 评估误差具有条件异方差 & 不同市场窗口的评分稳定性不同 \\
+Non-stationarity & 历史规律可能失效 & 后期版本可能过度适应旧环境 \\
+Single Historical Path & 缺少独立市场历史 & 反复回测可能累积选择偏差 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Coding Tasks}
+
+相对明确的正确性反馈
+
+部分指标可确定性验证
+
+任务之间可能存在迁移性
+
+\textbf{Financial Tasks}
+
+高统计不确定性
+
+有限且相关的历史数据
+
+潜在的环境变化
+
+↓
+
+\textbf{Same RSI Architecture} \(A_0\rightarrow A_1\rightarrow\cdots\rightarrow A_K\)
+
+↓
+
+\bookgraphic{0.629}{part-4-52-0680-008-01}{}
+
+IS performance
+
+Potential OOS trajectory in a reliable evaluation environment
+
+Potential OOS trajectory in a low-SNR financial environment
+
+研究假设示意，并非真实实验结果，也不意味着编程任务一定具有更好的泛化表现。
+
+这里最重要的认识是：\textbf{金融环境未必削弱 Agent 的 Optimization Capability，却可能显著削弱 Evaluator 区分真实改进与虚假改进的能力。}
+
+Agent 仍然可以变得越来越擅长搜索，但它所搜索到的高分候选未必代表真正的能力提升。
+
+\hypertarget{part-4-52-0680-research-practice-initial-financial-data-audit}{%
+\subsection{10. Research Practice --- Initial Financial Data Audit}\label{part-4-52-0680-research-practice-initial-financial-data-audit}}
+
+如果未来课题组提供了一份金融数据，我们不应该立即开始运行 RSI。
+
+第一步应当对 DGP 的统计特征进行初步分析。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.27}}@{}}
+\toprule
+Diagnostic & Method & Research Purpose \\
+\midrule
+\endhead
+Return Transformation & Simple / Log Return & 统一统计对象 \\
+Distribution Analysis & Histogram、Q-Q Plot & 检查厚尾及偏度 \\
+Temporal Dependence & ACF of Returns & 检查线性依赖 \\
+Volatility Dependence & ACF of Absolute / Squared Returns & 检查波动率聚集 \\
+Rolling Statistics & Rolling Mean / Variance & 调查潜在结构变化 \\
+Information Availability & Timestamp Audit & 排除 Look-Ahead Bias \\
+Sample Size Analysis & Effective Sample Size & 判断评估不确定性 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+一个最简单的 Python 实现可以写成：
+
+\begin{verbatim}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from statsmodels.graphics.tsaplots import plot_acf
+from scipy.stats import probplot
+
+# Assume df contains chronologically ordered prices.
+df = df.sort_index()
+
+r = np.log(df["close"]).diff().dropna()
+
+fig, axes = plt.subplots(2, 3, figsize=(14, 7))
+
+# Distribution
+axes[0, 0].hist(r, bins=60, density=True)
+axes[0, 0].set_title("Return Distribution")
+
+probplot(r, dist="norm", plot=axes[0, 1])
+axes[0, 1].set_title("Normal Q-Q Plot")
+
+# Rolling statistics
+r.rolling(60).std().plot(ax=axes[0, 2])
+axes[0, 2].set_title("Rolling Volatility")
+
+# Temporal dependence
+plot_acf(r, lags=30, ax=axes[1, 0])
+plot_acf(r.abs(), lags=30, ax=axes[1, 1])
+plot_acf(r**2, lags=30, ax=axes[1, 2])
+
+axes[1, 0].set_title("ACF of Returns")
+axes[1, 1].set_title("ACF of Absolute Returns")
+axes[1, 2].set_title("ACF of Squared Returns")
+
+plt.tight_layout()
+plt.show()
+\end{verbatim}
+
+这只是探索性数据分析的参考代码，尚未在课题组数据上运行。实际使用时需要考虑复权价格、缺失值、交易日对齐及 ACF 置信区间的适用条件。
+
+尤其需要注意，如果这些探索性分析用于设计 RSI 策略，那么应当在开发数据上进行，而不是提前检查封闭的最终测试集。
+
+\hypertarget{part-4-52-0680-literature-index}{%
+\subsection{11. Literature Index}\label{part-4-52-0680-literature-index}}
+
+本阶段只推荐两项主要阅读材料，没有必要立刻进入完整的 Financial Econometrics 教材。
+
+\textbf{P0 --- Empirical Properties of Asset Returns: Stylized Facts and Statistical Issues}
+
+Rama Cont · 2001 · Quantitative Finance, 1(2), 223--236 · 同行评审
+
+本阶段的核心参考文献。重点阅读收益率分布、非线性依赖、波动率聚集及统计估计困难。
+
+\href{https://doi.org/10.1080/713665670}{DOI: 10.1080/713665670}
+
+\textbf{P1 --- Revisiting Cont's Stylized Facts for Modern Stock Markets}
+
+2025 · Quantitative Finance · 同行评审
+
+重新检验经典 Stylized Facts 在现代市场中的表现，帮助我们避免将经验统计规律视为普遍成立的数学定律。
+
+\href{https://doi.org/10.1080/14697688.2025.2530637}{DOI: 10.1080/14697688.2025.2530637}
+
+第一篇的优先级明显更高。它能够为我们之后理解金融 Low-SNR Environment 提供统计学背景。
+
+\hypertarget{part-4-52-0680-iv-a-conclusion-index}{%
+\subsection{12. IV-A --- Conclusion Index}\label{part-4-52-0680-iv-a-conclusion-index}}
+
+\hypertarget{part-4-52-0680-core-conclusions}{%
+\subsubsection{12.1 Core Conclusions}\label{part-4-52-0680-core-conclusions}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.70}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+A1 & Simple Return 通过乘法累积，Log Return 通过加法累积 & §1 \\
+A2 & 一条历史序列只是随机过程的一条 Sample Path & §2.1 \\
+A3 & Filtration 定义金融预测中的合法信息集合 & §2.2 \\
+A4 & Conditional Mean 与 Conditional Variance 是不同预测目标 & §3 \\
+A5 & Stationarity 不等于 Independence & §4 \\
+A6 & Random Walk 的价格非平稳，但其增量可以平稳 & §4.3 \\
+A7 & ACF 衡量时间序列的线性依赖 & §5 \\
+A8 & 零自相关不意味着不存在非线性时间依赖 & §6.3 \\
+A9 & Volatility Clustering 不必然意味着 Non-stationarity & §6.4 \\
+A10 & Heavy Tails 可能限制传统统计推断方法的适用性 & §7 \\
+A11 & Temporal Dependence 会改变有效样本信息量 & §8 \\
+A12 & 金融数据特性可能降低 RSI Evaluator 的可靠性 & §9 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-4-52-0680-core-formula-sheet}{%
+\subsubsection{12.2 Core Formula Sheet}\label{part-4-52-0680-core-formula-sheet}}
+
+\textbf{Result 1 --- Return Transformation}
+
+\[r_t^{\log}=\log(1+r_t).\]
+
+\textbf{Result 2 --- Financial DGP}
+
+\[r_{t+1}
+=
+\mu_t+\sigma_tZ_{t+1}.\]
+
+\textbf{Result 3 --- AR(1)}
+
+\[X_t=\phi X_{t-1}+\varepsilon_t,
+\qquad
+\rho_h=\phi^{|h|}.\]
+
+\textbf{Result 4 --- GARCH(1,1)}
+
+\[\sigma_t^2
+=
+\omega+a\varepsilon_{t-1}^2+b\sigma_{t-1}^2.\]
+
+在相应平稳条件下：
+\[\mathbb E[\sigma_t^2]
+=
+\frac{\omega}{1-a-b}.\]
+
+\textbf{Result 5 --- Effective Sample Size for AR(1)}
+
+\[n_{\mathrm{eff}}
+\approx
+n\frac{1-\phi}{1+\phi}.\]
+
+以上公式应结合对应模型的假设使用，而不是直接作为所有金融数据的固有性质。
+
+\hypertarget{part-4-52-0680-research-takeaway}{%
+\subsection{13. Research Takeaway}\label{part-4-52-0680-research-takeaway}}
+
+如果将本阶段压缩为一个核心观点：
+
+\textbf{金融 RSI 所面临的困难，不仅是需要从高噪声数据中找到规律，还需要在同一批有限、相关且可能非平稳的数据中，反复判断哪些研究修改是真正有效的。}
+
+从这个角度来看，我们可以区分两个问题：
+\[\underbrace{
+\text{Can the agent find a better method?}
+}_{\text{Optimization Capability}}\]
+
+与：
+\[\underbrace{
+\text{Can the evaluator recognize a better method?}
+}_{\text{Statistical Reliability}}\]
+
+前者涉及 Part III，后者涉及 Part II 和 Part IV。
+
+当两者的发展速度不匹配时，一个越来越强大的 Agent 可能反而越来越容易受到评估噪声的误导。这是我们目前提出的候选退化机制之一，尚需通过实际实验验证。
+
+\hypertarget{part-4-52-0680-next-iv-b-low-signal-to-noise-ratio-predictability}{%
+\subsection{Next --- IV-B: Low Signal-to-Noise Ratio \& Predictability}\label{part-4-52-0680-next-iv-b-low-signal-to-noise-ratio-predictability}}
+
+IV-A --- Financial Time Series \& DGP
+
+IV-B --- Low Signal-to-Noise Ratio \& Predictability
+
+IV-C --- Financial Factors \& ML Models
+
+IV-D --- Returns, Sharpe Ratio \& Evaluation
+
+IV-E --- Backtest Overfitting, PBO \& DSR
+
+IV-F --- Market Regime \& Robustness
+
+下一阶段是 Part IV 中理论优先级最高的一节。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Topic & Core Question \\
+\midrule
+\endhead
+Signal-to-Noise Ratio & 如何定量描述金融预测的困难？ \\
+Law of Total Variance & 如何分解可预测与不可预测成分？ \\
+Irreducible Error & 模型性能的理论上限在哪里？ \\
+Bayes Optimal Predictor & 最好的预测器在数学上是什么？ \\
+Population \(R^2\) & 低信噪比如何限制预测能力？ \\
+Efficient Market Hypothesis & 为什么金融规律可能难以持续利用？ \\
+Spurious Correlation & 为什么无效金融特征也可能获得极高得分？ \\
+Noise-driven Optimization & RSI 如何逐步将噪声误认为真实改进？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+尤其是下一阶段，我们将利用你已经掌握的 \textbf{Conditional Expectation 与 Law of Total Variance}，推导一个相当漂亮的数学关系：
+\[\boxed{
+R_{\mathrm{optimal}}^2
+=
+\frac{\mathrm{SNR}}{1+\mathrm{SNR}}
+}\]
+
+在平方损失、有限二阶矩及相应 SNR 定义下，这个等式将金融数据的信噪比与理论最优预测能力直接联系起来。
+
+它也将帮助我们更深入地理解，为什么 Low-SNR Environment 是 X Program \#161 中一个如此重要的限定条件。

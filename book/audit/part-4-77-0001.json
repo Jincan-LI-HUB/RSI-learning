@@ -1,0 +1,275 @@
+{
+  "chapter": {
+    "part": 4,
+    "message": 77,
+    "first_line": 1,
+    "last_line": 2405,
+    "chapter": "part-4-77-0001",
+    "chosen_title": "IV-F — Market Regime, Non-stationarity & Robustness",
+    "tables": 20,
+    "source_sha256": "8600f9cefefc800ff303715fa038fbff00fe144aadb31bbff2cfb504635b6c14",
+    "source_math": 225,
+    "matched_math": 225
+  },
+  "components": [
+    {
+      "part": 4,
+      "message": 77,
+      "line": 13,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 43,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 132,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 162,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 221,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 356,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 464,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 533,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 546,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 586,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 679,
+      "component": "box",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 843,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 937,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 939,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1129,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1230,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1309,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1449,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1453,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1516,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1561,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1617,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1619,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1621,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1755,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1895,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1984,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 1986,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 2053,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 2256,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 2340,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 4,
+      "message": 77,
+      "line": 2364,
+      "component": "box",
+      "state": "navigation omitted",
+      "graphics": 0
+    }
+  ]
+}

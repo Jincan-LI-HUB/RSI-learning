@@ -1,0 +1,1052 @@
+% Archive record 20, line 1.
+\hypertarget{part-2-20-0001-ii-d-adaptive-overfitting-and-holdout-reuse}{%
+\section{II-D --- Adaptive Overfitting and Holdout Reuse}\label{part-2-20-0001-ii-d-adaptive-overfitting-and-holdout-reuse}}
+
+这是整个 Part II 中与 Recursive Self-Improvement 特性最直接相关的理论模块。
+
+此前 II-A 至 II-C 讨论的问题，即使没有 AI Agent，也会出现在传统的统计分析和机器学习过程中。而本阶段开始重点研究 \textbf{Adaptivity（自适应性）本身带来的统计问题}。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.57}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.20}}@{}}
+\toprule
+Section & Topics & Progress \\
+\midrule
+\endhead
+II-A & Risk and Generalization & \\
+II-B & Concentration Inequalities & \\
+II-C & Model Selection Bias \& Multiple Testing & \\
+\textbf{II-D} & \textbf{Adaptive Overfitting \& Holdout Reuse} & 当前 \\
+II-E & Data Leakage \& Distribution Shift & 待学习 \\
+II-F & Time-Series Validation \& Backtesting & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+本阶段主要解决五个问题：
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Adaptive Data Analysis 与普通 Model Selection 有什么本质区别？
+\item
+  为什么 Agent 没有直接访问验证集，也可能对验证集过拟合？
+\item
+  如何从 Information Theory 的角度理解这种过拟合？
+\item
+  为什么传统 Multiple Testing Correction 不足以解决这一问题？
+\item
+  如何设计允许反复使用、但仍具有统计可靠性的 Evaluator？
+\end{enumerate}
+
+\hypertarget{part-2-20-0001-from-model-selection-to-adaptive-data-analysis}{%
+\subsection{1. From Model Selection to Adaptive Data Analysis}\label{part-2-20-0001-from-model-selection-to-adaptive-data-analysis}}
+
+\hypertarget{part-2-20-0001-non-adaptive-vs.-adaptive-analysis}{%
+\subsubsection{1.1 Non-adaptive vs. Adaptive Analysis}\label{part-2-20-0001-non-adaptive-vs.-adaptive-analysis}}
+
+在 II-B 和 II-C 中，我们主要考虑一个预先确定的候选集合：
+\[\mathcal H=\{h_1,h_2,\ldots,h_M\}.\]
+
+所有候选模型已经确定，Evaluator 只负责评价它们，随后我们选择最优者。
+
+但 RSI 的工作方式并非如此。
+
+\textbf{Non-adaptive Analysis}
+
+\bookgraphic{0.263}{part-2-20-0001-004-01}{}
+
+\begin{verbatim}
+  候选模型的生成不依赖评估集的反馈。
+\end{verbatim}
+
+\textbf{Adaptive Analysis}
+
+\bookgraphic{0.263}{part-2-20-0001-004-02}{}
+
+\begin{verbatim}
+  候选模型本身由此前的评估反馈决定。
+\end{verbatim}
+
+两者的关键区别不是是否使用 AI，也不是是否进行了多轮搜索，而是：
+
+\textbf{评估数据是否参与了后续候选模型的生成过程。}
+
+事实上，人类研究人员反复观察实验结果、修改研究假设，也属于 Adaptive Data Analysis。
+
+AI Agent 只是将这种过程自动化，并可能显著扩大其速度、规模和自主程度。
+
+\hypertarget{part-2-20-0001-statistical-queryux7edfux8ba1ux67e5ux8be2}{%
+\subsubsection{1.2 Statistical Query（统计查询）}\label{part-2-20-0001-statistical-queryux7edfux8ba1ux67e5ux8be2}}
+
+沿用此前的记号，设评估数据为：
+\[D_n=\{Z_1,\ldots,Z_n\},
+\qquad Z_i\overset{\mathrm{i.i.d.}}{\sim}\mathcal D.\]
+
+定义一个 Statistical Query：
+\[q:\mathcal Z\to[0,1].\]
+
+我们希望知道它的总体期望：
+\[\mu(q)=\mathbb E_{Z\sim\mathcal D}[q(Z)].\]
+
+但 Evaluator 通常只能返回经验均值：
+\[\widehat\mu_{D_n}(q)
+=
+\frac1n\sum_{i=1}^{n}q(Z_i).\]
+
+这实际上是 Population Risk 与 Empirical Risk 的一般化。
+
+如果令：
+\[q_h(Z)=\ell(h(X),Y),\]
+
+那么：
+\[\mu(q_h)=R(h),
+\qquad
+\widehat\mu_{D_n}(q_h)=\widehat R_n(h).\]
+
+因此，Statistical Query 可以表示模型准确率、平均损失、错误比例等能够写成样本均值的统计指标。
+
+Sharpe Ratio 等非线性指标则需要额外处理。
+
+\hypertarget{part-2-20-0001-adaptive-query}{%
+\subsubsection{1.3 Adaptive Query}\label{part-2-20-0001-adaptive-query}}
+
+设 Agent 在第 \(k\) 次查询时获得回答 \(a_k\)。
+
+对于最简单的 Evaluator：
+\[a_k=\widehat\mu_{D_n}(q_k).\]
+
+而下一次查询由此前所有回答决定：
+\[\boxed{
+q_{k+1}
+=
+\mathcal F_k(a_1,\ldots,a_k)
+}\]
+
+其中 \(\mathcal F_k\) 是生成下一次查询的机制。
+
+这就建立了一个间接依赖关系：
+\[D_n
+\longrightarrow
+(a_1,\ldots,a_k)
+\longrightarrow
+q_{k+1}.\]
+
+即使 Agent 不知道 \(D_n\) 中的任何原始记录，后续 Query 仍然可能依赖于 \(D_n\)。
+
+这就是 \textbf{Adaptive Overfitting} 的基本信息传递机制。
+
+\hypertarget{part-2-20-0001-ux4e3aux4ec0ux4e48ux770bux4e0dux5230ux539fux59cbux6570ux636eux4e5fux4f1aux8fc7ux62dfux5408}{%
+\subsection{2. 为什么看不到原始数据也会过拟合？}\label{part-2-20-0001-ux4e3aux4ec0ux4e48ux770bux4e0dux5230ux539fux59cbux6570ux636eux4e5fux4f1aux8fc7ux62dfux5408}}
+
+这一节是理解本阶段内容的关键。
+
+\hypertarget{part-2-20-0001-ux4e00ux4e2aux601dux60f3ux5b9eux9a8cblack-box-evaluator}{%
+\subsubsection{2.1 一个思想实验：Black-box Evaluator}\label{part-2-20-0001-ux4e00ux4e2aux601dux60f3ux5b9eux9a8cblack-box-evaluator}}
+
+假设 Agent 无法读取 Validation Set，只能提交模型并获得一个 Accuracy Score。
+
+它发现：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}@{}}
+\toprule
+Revision & 修改内容 & Validation Accuracy \\
+\midrule
+\endhead
+R0 & Initial model & 0.700 \\
+R1 & 加入 Momentum Feature & 0.715 \\
+R2 & 调整 Lookback Window & 0.732 \\
+R3 & 修改分类阈值 & 0.748 \\
+R4 & 针对特定市场条件增加规则 & 0.771 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+Agent 虽然没有直接看到真实标签，但每一次得分变化都提供了信息：
+
+某个修改是否适合当前数据集、哪一类预测规则更容易得到高分、哪些搜索方向值得保留。
+
+当这些信息不断积累时，Validation Set 就可能在功能上成为一种间接的 Training Set。
+
+\textbf{Data Access 不等于 Information Access。}
+
+无法直接访问数据，并不代表无法从数据中学习。
+
+\hypertarget{part-2-20-0001-ux4e00ux4e2aux4e25ux683cux7684ux6570ux5b66ux53cdux4f8b}{%
+\subsubsection{2.2 一个严格的数学反例}\label{part-2-20-0001-ux4e00ux4e2aux4e25ux683cux7684ux6570ux5b66ux53cdux4f8b}}
+
+我们在这里构造一个极端但容易理解的例子，证明仅仅通过二元反馈，也可能产生严重的过拟合。
+
+假设：
+\[Z\sim\operatorname{Uniform}\{1,2,\ldots,N\},\]
+
+Evaluator 拥有 \(n\) 个 IID 样本，其中 \(n<N\)。
+
+Agent 不知道样本内容，但允许提交以下查询：
+\[q_j(Z)=\mathbf 1_{\{Z=j\}},
+\qquad j=1,\ldots,N.\]
+
+Evaluator 甚至不需要返回精确的经验均值，只需要回答：
+\[a_j=
+\mathbf 1_{\{
+\widehat\mu_{D_n}(q_j)>0
+\}}.\]
+
+即告诉 Agent：某个数值是否在数据集中出现过。
+
+每次反馈只有一个 bit。
+
+通过这些回答，Agent 可以构造出样本中出现过的数值集合：
+\[B=\{j:a_j=1\}.\]
+
+然后生成一个新的 Query：
+\[q_B(Z)=\mathbf 1_{\{Z\in B\}}.\]
+
+显然，在原评估数据上：
+\[\boxed{
+\widehat\mu_{D_n}(q_B)=1
+}\]
+
+但在总体分布上：
+\[\boxed{
+\mu(q_B)=\frac{|B|}{N}
+\leq\frac nN
+}\]
+
+因此：
+\[\boxed{
+\widehat\mu_{D_n}(q_B)-\mu(q_B)
+\geq1-\frac nN
+}\]
+
+示例：总体包含 1,000 种可能取值，评估集包含 100 个样本。
+
+Empirical Score
+
+\textbf{100\%}
+
+Population Score
+
+\textbf{≤ 10\%}
+
+Generalization Gap 至少为 0.90。即使 Evaluator 从未直接提供任何原始样本。
+
+这个例子不是说真实 RSI Agent 会采用这种查询方式，而是严格证明：
+
+\begin{itemize}
+\tightlist
+\item
+  低信息量的单次反馈不代表累计信息量一定很低；
+\item
+  Adaptive Query 可以间接获得评估集的特征；
+\item
+  即使评估数据从未被直接读取，也可能出现严重过拟合。
+\end{itemize}
+
+这比 II-C 中的普通 Selection Bias 更进一步。那里是从事先确定的模型中选择一个模型；这里则是根据评估反馈构造一个新的、针对评估数据的模型。
+
+\hypertarget{part-2-20-0001-information-theoretic-interpretation}{%
+\subsection{3. Information-Theoretic Interpretation}\label{part-2-20-0001-information-theoretic-interpretation}}
+
+这一节可以与你在 Data Science 中接触过的 Entropy 建立联系。
+
+此前，我们主要通过候选模型数量 \(M\) 来衡量模型选择的统计复杂度。
+
+但对于 Adaptive Data Analysis，一个更本质的问题是：
+
+\textbf{最终模型从评估数据中获取了多少信息？}
+
+\hypertarget{part-2-20-0001-evaluation-transcript}{%
+\subsubsection{3.1 Evaluation Transcript}\label{part-2-20-0001-evaluation-transcript}}
+
+设 Agent 一共执行 \(K\) 次查询，定义完整的反馈记录：
+\[T_K=(a_1,a_2,\ldots,a_K).\]
+
+称为 \textbf{Transcript（交互记录）}。
+
+假设 Agent 不直接访问评估数据 \(D_n\)，而只通过 Transcript 获得信息。最终生成的模型为：
+\[h_{T_K}=\mathcal F(T_K).\]
+
+于是形成如下信息传递关系：
+\[D_n\longrightarrow T_K\longrightarrow h_{T_K}.\]
+
+在不存在其他数据访问渠道的条件下，这构成一个 Markov Chain。
+
+根据 Data Processing Inequality：
+\[\boxed{
+I(D_n;h_{T_K})
+\leq
+I(D_n;T_K)
+}\]
+
+其中 \(I(\cdot;\cdot)\) 表示 Mutual Information（互信息）。
+
+其基本含义是：最终模型从评估数据中获得的信息，不会超过完整交互记录所包含的信息。
+
+对于离散随机变量，互信息可以表示为：
+\[I(X;Y)=H(X)-H(X\mid Y).\]
+
+也就是观察 \(Y\) 后，对 \(X\) 的不确定性减少了多少。
+
+\hypertarget{part-2-20-0001-feedback-precision-ux4e0e-information-budget}{%
+\subsubsection{3.2 Feedback Precision 与 Information Budget}\label{part-2-20-0001-feedback-precision-ux4e0e-information-budget}}
+
+假设每一次反馈最多包含 \(b\) bits 的信息，一共进行 \(K\) 次反馈，并且查询次数固定。
+
+那么可能出现的 Transcript 数量至多为：
+\[|\mathcal T_K|\leq 2^{bK}.\]
+
+因此：
+\[H(T_K)\leq bK\]
+
+这里采用以 2 为底的对数，Entropy 的单位为 bit。
+
+进一步有：
+\[\boxed{
+I(D_n;h_{T_K})
+\leq I(D_n;T_K)
+\leq bK
+}\]
+
+这给出了一个非常直观的 Information Budget。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Feedback Type & 单次最大信息量 \\
+\midrule
+\endhead
+Accept / Reject & 1 bit \\
+四级评分 & 2 bits \\
+256 级评分 & 8 bits \\
+65,536 级评分 & 16 bits \\
+Sample-level Error Report & 取决于报告内容，可能远大于标量评分 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+需要注意，这些是最大信息量，而不是每次交互实际泄露的信息量。高度重复的反馈可能几乎不提供新信息。
+
+\hypertarget{part-2-20-0001-generalization-bound-under-adaptive-feedback}{%
+\subsection{4. Generalization Bound under Adaptive Feedback}\label{part-2-20-0001-generalization-bound-under-adaptive-feedback}}
+
+现在我们尝试将 Information Budget 与 II-B 中的 Uniform Generalization Bound 联系起来。
+
+这是本阶段最值得保留的数学结论。
+
+\hypertarget{part-2-20-0001-description-length-bound}{%
+\subsubsection{4.1 Description Length Bound}\label{part-2-20-0001-description-length-bound}}
+
+在上述设定中，虽然最终生成的模型依赖于数据，但所有可能的 Transcript 至多有：
+\[2^{bK}\]
+
+种。
+
+如果 Agent 的生成机制事先固定且确定，那么所有可能输出的模型构成一个有限集合，其大小满足：
+\[M\leq 2^{bK}.\]
+
+因此，我们可以将 II-B 的结论：
+\[\mathbb P
+\left(
+\sup_{h\in\mathcal H}
+|\widehat R_n(h)-R(h)|>\epsilon
+\right)
+\leq2Me^{-2n\epsilon^2}\]
+
+应用到所有可能输出的模型集合。
+
+得到：
+\[\boxed{
+\mathbb P
+\left(
+|\widehat R_n(h_{T_K})-R(h_{T_K})|
+>\epsilon
+\right)
+\leq
+2^{bK+1}e^{-2n\epsilon^2}
+}\]
+
+进一步，转换为 Confidence Form：
+\[\boxed{
+|\widehat R_n(h_{T_K})-R(h_{T_K})|
+\leq
+\sqrt{
+\frac{bK\log 2+\log(2/\alpha)}{2n}
+}
+}\]
+
+该结论以至少 \(1-\alpha\) 的概率成立。
+
+\textbf{成立条件：} IID 评估样本、有界损失、固定的查询预算、有限反馈空间，以及 Agent 不通过其他渠道访问评估数据。对于具有独立随机性的 Agent，可以先条件于其随机种子，再进行类似分析。
+
+这里的 \(\log\) 为自然对数，因此出现了 bit 到 nat 的转换系数 \(\log 2\)。
+
+\hypertarget{part-2-20-0001-ux4e0eux6b64ux524dux7ed3ux8bbaux7684ux5bf9ux6bd4}{%
+\subsubsection{4.2 与此前结论的对比}\label{part-2-20-0001-ux4e0eux6b64ux524dux7ed3ux8bbaux7684ux5bf9ux6bd4}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.32}}@{}}
+\toprule
+& II-B & II-D \\
+\midrule
+\endhead
+分析对象 & Fixed Hypothesis Space & Adaptive Feedback \\
+复杂度来源 & 候选空间大小 \(M\) & 反馈预算 \(bK\) \\
+泛化误差尺度 & \(O(\sqrt{\log M/n})\) & \(O(\sqrt{bK/n})\) \\
+控制方式 & 限制假设空间 & 限制反馈信息量 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Adaptive Generalization Bound Explorer}
+
+固定 Confidence Level = 95\%，采用 Description Length Bound。
+
+Bits per feedback \(b\)\\
+\textbf{4 bits}
+
+4（范围 1--16）
+
+Query Budget \(K\)\\
+\textbf{30}
+
+30（范围 1--200）
+
+Evaluation Sample Size \(n\)\\
+\textbf{1,000}
+
+3（范围 2--5）
+
+Maximum Feedback Budget
+
+\textbf{120 bits}
+
+Generalization Error Bound
+
+\textbf{0.2084}
+
+\[\sqrt{\frac{bK\log 2+\log(2/\alpha)}{2n}}\]
+
+这是最坏情况下的理论上界，而不是实际过拟合程度的预测。
+
+这个结果为 RSI 提供了一个新的研究方向：
+
+除了限制 Agent 的 Search Budget，我们还可以控制 Evaluator 每次返回的信息量。
+
+不过，这并不意味着 Feedback Precision 越低越好。过度压缩反馈也可能使 Agent 无法识别真正有效的改进。
+
+我们需要在 \textbf{Optimization Utility 与 Statistical Validity} 之间寻找平衡。
+
+\hypertarget{part-2-20-0001-mutual-information-generalization-bound}{%
+\subsubsection{4.3 Mutual Information Generalization Bound}\label{part-2-20-0001-mutual-information-generalization-bound}}
+
+Description Length Bound 采用的是最坏情况下的最大信息量。
+
+一个更加精细的理论框架，是直接使用 Mutual Information 衡量模型与数据之间的依赖程度。
+
+Xu 和 Raginsky 在 NeurIPS 2017 发表的研究中，建立了学习算法输入与输出之间的互信息和期望泛化误差之间的关系。
+
+\href{https://papers.nips.cc/paper_files/paper/2017/hash/ad71c82b22f4f65b9398f76d8be4c615-Abstract.html}{来源 1} \href{https://arxiv.org/abs/1705.07809}{来源 2}
+
+在 IID Sampling、适当的可测性条件，以及损失取值于 \([0,1]\) 的情况下，其结果可以具体化为：
+\[\boxed{
+\left|
+\mathbb E
+\left[
+R(h_{T_K})-\widehat R_n(h_{T_K})
+\right]
+\right|
+\leq
+\sqrt{
+\frac{I(D_n;h_{T_K})}{2n}
+}
+}\]
+
+此处 Mutual Information 的单位为 nat。
+
+这个结论非常漂亮，因为它直接将 Generalization Error 与模型对评估数据的统计依赖联系起来。
+
+注意，这是\textbf{期望 Generalization Gap 的绝对值上界}，而不是每一次实验中实际 Gap 的绝对值上界，也不是 High-probability Bound。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}@{}}
+\toprule
+Bound & 控制对象 & 复杂度指标 \\
+\midrule
+\endhead
+Uniform Convergence & 高概率下的最大误差 & \(\log M\) \\
+Description Length & 高概率下的自适应输出误差 & \(bK\log 2\) \\
+Mutual Information & 期望泛化偏差 & \(I(D_n;h_{T_K})\) \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Proof Index：} Xu \& Raginsky (2017), Theorem 1。完整证明涉及 Sub-Gaussian Random Variables、KL Divergence 和变分不等式，本阶段暂不展开。
+
+这也是我们第一次真正将 Statistical Learning Theory 与 Information Theory 联系起来。
+
+\hypertarget{part-2-20-0001-ux4e3aux4ec0ux4e48-multiple-testing-correction-ux4e0dux8db3ux4ee5ux89e3ux51b3-adaptive-overfitting}{%
+\subsection{5. 为什么 Multiple Testing Correction 不足以解决 Adaptive Overfitting？}\label{part-2-20-0001-ux4e3aux4ec0ux4e48-multiple-testing-correction-ux4e0dux8db3ux4ee5ux89e3ux51b3-adaptive-overfitting}}
+
+回顾 II-C 中的 Bonferroni Correction：
+\[\alpha_{\mathrm{individual}}=\frac{\alpha}{M}.\]
+
+它通过 Union Bound 控制：
+\[\mathrm{FWER}\leq\alpha.\]
+
+但是，这个证明存在一个关键前提：每个真实零假设对应的检验必须是有效的。
+
+对于一个事先确定的真实零假设，有效 p-value 满足：
+\[\mathbb P(p\leq u)\leq u,
+\qquad u\in[0,1].\]
+
+然而，在 Adaptive Analysis 中，我们可能先观察数据，再决定检验什么假设。
+
+\hypertarget{part-2-20-0001-ux4e00ux4e2aux5177ux4f53ux4f8bux5b50}{%
+\subsubsection{5.1 一个具体例子}\label{part-2-20-0001-ux4e00ux4e2aux5177ux4f53ux4f8bux5b50}}
+
+假设 Agent 首先计算 100 个无效金融特征与收益率之间的相关性。
+
+随后选择 Sample Correlation 最高的特征，并对这个特征执行一次普通的显著性检验。
+
+假设 100 个原始零假设均成立，且其 p-values 独立并服从 Uniform Distribution：
+\[p_1,\ldots,p_{100}
+\overset{\mathrm{i.i.d.}}{\sim}U(0,1).\]
+
+最终报告：
+\[p_{\mathrm{selected}}=\min_j p_j.\]
+
+那么：
+\[\mathbb P(p_{\mathrm{selected}}\leq u)
+=
+1-(1-u)^{100}.\]
+
+这已经不再是普通有效 p-value 所应具有的分布。
+
+如果 Agent 声称自己只执行了一次最终显著性检验，并使用：
+\[M=1\]
+
+进行 Bonferroni Correction，显然无法解决此前 100 次搜索造成的偏差。
+
+这个固定候选的例子可以通过对全部 100 个原始检验进行校正来解决。但真实 RSI 中，候选假设还可能由此前反馈动态生成，此时问题更加复杂。
+
+\hypertarget{part-2-20-0001-sequential-testing-ux7684ux57faux672cux601dux60f3}{%
+\subsubsection{5.2 Sequential Testing 的基本思想}\label{part-2-20-0001-sequential-testing-ux7684ux57faux672cux601dux60f3}}
+
+一种处理方式，是要求第 \(k\) 次检验在给定过去历史 \(H_{k-1}\) 的情况下仍然有效，即对真实零假设满足：
+\[\mathbb P
+\left(
+p_k\leq\alpha_k
+\mid H_{k-1}
+\right)
+\leq\alpha_k.\]
+
+同时分配整个研究过程中的显著性预算：
+\[\sum_{k=1}^{\infty}\alpha_k\leq\alpha.\]
+
+这称为 \textbf{Alpha Spending} 的一种基本形式。
+
+例如：
+\[\alpha_k=\frac{\alpha}{2^k}.\]
+
+则：
+\[\sum_{k=1}^{\infty}\alpha_k=\alpha.\]
+
+在相应的条件有效性成立时，可以通过 Union Bound 控制整个序贯过程中的 FWER。
+
+但 Alpha Spending 本身并不能使已经失效的 p-value 恢复有效性。如何获得条件有效的检验，才是更困难的部分。
+
+\textbf{核心结论：} Multiple Testing 主要解决大量有效检验的错误累积问题；Adaptive Data Analysis 还必须解决检验本身可能失效的问题。
+
+\hypertarget{part-2-20-0001-the-reusable-holdout}{%
+\subsection{6. The Reusable Holdout}\label{part-2-20-0001-the-reusable-holdout}}
+
+现在进入本阶段最重要的代表性研究。
+
+Dwork 等人在 2015 年发表于 \emph{Science} 的论文 \emph{The Reusable Holdout: Preserving Validity in Adaptive Data Analysis} 中，研究了如何在反复、自适应地使用 Holdout Set 的同时维持统计有效性。
+
+\href{https://pubmed.ncbi.nlm.nih.gov/26250683/}{来源 1}
+
+\hypertarget{part-2-20-0001-traditional-holdout-vs.-reusable-holdout}{%
+\subsubsection{6.1 Traditional Holdout vs. Reusable Holdout}\label{part-2-20-0001-traditional-holdout-vs.-reusable-holdout}}
+
+传统验证集的工作方式是，每一次查询都直接返回真实的经验评估结果。
+
+\textbf{Traditional Holdout}
+
+\bookgraphic{0.830}{part-2-20-0001-009-01}{}
+
+\textbf{Reusable Holdout}
+
+\bookgraphic{0.830}{part-2-20-0001-009-02}{Reusable Holdout 的核心是改变信息释放机制，而不是简单地允许验证集被无限重复使用。}
+
+这里的变化在于，我们不再将 Evaluator 视为一个被动的评分函数，而是将它视为一个主动控制信息释放的 \textbf{Statistical Mechanism}。
+
+\hypertarget{part-2-20-0001-thresholdout-algorithm}{%
+\subsubsection{6.2 Thresholdout Algorithm}\label{part-2-20-0001-thresholdout-algorithm}}
+
+Dwork 等人提出的一种代表性机制称为 \textbf{Thresholdout}。 设：
+\[D_{\mathrm{train}},\qquad D_{\mathrm{holdout}}\]
+
+分别表示可用于开发的训练数据与受到保护的验证数据。
+
+对于某个 Query \(q\)，计算：
+\[\widehat\mu_{\mathrm{train}}(q),
+\qquad
+\widehat\mu_{\mathrm{holdout}}(q).\]
+
+进一步计算两者的差异：
+\[d(q)=
+\left|
+\widehat\mu_{\mathrm{train}}(q)
+-
+\widehat\mu_{\mathrm{holdout}}(q)
+\right|.\]
+
+Thresholdout 的基本思想如下：
+
+\textbf{Receive Query \(q\)}
+
+计算训练集与 Holdout Set 的统计差异
+
+↓
+
+\textbf{Compare with a Noisy Threshold} \(d(q)\leq\tau+\eta\)
+
+Yes
+
+↓
+
+\textbf{Return Training Estimate} \(\widehat\mu_{\mathrm{train}}(q)\)
+
+不直接返回 Holdout 统计量
+
+No
+
+↓
+
+\textbf{Return Noisy Holdout Estimate} \(\widehat\mu_{\mathrm{holdout}}(q)+\xi\)
+
+消耗有限的纠偏预算
+
+Thresholdout 通过随机化阈值、带噪声的 Holdout 反馈及有限预算，减少对 Holdout 数据的过度适应。
+
+\href{https://papers.neurips.cc/paper_files/paper/2015/hash/bad5f33780c42f2588878a9d07405083-Abstract.html}{来源 1} \href{https://www.sciencemagazinedigital.org/sciencemagazine/7_august_2015?pg=93}{来源 2} \href{https://ibmresearchnews.blogspot.com/2015/08/preserving-validity-in-adaptive-data_6.html}{来源 3}
+
+为什么不在每一次查询时直接返回真实验证集得分？
+
+因为如果训练集上的估计已经足够可靠，就没有必要额外释放 Holdout Set 的精确统计信息。
+
+而当二者出现较大差异时，再使用受到保护的数据进行纠偏。
+
+上述流程是概念级简化，并非完整的 Thresholdout 实现。原算法还包含具体的噪声分布、阈值更新、预算耗尽处理和参数条件。
+
+\hypertarget{part-2-20-0001-differential-privacy-ux4e0e-generalization}{%
+\subsubsection{6.3 Differential Privacy 与 Generalization}\label{part-2-20-0001-differential-privacy-ux4e0e-generalization}}
+
+Thresholdout 背后的重要理论基础是 Differential Privacy（差分隐私）。
+
+差分隐私通常用于保护个体数据，但在这里，它具有另一种重要用途：\textbf{限制分析结果对具体样本的依赖，从而提供泛化保证。}
+
+设 \(D,D'\) 是仅相差一条记录的两个相邻数据集，\(\mathcal M\) 为随机化算法。
+
+如果对于所有可测输出事件 \(B\)：
+\[\boxed{
+\mathbb P(\mathcal M(D)\in B)
+\leq
+e^{\varepsilon_{\mathrm{DP}}}
+\mathbb P(\mathcal M(D')\in B)
++
+\delta_{\mathrm{DP}}
+}\]
+
+则称该机制满足相应的 \((\varepsilon_{\mathrm{DP}},\delta_{\mathrm{DP}})\)-Differential Privacy。
+
+这里增加 DP 下标，是为了避免与此前的 Error Tolerance \(\epsilon\) 和 Optimization Error \(\delta\) 混淆。
+
+其直观思想是：如果改变数据集中的一个样本，不会显著改变整个算法的输出分布，那么算法就不容易对某一个具体样本形成过强的依赖。
+
+这建立了一条重要的研究联系：
+\[\text{Differential Privacy}
+\longrightarrow
+\text{Algorithmic Stability}
+\longrightarrow
+\text{Generalization Guarantees}.\]
+
+上述联系需要具体定理的条件才能成立，并不是所有添加噪声的算法都具有统计泛化保证。
+
+\textbf{目前没有必要系统学习 Differential Privacy。} 知道它为什么能够成为 Adaptive Overfitting 的理论工具即可。如果课题组后续确实考虑类似 Thresholdout 的机制，再深入其数学细节。
+
+\hypertarget{part-2-20-0001-research-connections-x-program-161}{%
+\subsection{7. Research Connections --- X Program \#161}\label{part-2-20-0001-research-connections-x-program-161}}
+
+\hypertarget{part-2-20-0001-evaluator-ux5e94ux5f53ux6210ux4e3aux72ecux7acbux7684ux7814ux7a76ux5bf9ux8c61}{%
+\subsubsection{7.1 Evaluator 应当成为独立的研究对象}\label{part-2-20-0001-evaluator-ux5e94ux5f53ux6210ux4e3aux72ecux7acbux7684ux7814ux7a76ux5bf9ux8c61}}
+
+此前我们主要研究 Agent 如何进行修改。
+
+但经过本阶段的学习，我们发现 Evaluator 本身也具有非常丰富的研究空间。
+
+可以将第 \(k\) 次反馈表示为：
+\[a_k=\mathcal M(D_n,A_k,H_{k-1}),\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(D_n\)：开发阶段使用的评估数据；
+\item
+  \(A_k\)：当前候选 Agent；
+\item
+  \(H_{k-1}\)：此前实验历史；
+\item
+  \(\mathcal M\)：Evaluation Mechanism。
+\end{itemize}
+
+因此，我们不一定需要修改 Agent 本身，也可以通过改变 \(\mathcal M\) 来缓解过拟合。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}@{}}
+\toprule
+Evaluation Mechanism & Feedback & 潜在问题 \\
+\midrule
+\endhead
+Exact Score & 精确得分 & 可能累计释放大量信息 \\
+Rounded Score & 离散化得分 & 可能丢失微小但真实的改进 \\
+Binary Feedback & Accept / Reject & 仍可能累积信息 \\
+Noisy Score & 得分加随机噪声 & 可能增加错误选择 \\
+Thresholdout & 有控制的验证反馈 & 实现与参数设计较复杂 \\
+Fresh Holdout & 使用新的独立样本 & 数据消耗较大 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中有一个相当有意思的矛盾：
+
+我们在 II-C 中已经证明，Evaluation Noise 越大，Agent 越容易错误地选择较差的模型。
+
+但在 II-D 中，我们又发现，适当的 Randomization 可以降低对评估数据的依赖。 因此：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{太少的随机化}可能使 Agent 精确地适应历史评估数据。
+\item
+  \textbf{太多的随机化}可能使 Agent 无法区分真实改进与随机波动。
+\end{itemize}
+
+这构成一个值得实验研究的 Trade-off。
+
+\hypertarget{part-2-20-0001-feedback-utilitygeneralization-trade-off}{%
+\subsubsection{7.2 Feedback Utility--Generalization Trade-off}\label{part-2-20-0001-feedback-utilitygeneralization-trade-off}}
+
+\bookgraphic{0.477}{part-2-20-0001-012-01}{}
+
+Optimization Utility
+
+Adaptive Overfitting Risk
+
+Potential OOS Performance
+
+Research Hypothesis：反馈信息不足可能限制有效改进，而反馈过度详细可能促进过拟合。曲线仅为假设性的机制示意，并非数学定理或真实实验数据。
+
+这个研究方向与 X Program 的最后一项任务直接对应：构建能够在低信噪比金融环境下缓解 RSI Overfitting 的机制。
+
+\hypertarget{part-2-20-0001-candidate-experiment-adaptive-feedback-ablation}{%
+\subsubsection{7.3 Candidate Experiment --- Adaptive Feedback Ablation}\label{part-2-20-0001-candidate-experiment-adaptive-feedback-ablation}}
+
+我们现在可以提出一个相对完整的候选实验。
+
+保持以下条件一致：底层 LLM、初始 Agent、训练数据、评估样本规模、Search Budget 和金融任务。
+
+仅改变 Evaluator 的反馈机制。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Group & Search Method & Feedback \\
+\midrule
+\endhead
+A & Non-adaptive Search & Exact Score \\
+B & Adaptive Search & Exact Score \\
+C & Adaptive Search & Rounded Score \\
+D & Adaptive Search & Binary Feedback \\
+E & Adaptive Search & Noise-added Score \\
+F & Adaptive Search & Reusable Holdout \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 A 与 B 的比较用于研究 Adaptivity 的影响，B 至 F 的比较用于研究不同 Feedback Mechanism 的影响。所有组都应接受同一个不参与优化的独立 OOS Evaluator。
+
+在实际实施时，还需要尽量匹配可搜索的方法空间和计算预算，否则组间差异可能来自搜索能力而非自适应性。
+
+\hypertarget{part-2-20-0001-evaluation-metrics}{%
+\paragraph{Evaluation Metrics}\label{part-2-20-0001-evaluation-metrics}}
+
+沿用 Part I 的记号：
+\[G_k=S_k^{\mathrm{IS}}-S_k^{\mathrm{OOS}}.\]
+
+建议同时记录：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.38}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.58}}@{}}
+\toprule
+Metric & Research Question \\
+\midrule
+\endhead
+Final OOS Score & 最终模型是否真正改善？ \\
+Peak OOS Score & 优化过程能够达到多好的泛化表现？ \\
+Decay Onset & 退化从什么时候开始？ \\
+Peak-to-Final Decay & 峰值之后损失了多少能力？ \\
+Generalization Gap & IS 与 OOS 的分离程度如何？ \\
+Acceptance Rate & 反馈机制是否过度限制了有效修改？ \\
+Query Budget & 获得这些改进消耗了多少评估资源？ \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+注意，Peak OOS Score 本身也存在最大值选择偏差。如果根据它选择最终版本或缓解机制，需要额外的独立数据进行确认。
+
+\textbf{最重要的是不能只以 Generalization Gap 是否缩小来评价 Mitigation 是否成功。} 仍然需要关注绝对 OOS Performance。
+
+这一实验设计目前属于我们提出的候选方案，尚不代表课题组已有的研究框架，也尚未实际运行。
+
+\hypertarget{part-2-20-0001-literature-index}{%
+\subsection{8. Literature Index}\label{part-2-20-0001-literature-index}}
+
+本阶段涉及四篇经过核实的同行评审论文。
+
+\textbf{P0 --- 基础必读}
+
+\textbf{The Reusable Holdout: Preserving Validity in Adaptive Data Analysis}
+
+Cynthia Dwork, Vitaly Feldman, Moritz Hardt, Toniann Pitassi, Omer Reingold, Aaron Roth · Science · 2015
+
+本阶段最重要的论文。优先阅读 Introduction、Thresholdout 的基本思想及 Synthetic Experiment。
+
+\href{https://doi.org/10.1126/science.aaa9375}{DOI: 10.1126/science.aaa9375} \href{https://pubmed.ncbi.nlm.nih.gov/26250683/}{来源 1}
+
+\textbf{P1 --- 直接相关}
+
+\textbf{Generalization in Adaptive Data Analysis and Holdout Reuse}
+
+Cynthia Dwork, Vitaly Feldman, Moritz Hardt, Toniann Pitassi, Omer Reingold, Aaron Roth · NeurIPS 2015
+
+更完整的理论分析，包括 Differential Privacy、Description Length 与 Holdout Reuse。
+
+\href{https://papers.neurips.cc/paper_files/paper/2015/hash/bad5f33780c42f2588878a9d07405083-Abstract.html}{正式会议论文} · \href{https://arxiv.org/abs/1506.02629}{arXiv:1506.02629} \href{https://papers.neurips.cc/paper_files/paper/2015/hash/bad5f33780c42f2588878a9d07405083-Abstract.html}{来源 1}
+
+\textbf{Controlling Bias in Adaptive Data Analysis Using Information Theory}
+
+Daniel Russo, James Zou · AISTATS 2016
+
+从信息论角度量化自适应统计分析中的估计偏差，建立 Selection Bias 与 Mutual Information 的联系。
+
+\href{https://proceedings.mlr.press/v51/russo16.html}{正式会议论文} \href{https://proceedings.mlr.press/v51/russo16.html}{来源 1}
+
+\textbf{P2 --- 进阶理论}
+
+\textbf{Information-theoretic Analysis of Generalization Capability of Learning Algorithms}
+
+Aolin Xu, Maxim Raginsky · NeurIPS 2017
+
+将信息论方法应用于更一般的学习算法，建立模型输出与训练数据之间的互信息及泛化误差上界。
+
+\href{https://papers.nips.cc/paper_files/paper/2017/hash/ad71c82b22f4f65b9398f76d8be4c615-Abstract.html}{正式会议论文} · \href{https://arxiv.org/abs/1705.07809}{arXiv:1705.07809} \href{https://papers.nips.cc/paper_files/paper/2017/hash/ad71c82b22f4f65b9398f76d8be4c615-Abstract.html}{来源 1}
+
+以目前的学习目标，我建议实际通读第一篇，其余三篇暂时作为理论索引。
+
+\hypertarget{part-2-20-0001-ii-d-conclusion-index}{%
+\subsection{9. II-D --- Conclusion Index}\label{part-2-20-0001-ii-d-conclusion-index}}
+
+\hypertarget{part-2-20-0001-ux6838ux5fc3ux89c2ux70b9}{%
+\subsubsection{9.1 核心观点}\label{part-2-20-0001-ux6838ux5fc3ux89c2ux70b9}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.71}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Result & Index \\
+\midrule
+\endhead
+D1 & Adaptive Analysis 的候选假设依赖此前评估反馈 & §1 \\
+D2 & Statistical Query 是经验风险评估的一般化 & §1.2 \\
+D3 & 不直接访问原始数据，也可能发生严重过拟合 & §2 \\
+D4 & Feedback Transcript 可以携带评估数据的信息 & §3 \\
+D5 & 有限反馈预算可以用于建立泛化误差上界 & §4.1 \\
+D6 & Mutual Information 可以刻画期望泛化偏差 & §4.3 \\
+D7 & Multiple Testing Correction 不能自动修复无效 p-values & §5 \\
+D8 & Reusable Holdout 通过控制信息释放维持统计有效性 & §6 \\
+D9 & Differential Privacy 可以成为控制泛化误差的工具 & §6.3 \\
+D10 & Feedback Utility 与 Adaptive Overfitting 可能存在 Trade-off & §7 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-2-20-0001-core-formula-sheet}{%
+\subsubsection{9.2 Core Formula Sheet}\label{part-2-20-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Adaptive Dependency}
+
+\[\boxed{
+D_n\longrightarrow T_K\longrightarrow h_{T_K}
+}\]
+
+\textbf{Result 2 --- Information Budget}
+
+\[\boxed{
+I(D_n;h_{T_K})
+\leq I(D_n;T_K)\leq bK
+}\]
+
+单位为 bit。
+
+\textbf{Result 3 --- Description Length Generalization Bound}
+
+\[\boxed{
+|\widehat R_n(h_{T_K})-R(h_{T_K})|
+\leq
+\sqrt{
+\frac{bK\log 2+\log(2/\alpha)}{2n}
+}
+}\]
+
+在 §4.1 的条件下，以至少 \(1-\alpha\) 的概率成立。
+
+\textbf{Result 4 --- Mutual Information Generalization Bound}
+
+\[\boxed{
+\left|
+\mathbb E[G_n(h_{T_K})]
+\right|
+\leq
+\sqrt{
+\frac{I(D_n;h_{T_K})}{2n}
+}
+}\]
+
+在 §4.3 的条件下成立，互信息单位为 nat。
+
+\textbf{Result 5 --- Sequential Error Budget}
+
+\[\boxed{
+\sum_{k=1}^{\infty}\alpha_k\leq\alpha
+}\]
+
+结合条件有效的统计检验，可以控制整个序贯过程的 FWER。
+
+\hypertarget{part-2-20-0001-consolidation-ii-a-ux81f3-ii-d-ux7684ux7406ux8bbaux8054ux7cfb}{%
+\subsection{10. Consolidation --- II-A 至 II-D 的理论联系}\label{part-2-20-0001-consolidation-ii-a-ux81f3-ii-d-ux7684ux7406ux8bbaux8054ux7cfb}}
+
+到目前为止，我们实际上已经基本完成了整个项目的核心统计学习理论框架。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.42}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.43}}@{}}
+\toprule
+Module & Fundamental Question & Mathematical Tool \\
+\midrule
+\endhead
+II-A & 我们真正希望优化什么？ & Population Risk、ERM \\
+II-B & 有限样本的评估误差有多大？ & Concentration Inequalities \\
+II-C & 选择最优模型为什么产生系统性偏差？ & Order Statistics、Multiple Testing \\
+II-D & 根据反馈产生新模型为什么带来额外风险？ & Adaptive Data Analysis、Information Theory \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Finite-Sample Uncertainty}
+
+有限数据导致评估误差 · II-A / II-B
+
+↓ \textbf{Model Selection}
+
+选择机制产生方向性的乐观偏差 · II-C
+
+↓ \textbf{Adaptive Feedback}
+
+历史评分影响未来模型的构造 · II-D
+
+↓ \textbf{Information Accumulation}
+
+模型可能逐步适应有限评估环境
+
+↓ \textbf{Potential Generalization Decay}
+
+X Program \#161 的核心研究现象
+
+其中最本质的认识是：
+
+\begin{quote}
+RSI 的统计风险不仅来自 Agent 搜索了多少模型，还来自它能够通过反复交互，从评估数据中获取并利用多少信息。
+\end{quote}
+
+这也是为什么传统的模型复杂度分析、单次显著性检验或者简单的 Iteration Count，都不足以完整解释 RSI 的泛化性能。
+
+\hypertarget{part-2-20-0001-next-ii-e-data-leakage-and-distribution-shift}{%
+\subsection{Next --- II-E: Data Leakage and Distribution Shift}\label{part-2-20-0001-next-ii-e-data-leakage-and-distribution-shift}}
+
+II-A --- Risk and Generalization
+
+II-B --- Concentration Inequalities
+
+II-C --- Model Selection Bias \& Multiple Testing
+
+II-D --- Adaptive Overfitting \& Holdout Reuse
+
+II-E --- Data Leakage \& Distribution Shift
+
+II-F --- Time-Series Validation \& Backtesting
+
+此前的 II-A 至 II-D，基本上都是在一个相对理想的统计环境下研究问题，即假设数据来自相同的总体分布，并且具有独立性。
+
+接下来的 II-E 将开始放松这些假设，重点讨论：
+
+\begin{itemize}
+\tightlist
+\item
+  Data Leakage 与 Adaptive Overfitting 的联系与区别；
+\item
+  Covariate Shift；
+\item
+  Label Shift；
+\item
+  Concept Drift；
+\item
+  Distribution Shift 的数学分解；
+\item
+  如何通过 Controlled Experiments 区分不同的退化机制。
+\end{itemize}
+
+之后的 II-F 再正式进入金融时间序列的评估方法。
+
+相较于已经完成的四个模块，II-E 和 II-F 会更偏向 \textbf{Experimental Methodology}，数学证明的密度可以适当降低。

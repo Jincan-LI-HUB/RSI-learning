@@ -1,0 +1,665 @@
+% Archive record 10, line 1.
+\hypertarget{part-1-10-0001-conclusion-concept-index}{%
+\section{Conclusion \& Concept Index}\label{part-1-10-0001-conclusion-concept-index}}
+
+Part I 的主要目标是建立对 \textbf{Research Problem} 的整体认识，而不是系统地推导 Statistical Learning Theory。前面的数学推导主要用于说明某些现象为什么能够发生，暂时没有必要逐一消化。
+
+\textbf{Conclusion \& Concept Index} 汇集核心定义、数学结论、成立条件及研究意义。具体证明见前文。
+
+\hypertarget{part-1-10-0001-part-i-conclusion-concept-index}{%
+\subsection{Part I --- Conclusion \& Concept Index}\label{part-1-10-0001-part-i-conclusion-concept-index}}
+
+\hypertarget{part-1-10-0001-recursive-self-improvement-rsi}{%
+\subsection{1. Recursive Self-Improvement (RSI)}\label{part-1-10-0001-recursive-self-improvement-rsi}}
+
+\hypertarget{part-1-10-0001-ux6838ux5fc3ux6982ux5ff5}{%
+\subsubsection{1.1 核心概念}\label{part-1-10-0001-ux6838ux5fc3ux6982ux5ff5}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.55}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+Concept & 核心含义 & 原文索引 \\
+\midrule
+\endhead
+AI Agent & 由 LLM、Prompt、Memory、Tools、Control Logic 等组成的任务执行系统 & §2.1 \\
+Self-Improvement & 系统根据反馈改进自身的方法或结构 & §2.2 \\
+Recursive Self-Improvement & 改进后的系统继续参与对自身的改进 & §2.2 \\
+Agent Scaffold / Harness & 围绕底层 LLM 构建的程序、工具和控制机制 & §2.1 \\
+Improvement Operator & 根据当前版本及历史反馈产生新版本的机制 & §2.2 \\
+Trajectory & Agent 在多轮改进中形成的版本演化轨迹 & §3.2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+RSI 的核心特征可以概括为：
+
+\begin{quote}
+The optimizer itself becomes an object of optimization.
+\end{quote}
+
+其数学抽象为：
+\[A_{k+1}
+=
+\mathcal I_{A_k}(A_k,F_k,H_k).\]
+
+其中 \(A_k\) 是当前 Agent，\(F_k\) 是实验反馈，\(H_k\) 是历史记录。
+
+\hypertarget{part-1-10-0001-rsi-ux4e0eux5176ux4ed6ux4f18ux5316ux65b9ux6cd5ux7684ux5173ux7cfb}{%
+\subsubsection{1.2 RSI 与其他优化方法的关系}\label{part-1-10-0001-rsi-ux4e0eux5176ux4ed6ux4f18ux5316ux65b9ux6cd5ux7684ux5173ux7cfb}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.31}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.29}}@{}}
+\toprule
+& ML Training & Hyperparameter Tuning & RSI \\
+\midrule
+\endhead
+优化对象 & Parameters & Configurations & Agent / Method \\
+搜索空间 & 参数空间 & 配置空间 & 程序与方法空间 \\
+优化机制 & 通常固定 & 通常固定 & 可能被自身修改 \\
+自适应性 & 存在 & 存在 & 存在，且可能更开放 \\
+自指性 & 通常没有 & 通常没有 & 核心特征 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{重要观点：} RSI 并没有创造一种全新的统计学问题，而是可能通过开放式搜索、自适应反馈及自我修改，放大已有的统计学习问题。
+
+证明与解释索引：§2--4。
+
+\hypertarget{part-1-10-0001-ux6838ux5fc3ux6570ux5b66ux7ed3ux8bba}{%
+\subsection{2. 核心数学结论}\label{part-1-10-0001-ux6838ux5fc3ux6570ux5b66ux7ed3ux8bba}}
+
+\hypertarget{part-1-10-0001-conclusion-1-in-sample-improvement-does-not-imply-out-of-sample-improvement}{%
+\subsubsection{Conclusion 1 --- In-Sample Improvement does not imply Out-of-Sample Improvement}\label{part-1-10-0001-conclusion-1-in-sample-improvement-does-not-imply-out-of-sample-improvement}}
+
+在固定评估环境和允许保留原版本的 Greedy Selection 机制下：
+\[\boxed{
+\widehat J_{\mathrm{IS}}(A_{k+1})
+\geq
+\widehat J_{\mathrm{IS}}(A_k)
+}\]
+
+但是：
+\[\boxed{
+\Delta J_{\mathrm{IS}}>0
+\quad\not\Rightarrow\quad
+\Delta J_{\mathrm{OOS}}>0
+}\]
+
+\textbf{数学性质：} 前者是特定选择规则下的严格结论，后者是不成立的逻辑蕴含。
+
+\textbf{研究意义：} IS Score 的单调增长可能仅仅是优化规则的直接结果，而不是 Agent 真实性能持续提升的证据。
+
+Proof Index：§3.1 --- Generate--Evaluate--Select Loop
+
+\hypertarget{part-1-10-0001-conclusion-2-unbiased-evaluation-does-not-imply-unbiased-model-selection}{%
+\subsubsection{Conclusion 2 --- Unbiased Evaluation does not imply Unbiased Model Selection}\label{part-1-10-0001-conclusion-2-unbiased-evaluation-does-not-imply-unbiased-model-selection}}
+
+对于事先固定且独立于评估数据的模型 \(A\)，在评估样本同分布且期望存在的条件下：
+\[\mathbb E_D[\widehat J_D(A)]
+=
+J(A).\]
+
+但是，当模型本身依赖于评估数据时：
+\[\boxed{
+\mathbb E_D
+\left[
+\widehat J_D(A(D))-J(A(D))
+\right]
+\text{ 不一定为 }0
+}\]
+
+\textbf{数学性质：} 严格的统计学观点。
+
+\textbf{研究意义：} 即使 Evaluator 对每一个事先固定的 Agent 都是无偏的，经过 Evaluator 反复筛选得到的 Agent，其观察得分仍然可能存在系统性偏差。
+
+这里的关键是 \textbf{Data-dependent Model Selection}。
+
+Proof Index：§5.1 --- Population Performance and Empirical Performance
+
+\hypertarget{part-1-10-0001-conclusion-3-model-selection-introduces-optimistic-bias}{%
+\subsubsection{Conclusion 3 --- Model Selection introduces Optimistic Bias}\label{part-1-10-0001-conclusion-3-model-selection-introduces-optimistic-bias}}
+
+假设所有候选模型的真实性能相同：
+\[J(A_1)=\cdots=J(A_m)=\mu.\]
+
+观察得分为：
+\[\widehat J_D(A_j)=\mu+\varepsilon_j,
+\qquad
+\mathbb E[\varepsilon_j]=0.\]
+
+选择得分最高的模型后：
+\[\boxed{
+\mathbb E[\widehat J_D(A_{j^*})]
+\geq\mu
+}\]
+
+但其真实性能仍然为：
+\[J(A_{j^*})=\mu.\]
+
+\textbf{数学性质：} 严格结论，利用 Maximum 的凸性与 Jensen's Inequality 即可证明，不要求各评估误差相互独立。
+
+\textbf{研究意义：} 搜索并选择最优模型，本身就可能产生虚假的性能提升。
+
+相关概念：Selection Bias、Winner's Curse、Multiple Comparisons。
+
+Proof Index：§5.2 --- Selection Bias
+
+\hypertarget{part-1-10-0001-conclusion-4-selection-bias-increases-with-search-budget-and-evaluation-noise}{%
+\subsubsection{Conclusion 4 --- Selection Bias increases with Search Budget and Evaluation Noise}\label{part-1-10-0001-conclusion-4-selection-bias-increases-with-search-budget-and-evaluation-noise}}
+
+在独立 Gaussian Evaluation Error 的假设下：
+\[\varepsilon_j
+\overset{\mathrm{i.i.d.}}{\sim}
+\mathcal N(0,\sigma^2),\]
+
+当候选模型数量 \(m\) 足够大时：
+\[\boxed{
+\mathbb E[\max_j\varepsilon_j]
+\sim
+\sigma\sqrt{2\log m}
+}\]
+
+进一步，在独立样本均值等适当条件下：
+\[\sigma\propto\frac1{\sqrt n}.\]
+
+因此 Selection Bias 具有如下尺度关系：
+\[\boxed{
+\text{Selection Bias}
+=
+O\left(\sqrt{\frac{\log m}{n}}\right)
+}\]
+
+\bookgraphic{0.615}{part-1-10-0001-004-01}{}
+
+n = 100
+
+n = 500
+
+n = 2,000
+
+基于 Gaussian Maximum 渐近近似的理论示意，假设单样本误差方差为 1。
+
+\textbf{数学性质：} 有条件的渐近结论，不是适用于所有 RSI 系统的普遍定理。
+
+\textbf{研究意义：} Agent 搜索能力的增强不一定总是有益的。搜索预算越大、评估数据越少、评估噪声越大，模型选择的可靠性就越值得关注。
+
+Proof Index：§5.2 --- Gaussian Maximum and Search Budget
+
+\hypertarget{part-1-10-0001-conclusion-5-score-inflation-ux4e0e-performance-decay-ux662fux4e0dux540cux73b0ux8c61}{%
+\subsubsection{Conclusion 5 --- Score Inflation 与 Performance Decay 是不同现象}\label{part-1-10-0001-conclusion-5-score-inflation-ux4e0e-performance-decay-ux662fux4e0dux540cux73b0ux8c61}}
+
+\textbf{Score Inflation}
+
+\bookgraphic{0.445}{part-1-10-0001-006-01}{}
+
+\[\Delta J_{\mathrm{IS}}>0\]
+
+\[\Delta J_{\mathrm{OOS}}=0\]
+
+观察表现增长，真实性能不变。
+
+\textbf{Performance Decay}
+
+\bookgraphic{0.445}{part-1-10-0001-006-02}{}
+
+\[\Delta J_{\mathrm{IS}}>0\]
+
+\[\Delta J_{\mathrm{OOS}}<0\]
+
+观察表现增长，样本外性能下降。
+
+IS Performance
+
+Population / OOS Performance
+
+\textbf{重要逻辑关系：}
+
+\[\text{Selection Bias}
+\not\Rightarrow
+\text{Performance Decay}.\]
+
+Selection Bias 可以解释观察性能的高估，却不能单独证明真实性能下降。
+
+而 X Program \#161 真正希望研究的是第二种现象及其产生机制。
+
+Explanation Index：§5.3
+
+\hypertarget{part-1-10-0001-conclusion-6-adding-noise-features-can-strictly-damage-generalization}{%
+\subsubsection{Conclusion 6 --- Adding Noise Features can strictly damage Generalization}\label{part-1-10-0001-conclusion-6-adding-noise-features-can-strictly-damage-generalization}}
+
+通过前面构建的 Linear Regression Example：
+\[Y=\beta X_1+\varepsilon,\]
+
+其中 \(X_2\) 是独立的无效特征。 设：
+\[f_0(X)=\beta X_1,\]
+
+\[f_1(X)=\beta X_1+\hat bX_2.\]
+
+在此前设定的模型假设下，我们严格证明了：
+\[\boxed{
+\begin{aligned}
+\widehat R_D(f_1)
+&\leq\widehat R_D(f_0),\\
+R(f_1)&\geq R(f_0).
+\end{aligned}
+}\]
+
+尤其是：
+\[R(f_1)-R(f_0)=\hat b^2.\]
+
+\textbf{数学性质：} 严格结论。在此前连续分布及非退化假设下，两个不等式几乎必然严格成立。
+
+\textbf{研究意义：} 即使不存在金融市场变化、复杂模型或 LLM，单纯增加无效特征也足以造成真实的泛化性能下降。
+
+这个例子展示的是经典 Empirical Risk Overfitting，而非单独证明 Adaptive Overfitting。
+
+Proof Index：§5.4 --- A Rigorous Regression Example
+
+\hypertarget{part-1-10-0001-conclusion-7-repeated-adaptive-evaluation-compromises-holdout-independence}{%
+\subsubsection{Conclusion 7 --- Repeated Adaptive Evaluation compromises Holdout Independence}\label{part-1-10-0001-conclusion-7-repeated-adaptive-evaluation-compromises-holdout-independence}}
+
+RSI 中存在如下信息传递关系：
+\[D
+\longrightarrow H_k
+\longrightarrow A_{k+1}.\]
+
+其中 \(D\) 为反复使用的评估数据集。
+
+\textbf{Evaluation Dataset \(D\)}
+
+↓
+
+\textbf{Evaluation Feedback}
+
+Score、Error Analysis、Failure Cases
+
+↓
+
+\textbf{Experimental History \(H_k\)}
+
+↓
+
+\textbf{Next Agent \(A_{k+1}\)}
+
+间接依赖于 Evaluation Dataset
+
+因此，Agent 即使没有直接读取评估数据的标签，也可能通过反复获取反馈逐渐适应该数据集。
+
+\textbf{研究意义：} Validation Set 一旦反复参与模型改进，就不能继续被无条件地视为独立评估集。
+
+这属于 Adaptive Data Analysis 的核心问题。
+
+需要注意，自适应依赖会使经典泛化保证不再自动成立，但并不意味着所有自适应分析都必然过拟合。
+
+Explanation Index：§6 --- Adaptive Overfitting
+
+\hypertarget{part-1-10-0001-conclusion-8-statistical-overfitting-ux4e0e-distribution-shift-ux5fc5ux987bux533aux5206}{%
+\subsubsection{Conclusion 8 --- Statistical Overfitting 与 Distribution Shift 必须区分}\label{part-1-10-0001-conclusion-8-statistical-overfitting-ux4e0e-distribution-shift-ux5fc5ux987bux533aux5206}}
+
+设 \(P\) 为开发阶段的数据分布，\(Q\) 为目标环境的数据分布。
+
+则：
+\[\boxed{
+\begin{aligned}
+\widehat J_D(A)-J_Q(A)
+={}&
+\underbrace{
+\widehat J_D(A)-J_P(A)
+}_{\text{Statistical Generalization Gap}}\\
+&+
+\underbrace{
+J_P(A)-J_Q(A)
+}_{\text{Distribution Shift Gap}}
+\end{aligned}
+}\]
+
+\textbf{数学性质：} 严格的代数恒等式。
+
+\textbf{研究意义：} 观察到金融模型的 OOS Performance 下降，并不足以说明下降来自 RSI Overfitting。
+
+我们需要区分模型是否过度适应有限样本，以及市场的数据生成机制是否发生变化。
+
+两个差值均可能为正或负，且该分解本身并不能保证我们能够从实验数据中分别识别它们。
+
+Proof Index：§7.2 --- Non-stationarity and Distribution Shift
+
+\hypertarget{part-1-10-0001-ux4e3aux4ec0ux4e48-finance-ux5c24ux5176ux5bb9ux6613ux51faux73b0ux8fd9ux4e9bux95eeux9898}{%
+\subsection{3. 为什么 Finance 尤其容易出现这些问题？}\label{part-1-10-0001-ux4e3aux4ec0ux4e48-finance-ux5c24ux5176ux5bb9ux6613ux51faux73b0ux8fd9ux4e9bux95eeux9898}}
+
+这一部分目前只需要掌握各个因素与研究问题的逻辑联系。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+Financial Property & Consequence \\
+\midrule
+\endhead
+Low Signal-to-Noise Ratio & 难以区分真实预测信号和偶然相关性 \\
+Non-stationarity & 历史规律可能在未来失效 \\
+Serial Dependence & 常规独立样本统计推断可能不再有效 \\
+Volatility Clustering & 不同时间段的评估不确定性不同 \\
+Heavy-tailed Returns & 极端值可能显著影响评价指标 \\
+Backtest Overfitting & 大规模策略搜索可能产生虚假历史优势 \\
+Look-Ahead Bias & 使用决策时尚不可获得的信息 \\
+Transaction Costs & 微小的历史性能提升可能没有实际价值 \\
+Benchmark Contamination & LLM 可能已经接触过部分历史评估信息 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中最重要的三个因素是：
+\[\boxed{
+\begin{aligned}
+&\text{Low SNR}\\
+&\text{Adaptive Model Selection}\\
+&\text{Distribution Shift}
+\end{aligned}
+}\]
+
+前两个因素可能共同加剧过拟合；第三个因素则可能独立造成性能退化，并使其原因更加难以识别。
+
+Explanation Index：§7 --- Financial AI
+
+\hypertarget{part-1-10-0001-x-program-161-research-methodology}{%
+\subsection{4. X Program \#161 --- Research Methodology}\label{part-1-10-0001-x-program-161-research-methodology}}
+
+这部分是 Part I 中与实际科研任务联系最紧密的内容。
+
+\hypertarget{part-1-10-0001-trajectory-analysis}{%
+\subsubsection{4.1 Trajectory Analysis}\label{part-1-10-0001-trajectory-analysis}}
+
+对于每一轮 Agent，记录：
+\[\mathcal T=
+\left\{
+(A_k,S_k^{\mathrm{IS}},S_k^{\mathrm{OOS}},r_k)
+\right\}_{k=0}^{K}.\]
+
+计算经验 Generalization Gap：
+\[\boxed{
+G_k=S_k^{\mathrm{IS}}-S_k^{\mathrm{OOS}}
+}\]
+
+同时需要区分 Chronological Trajectory、Incumbent Trajectory 与 Lineage。
+
+Index：§3.2、§8.1
+
+\hypertarget{part-1-10-0001-decay-detection}{%
+\subsubsection{4.2 Decay Detection}\label{part-1-10-0001-decay-detection}}
+
+核心任务：识别 OOS Performance 从改善转向退化的位置。
+
+\bookgraphic{0.786}{part-1-10-0001-015-01}{}
+
+假想的 RSI Performance Trajectory。
+
+候选数学工具：Segmented Regression。
+
+\[S_k^{\mathrm{OOS}}
+=
+\alpha+\beta k+\gamma(k-\tau)_+
++\eta_k.\]
+
+若：
+\[\beta>0,
+\qquad
+\beta+\gamma<0,\]
+
+则该模型描述了先改善、后退化的趋势。
+
+需要区分 Observed Peak、Change Point 与 Sustained Decay，而不能直接将观察最大值视为真实变点。
+
+Index：§8.2
+
+\hypertarget{part-1-10-0001-revision-classification}{%
+\subsubsection{4.3 Revision Classification}\label{part-1-10-0001-revision-classification}}
+
+对每一次修改计算：
+\[\begin{aligned}
+\Delta_k^{\mathrm{IS}}
+&=S_k^{\mathrm{IS}}-S_{k-1}^{\mathrm{IS}},\\
+\Delta_k^{\mathrm{OOS}}
+&=S_k^{\mathrm{OOS}}-S_{k-1}^{\mathrm{OOS}}.
+\end{aligned}\]
+
+以及：
+\[\boxed{
+\Delta G_k
+=
+\Delta_k^{\mathrm{IS}}
+-
+\Delta_k^{\mathrm{OOS}}
+}\]
+
+\bookgraphic{0.444}{part-1-10-0001-018-01}{重点分析提高 IS 表现却降低 OOS 表现的 Revision。}
+
+候选 Revision Categories：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.51}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.45}}@{}}
+\toprule
+Category & 修改对象 \\
+\midrule
+\endhead
+Feature Engineering & 特征构造 \\
+Model Complexity & 模型结构与复杂度 \\
+Search Expansion & 搜索范围及预算 \\
+Memory Modification & 历史反馈的利用方式 \\
+Evaluation Modification & 评分和选择机制 \\
+Data Processing & 数据处理流程 \\
+Robustness Mechanism & 正则化与稳健性机制 \\
+Infrastructure & 执行效率及工具接口 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{研究原则：} 分类统计只能发现关联，进一步的因果解释需要 Rollback Experiment、Ablation Study 等受控实验。
+
+Index：§8.3
+
+\hypertarget{part-1-10-0001-overfitting-mitigation}{%
+\subsubsection{4.4 Overfitting Mitigation}\label{part-1-10-0001-overfitting-mitigation}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.46}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.50}}@{}}
+\toprule
+Mechanism & 基本思想 \\
+\midrule
+\endhead
+Regularization & 限制不必要的复杂度 \\
+Early Stopping & 在后期退化前停止优化 \\
+Independent Validation & 减少对固定评估集的适应 \\
+Rolling Validation & 检验不同时间窗口下的稳健性 \\
+Search Budget Control & 减少大规模搜索的选择偏差 \\
+Statistical Acceptance Test & 不接受仅由随机波动产生的提升 \\
+Revision Rollback & 撤销有害的修改 \\
+Robust Objective & 将跨环境稳定性纳入优化目标 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+例如，将传统接受条件：
+\[\Delta_k^{\mathrm{IS}}>0\]
+
+修改为：
+\[\Delta_k^{\mathrm{IS}}
+>
+c\cdot
+\widehat{\operatorname{SE}}
+(\Delta_k^{\mathrm{IS}}).\]
+
+不过，反复执行统计检验本身也可能引入 Multiple Testing 和 Adaptive Overfitting，因此这并不是具有无条件统计保证的解决方案。
+
+Index：§8.4
+
+以上 Detection、Taxonomy 和 Mitigation 方法均为我们目前提出的候选研究方案，不代表课题组已经采用这些方法。
+
+\hypertarget{part-1-10-0001-literature-index}{%
+\subsection{5. Literature Index}\label{part-1-10-0001-literature-index}}
+
+暂时不展开论文内容，仅保留文献与研究问题之间的映射关系。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}@{}}
+\toprule
+Paper & Year & Research Connection \\
+\midrule
+\endhead
+\href{https://www.jmlr.org/papers/v11/cawley10a.html}{On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation} & 2010 & Model Selection Bias \\
+\href{https://doi.org/10.1126/science.aaa9375}{The Reusable Holdout} & 2015 & Adaptive Data Analysis \\
+The Probability of Backtest Overfitting & 2017 & Financial Evaluation \\
+\href{https://arxiv.org/abs/2310.02304}{Self-Taught Optimizer (STOP)} & 2024 & RSI 的数学与程序结构 \\
+\href{https://arxiv.org/abs/2505.22954}{Darwin Gödel Machine} & 2025/26 & Agent Evolution、Archive \\
+\href{https://arxiv.org/abs/2505.15155}{R\&D-Agent-Quant} & 2025 & Automated Financial Research \\
+\href{https://arxiv.org/abs/2609.26457}{Recursive self-improvement of AI research agents} & 2026 & RSI 与跨任务泛化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+完整作者信息、出版状态和论文介绍索引至 §9。这里沿用前面的文献清单，未进行新一轮文献核验。
+
+\hypertarget{part-1-10-0001-part-i-knowledge-checklist}{%
+\subsection{6. Part I --- Knowledge Checklist}\label{part-1-10-0001-part-i-knowledge-checklist}}
+
+我们暂时不要求能够独立复现所有数学推导，只要求能够理解并解释以下结论。
+
+\textbf{Part I 掌握程度}
+
+\begin{itemize}
+\tightlist
+\item
+  RSI 的定义及其与传统优化方法的区别
+\end{itemize}
+
+§2--4
+
+\begin{itemize}
+\tightlist
+\item
+  IS Performance 增长不保证 OOS Performance 增长
+\end{itemize}
+
+§3.1
+
+\begin{itemize}
+\tightlist
+\item
+  固定模型的无偏评估不保证模型选择的无偏性
+\end{itemize}
+
+§5.1
+
+\begin{itemize}
+\tightlist
+\item
+  Selection Bias 及其与 Search Budget 的关系
+\end{itemize}
+
+§5.2
+
+\begin{itemize}
+\tightlist
+\item
+  Score Inflation 与 Performance Decay 的区别
+\end{itemize}
+
+§5.3
+
+\begin{itemize}
+\tightlist
+\item
+  无效特征如何造成真实性能退化
+\end{itemize}
+
+§5.4
+
+\begin{itemize}
+\tightlist
+\item
+  Adaptive Feedback 如何破坏 Holdout Independence
+\end{itemize}
+
+§6
+
+\begin{itemize}
+\tightlist
+\item
+  Statistical Overfitting 与 Distribution Shift 的区别
+\end{itemize}
+
+§7
+
+\begin{itemize}
+\tightlist
+\item
+  Trajectory Analysis 与 Decay Detection
+\end{itemize}
+
+§8.1--2
+
+\begin{itemize}
+\tightlist
+\item
+  Revision Classification 与 Overfitting Mitigation
+\end{itemize}
+
+§8.3--4
+
+\hypertarget{part-1-10-0001-ux6700ux7ec8ux7684-conceptual-framework}{%
+\subsection{7. 最终的 Conceptual Framework}\label{part-1-10-0001-ux6700ux7ec8ux7684-conceptual-framework}}
+
+如果我们将整个 Part I 压缩到只剩一条主线，那就是：
+
+\textbf{Recursive Self-Improvement}
+
+系统不断改进自身方法
+
+↓ \textbf{Repeated \& Adaptive Model Selection}
+
+产生大量候选版本并反复获取评估反馈
+
+↓ \textbf{Selection Bias \& Adaptive Overfitting}
+
+可能将随机规律误认为有效信号
+
+↓ \textbf{Generalization Gap Expansion}
+
+开发集与样本外表现逐渐分离
+
+↓ \textbf{Potential Out-of-Sample Performance Decay}
+
+样本外性能可能真正下降
+
+\textbf{Detection}
+
+何时退化
+
+\textbf{Diagnosis}
+
+为何退化
+
+\textbf{Mitigation}
+
+如何缓解
+
+其中，金融环境中的 Low SNR、Non-stationarity 和时间依赖性进一步增加了研究难度。
+
+后面进入 Part II 时，我建议调整一下教学颗粒度：\textbf{每次只推进一个相对独立的理论模块，采用 Definition → Key Results → Mathematical Principles → Research Implications 的结构。} 每个模块结束后单独整理 Conclusion Index，避免再次出现大量概念与证明同时堆积的情况。
+
+Part I 到这里就可以暂时结束，不必为了完全掌握每一个证明而阻塞后续学习。

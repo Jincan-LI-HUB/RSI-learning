@@ -1,0 +1,192 @@
+{
+  "chapter": {
+    "part": 1,
+    "message": 10,
+    "first_line": 1,
+    "last_line": 689,
+    "chapter": "part-1-10-0001",
+    "chosen_title": "Conclusion & Concept Index",
+    "tables": 6,
+    "source_sha256": "aef49def766fe697ae868c6fffd5030c07b8be734c56f44b3263aa2c19f2b6f8",
+    "source_math": 39,
+    "matched_math": 39
+  },
+  "components": [
+    {
+      "part": 1,
+      "message": 10,
+      "line": 78,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 110,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 151,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 191,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 218,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 224,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 262,
+      "component": "row",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 279,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 327,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 343,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 371,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 405,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 439,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 468,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 474,
+      "component": "Chart",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 476,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 499,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 526,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 559,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 592,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 620,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 1,
+      "message": 10,
+      "line": 647,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

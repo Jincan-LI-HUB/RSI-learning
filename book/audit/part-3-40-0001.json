@@ -1,0 +1,220 @@
+{
+  "chapter": {
+    "part": 3,
+    "message": 40,
+    "first_line": 1,
+    "last_line": 1470,
+    "chapter": "part-3-40-0001",
+    "chosen_title": "III-D — Agent Evaluation, Search & Selection",
+    "tables": 15,
+    "source_sha256": "5afee8803d3250dfc3bd60d1c866fe53ce51cc8cebc58365690e2ba86d01908c",
+    "source_math": 88,
+    "matched_math": 88
+  },
+  "components": [
+    {
+      "part": 3,
+      "message": 40,
+      "line": 24,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 25,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 26,
+      "component": "icon",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 94,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 203,
+      "component": "card",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 273,
+      "component": "box",
+      "state": "converted",
+      "graphics": 1
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 320,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 330,
+      "component": "box",
+      "state": "converted",
+      "graphics": 4
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 364,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 392,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 471,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 558,
+      "component": "card",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 702,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 857,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 948,
+      "component": "inline",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1024,
+      "component": "card",
+      "state": "converted",
+      "graphics": 2,
+      "print_states": 2
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1105,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1123,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1244,
+      "component": "grid",
+      "state": "converted",
+      "graphics": 2
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1270,
+      "component": "row",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1274,
+      "component": "caption",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1292,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1405,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1446,
+      "component": "box",
+      "state": "converted",
+      "graphics": 0
+    },
+    {
+      "part": 3,
+      "message": 40,
+      "line": 1470,
+      "component": "inline",
+      "unresolved_citations": 1,
+      "state": "converted",
+      "graphics": 0
+    }
+  ]
+}

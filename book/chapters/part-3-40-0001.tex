@@ -1,0 +1,1364 @@
+% Archive record 40, line 1.
+\hypertarget{part-3-40-0001-iii-d-agent-evaluation-search-selection}{%
+\section{III-D --- Agent Evaluation, Search \& Selection}\label{part-3-40-0001-iii-d-agent-evaluation-search-selection}}
+
+上一阶段 III-C，我们已经理解了 RSI 最核心的递归结构：
+\[\mathcal I_{k+1}
+=
+\mathcal I_k
+(\widehat J_D,\mathcal I_k,\mathcal L).\]
+
+现在，我们将从 Algorithm Design 的角度进一步研究这一过程。
+
+假设 Agent 已经能够修改自身代码，那么接下来真正决定 RSI 演化方向的，就是三个机制：
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Generation：} 如何产生候选版本？
+\item
+  \textbf{Evaluation：} 如何判断候选版本的质量？
+\item
+  \textbf{Selection：} 哪些版本能够被保留，并参与下一轮改进？
+\end{itemize}
+
+这三个机制共同决定了 Agent 最终是在积累真实能力，还是在不断强化对历史数据的适应。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.60}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}@{}}
+\toprule
+Section & Topic & Progress \\
+\midrule
+\endhead
+III-A & Agent Architecture \& Harness & \\
+III-B & Tools, Memory, Planning \& Reflection & \\
+III-C & Self-Modification \& Recursive Optimization & \\
+\textbf{III-D} & \textbf{Evaluation, Search \& Selection} & 当前 \\
+III-E & Automated Research Agents & 待学习 \\
+III-F & Failure Modes \& Instrumentation & 待学习 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+本阶段会涉及 Greedy Search、Beam Search、Evolutionary Algorithms、Monte Carlo Tree Search、Multi-objective Optimization 和 Goodhart's Law。
+
+其中，搜索算法本身并不难。真正值得深入研究的是：\textbf{当 Evaluator 存在统计噪声时，这些原本合理的搜索算法会产生什么样的演化行为？}
+
+\hypertarget{part-3-40-0001-rsi-as-a-search-problem}{%
+\subsection{1. RSI as a Search Problem}\label{part-3-40-0001-rsi-as-a-search-problem}}
+
+\hypertarget{part-3-40-0001-search-space}{%
+\subsubsection{1.1 Search Space}\label{part-3-40-0001-search-space}}
+
+沿用此前的 Agent Representation：
+\[A_k=(\mathcal L,P_k,M_k,T_k,C_k).\]
+
+定义所有允许存在的 Agent 版本构成的空间：
+\[\mathcal A=\{A:A\text{ is an admissible agent}\}.\]
+
+理论上，我们希望找到：
+\[A^*=\arg\max_{A\in\mathcal A}J(A).\]
+
+但实际上，Population Performance \(J(A)\) 不可直接观测，而且 \(\mathcal A\) 可能极其庞大，甚至没有预先确定的有限表示。
+
+因此，实际的 RSI 是在有限计算预算下，通过不断生成和评价候选版本，寻找一个具有较高经验得分的 Agent。
+
+\hypertarget{part-3-40-0001-three-operators}{%
+\subsubsection{1.2 Three Operators}\label{part-3-40-0001-three-operators}}
+
+我们可以将每一轮 RSI 抽象为三个 Operator。
+
+\textbf{Generation Operator}
+
+\[\mathcal C_k=\mathcal G_{A_k}(A_k,H_k).\]
+
+产生候选集合 \(\mathcal C_k\)。
+
+\textbf{Evaluation Operator}
+
+\[\widehat J_{\mathrm{IS}}(A),
+\qquad A\in\mathcal C_k.\]
+
+根据开发环境评价每个候选版本。
+
+\textbf{Selection Operator}
+
+\[A_{k+1}
+=
+\mathcal S(A_k,\mathcal C_k,H_k).\]
+
+决定下一轮使用哪个版本。
+
+\bookgraphic{0.382}{part-3-40-0001-004-01}{Generate--Evaluate--Select Loop。图中分数为假想的 IS 得分；Selection 不一定选择分数最高者，具体取决于搜索策略。}
+
+在严格意义的 RSI 中，Generation Operator 和 Selection Operator 的内部实现也可能随 Agent 的版本变化。
+
+但用于科研审计的外部 Evaluator 应保持独立和可比。
+
+\hypertarget{part-3-40-0001-search-strategiesux641cux7d22ux7b56ux7565}{%
+\subsection{2. Search Strategies（搜索策略）}\label{part-3-40-0001-search-strategiesux641cux7d22ux7b56ux7565}}
+
+RSI 可以被看作一个不断生成新节点的 Search Tree。
+
+其中，每个节点代表一个 Agent Version，每条边代表一次 Revision。不同的搜索算法决定我们保留哪些节点、从哪些节点继续生成后代，以及如何分配有限的计算资源。
+
+\hypertarget{part-3-40-0001-greedy-search-hill-climbing}{%
+\subsubsection{2.1 Greedy Search / Hill Climbing}\label{part-3-40-0001-greedy-search-hill-climbing}}
+
+最简单的策略是：每一轮生成若干候选版本，并保留其中得分最高的版本。
+
+\[\boxed{
+A_{k+1}
+=
+\arg\max_{A\in\mathcal C_k\cup\{A_k\}}
+\widehat J_{\mathrm{IS}}(A)
+}\]
+
+这里将当前版本 \(A_k\) 也纳入候选集合，意味着如果所有修改都没有提高得分，我们就保留原来的版本。
+
+在 Evaluator 固定、得分确定且可比较的条件下：
+\[\widehat J_{\mathrm{IS}}(A_{k+1})
+\geq
+\widehat J_{\mathrm{IS}}(A_k).\]
+
+因此，IS Performance 的单调增长甚至不需要 Agent 具备真正的自我改进能力，它可以仅仅是 Selection Rule 的数学结果。
+
+\hypertarget{part-3-40-0001-advantages-and-limitations}{%
+\paragraph{Advantages and Limitations}\label{part-3-40-0001-advantages-and-limitations}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.52}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.44}}@{}}
+\toprule
+Advantages & Limitations \\
+\midrule
+\endhead
+实现简单 & 容易陷入 Local Optimum \\
+计算成本相对较低 & 容易丢失方法多样性 \\
+版本轨迹清晰 & 对 Evaluation Noise 敏感 \\
+容易进行 Revision Attribution & 可能错过长期更优路径 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+对于 X Program \#161，Greedy Search 是非常合适的 Baseline，因为它的行为相对容易分析。
+
+\hypertarget{part-3-40-0001-beam-searchux675fux641cux7d22}{%
+\subsubsection{2.2 Beam Search（束搜索）}\label{part-3-40-0001-beam-searchux675fux641cux7d22}}
+
+Greedy Search 每一轮只保留一个版本，而 Beam Search 同时保留得分最高的 \(B\) 个版本。
+
+定义：
+\[\mathcal B_k
+=
+\{A_k^{(1)},\ldots,A_k^{(B)}\},\]
+
+其中 \(B\) 称为 Beam Width。
+
+对于每一个保留的 Agent，分别生成候选版本：
+\[\mathcal C_k
+=
+\bigcup_{A\in\mathcal B_k}
+\mathcal G_A(A,H_k).\]
+
+随后执行：
+\[\boxed{
+\mathcal B_{k+1}
+=
+\operatorname{TopB}_{A\in\mathcal C_k}
+\widehat J_{\mathrm{IS}}(A)
+}\]
+
+这里的 \(\operatorname{TopB}\) 表示选择得分最高的 \(B\) 个候选版本。
+
+\textbf{Greedy Search vs. Beam Search}
+
+假设每个节点的分数都是确定性的评价结果，暂时排除统计噪声。
+
+Greedy (B=1) / Beam (B=2) / Beam (B=3)
+
+\bookgraphic{0.411}{part-3-40-0001-005-01}{}
+
+Best final score
+
+\textbf{0.92}
+
+Candidate evaluations
+
+\textbf{7}
+
+假想搜索树：Greedy Search 第一轮放弃了 0.69 的候选版本，因而无法探索其得分为 0.92 的后代。
+
+Beam Search 解决了部分 Myopic Optimization 问题，但引入了新的代价。
+
+假设每个 Agent 每轮产生 \(m\) 个候选，迭代 \(K\) 轮，则在不重复评价父节点的简化条件下：
+\[N_{\mathrm{Greedy}}=Km,\]
+
+\[N_{\mathrm{Beam}}=m+(K-1)Bm.\]
+
+因此，Beam Width 增大不仅意味着保留更多演化路径，也意味着在相同迭代轮数下可能执行更多评估。
+
+从 Statistical Learning 的角度来看：
+
+\textbf{Beam Search 可能减少搜索路径上的短视问题，却同时增加 Model Selection Overfitting 的风险。}
+
+所以，在比较 Greedy Search 和 Beam Search 时，不能仅仅控制迭代轮数，还应该考虑 Total Evaluation Budget。
+
+\hypertarget{part-3-40-0001-evolutionary-algorithmsux8fdbux5316ux7b97ux6cd5}{%
+\subsubsection{2.3 Evolutionary Algorithms（进化算法）}\label{part-3-40-0001-evolutionary-algorithmsux8fdbux5316ux7b97ux6cd5}}
+
+Evolutionary Algorithms 与 RSI 具有非常自然的联系。
+
+我们将每个 Agent 视为一个 Individual，将多个 Agent 组成的集合视为 Population。
+
+其基本操作包括：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.33}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}@{}}
+\toprule
+Operator & Biological Analogy & RSI Implementation \\
+\midrule
+\endhead
+Mutation & 基因变异 & 修改 Agent 代码或 Prompt \\
+Crossover & 基因重组 & 合并两个 Agent 的有效组件 \\
+Fitness Evaluation & 适应度评价 & 运行 Evaluator \\
+Selection & 自然选择 & 选择下一代 Parent \\
+Elitism & 优秀个体保留 & 保留历史最优版本 \\
+Diversity Preservation & 保持种群多样性 & 保留不同类型的研究方法 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\bookgraphic{0.435}{part-3-40-0001-006-01}{Agent 的程序结构充当可变异的表示，LLM 可以充当具有语义理解能力的 Mutation Operator。}
+
+与传统 Genetic Algorithm 相比，LLM-based Evolution 有一个值得关注的特点。
+
+传统 Mutation 可能只是随机改变某些参数，而 LLM 可以根据代码、失败案例和历史实验记录，提出具有语义针对性的修改。
+
+例如：
+
+\begin{verbatim}
+Traditional Mutation:
+    regularization_strength: 0.10 → 0.15
+
+LLM-guided Mutation:
+    Replace exhaustive feature search with
+    a two-stage screening and validation procedure.
+\end{verbatim}
+
+后者不仅能够改变参数，还能够改变 Algorithmic Structure。
+
+但这种搜索的针对性具有双重作用：
+
+\begin{itemize}
+\tightlist
+\item
+  如果反馈反映了真实规律，LLM 可以更高效地发现有效修改。
+\item
+  如果反馈主要反映有限样本的偶然规律，LLM 也可能更高效地利用这些噪声。
+\end{itemize}
+
+这就是 \textbf{Adaptive Mutation} 的统计风险。
+
+Darwin Gödel Machine 采用了与进化搜索相关的 Archive-based Exploration：从已经保存的 Agent 中选择 Parent，再生成新的自我修改版本，而不是仅沿着当前最优版本继续演化。我们将在 III-E 中详细研究这一系统。
+
+\href{https://arxiv.org/abs/2505.22954}{来源 1} \href{https://openreview.net/pdf?id=pUpzQZTvGY}{来源 2}
+
+\hypertarget{part-3-40-0001-monte-carlo-tree-search-mcts}{%
+\subsubsection{2.4 Monte Carlo Tree Search (MCTS)}\label{part-3-40-0001-monte-carlo-tree-search-mcts}}
+
+MCTS 是另一种值得了解的搜索方法。它不只关注当前节点的分数，还试图通过后续模拟估计该节点未来的潜力。
+
+其基本流程包含四个阶段。
+
+\textbf{1. Selection}
+
+\bookgraphic{0.384}{part-3-40-0001-008-01}{选择值得进一步探索的节点}
+
+\textbf{2. Expansion}
+
+\bookgraphic{0.384}{part-3-40-0001-008-02}{生成新的候选子节点}
+
+\textbf{3. Simulation}
+
+\bookgraphic{0.384}{part-3-40-0001-008-03}{模拟未来的演化过程}
+
+\textbf{4. Backpropagation}
+
+\bookgraphic{0.384}{part-3-40-0001-008-04}{更新祖先节点的价值估计}
+
+\hypertarget{part-3-40-0001-upper-confidence-bound-applied-to-trees-uct}{%
+\paragraph{Upper Confidence Bound applied to Trees (UCT)}\label{part-3-40-0001-upper-confidence-bound-applied-to-trees-uct}}
+
+经典 MCTS 中的一种节点选择规则是 UCT，其思想由 Kocsis 和 Szepesvári 在 2006 年提出。
+
+\href{https://aima.cs.berkeley.edu/~russell/classes/cs294/s11/readings/Kocsis\%2BSzepesvari\%3A2006.pdf}{来源 1} \href{https://cris.technion.ac.il/en/publications/bandit-based-monte-carlo-planning/}{来源 2}
+
+定义：
+
+\begin{itemize}
+\tightlist
+\item
+  \(\bar Q(v)\)：节点 \(v\) 根据后续模拟得到的平均收益；
+\item
+  \(N(v)\)：节点 \(v\) 被访问的次数；
+\item
+  \(N(p(v))\)：其父节点被访问的次数；
+\item
+  \(c_{\mathrm{UCT}}\)：控制 Exploration 强度的系数。
+\end{itemize}
+
+一种常见形式为：
+\[\boxed{
+\operatorname{UCT}(v)
+=
+\underbrace{\bar Q(v)}_{\text{Exploitation}}
++
+\underbrace{
+c_{\mathrm{UCT}}
+\sqrt{
+\frac{\log N(p(v))}{N(v)}
+}
+}_{\text{Exploration}}
+}\]
+
+对于尚未访问的节点，通常需要单独处理，例如优先进行首次探索。
+
+\textbf{UCT --- Exploration vs. Exploitation}
+
+假设父节点已被访问 100 次。
+
+Exploration coefficient\\
+\textbf{1.00}
+
+1（范围 0--2）
+
+\textbf{Agent A}
+
+70 visits
+
+1.056
+
+Estimated value: 0.80 · Exploration bonus: 0.256
+
+\textbf{Agent B}
+
+20 visits
+
+1.160
+
+Estimated value: 0.68 · Exploration bonus: 0.480
+
+\textbf{Agent C}
+
+10 visits
+
+Selected
+
+1.229
+
+Estimated value: 0.55 · Exploration bonus: 0.679
+
+Exploitation
+
+Exploration
+
+你可以将 Exploration Coefficient 调整为零，此时系统只关注当前估计收益最高的节点。
+
+随着该系数增加，历史访问次数较少的节点将获得额外的探索优势。
+
+\hypertarget{part-3-40-0001-mcts-ux5bf9-rsi-ux7684ux9002ux7528ux6027}{%
+\paragraph{MCTS 对 RSI 的适用性}\label{part-3-40-0001-mcts-ux5bf9-rsi-ux7684ux9002ux7528ux6027}}
+
+MCTS 的吸引力在于，它有机会评价某个 Agent 的 \textbf{Long-term Improvability}，而不仅是当前性能。
+
+但是，真实 RSI 的每一次 Simulation 可能都需要多次 LLM 调用、代码修改、模型训练和金融回测，成本远高于普通游戏中的状态模拟。
+
+此外，如果所有模拟都使用同一批评估数据，那么更多 Rollouts 也不意味着获得了更多独立统计证据。经典 UCT 的理论保证不能不加修改地用于这种自适应、非平稳且昂贵的代码搜索环境。
+
+因此，我暂时将 MCTS 列为 P2 进阶内容，而不是本项目的首选实现方案。
+
+\hypertarget{part-3-40-0001-search-strategy-comparison}{%
+\subsubsection{2.5 Search Strategy Comparison}\label{part-3-40-0001-search-strategy-comparison}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.25}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.15}}@{}}
+\toprule
+Algorithm & 保留对象 & Exploration & 计算成本倾向 & 研究优先级 \\
+\midrule
+\endhead
+Random Search & 最优解及搜索记录 & 随机 & 较低 & P0 \\
+Greedy Search & 当前最优版本 & 较弱 & 较低 & P0 \\
+Beam Search & Top-\(B\) 版本 & 中等 & 中等 & P1 \\
+Evolutionary Search & Population & 可调 & 中高 & P1 \\
+Archive-based Search & 历史 Agent & 较强 & 中高 & P0 \\
+MCTS & Search Tree & 自适应 & 较高 & P2 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这里的计算成本是典型倾向，而不是固定的复杂度排序，实际成本取决于各算法的预算与实现方式。
+
+对于 X Program \#161，最值得优先研究的是 Random Search、Greedy Search 与 Archive-based Search。它们可以帮助我们分别建立非自适应基线、局部自适应基线和开放式演化系统。
+
+\hypertarget{part-3-40-0001-evaluatoroptimizer-architecture}{%
+\subsection{3. Evaluator--Optimizer Architecture}\label{part-3-40-0001-evaluatoroptimizer-architecture}}
+
+\hypertarget{part-3-40-0001-evaluator-ux4e0dux4e00ux5b9aux53eaux6709ux4e00ux4e2a}{%
+\subsubsection{3.1 Evaluator 不一定只有一个}\label{part-3-40-0001-evaluator-ux4e0dux4e00ux5b9aux53eaux6709ux4e00ux4e2a}}
+
+在 RSI 中，我们至少需要区分三类 Evaluation。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.38}}@{}}
+\toprule
+Evaluator & Function & Example \\
+\midrule
+\endhead
+Execution Validator & 判断程序能否正常执行 & Syntax Check、Unit Test \\
+Development Evaluator & 驱动优化过程 & Validation Score、Backtest Score \\
+Independent Auditor & 评价泛化表现 & Sealed OOS Evaluation \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\textbf{Candidate Agent}
+
+↓
+
+\textbf{Execution Validator}
+
+Correctness · Compatibility · Resource constraints
+
+↓
+
+\textbf{Development Evaluator}
+
+IS Performance · Feedback
+
+↓
+
+\textbf{Selection \& Version Archive}
+
+↓
+
+\textbf{Independent OOS Auditor}
+
+结果仅用于研究，不反馈给 Agent
+
+这里特别值得注意的是：
+
+\textbf{程序正确性与统计有效性属于不同层级。}
+
+例如，一个金融预测程序能够通过全部 Unit Tests，只能说明它满足了某些程序行为规范，并不能证明它在未来市场环境中有效。
+
+这与你此前 Truth Table to Circuit 项目中的 Evaluator 存在一个非常重要的区别。
+
+在该项目中，给定真值表和电路，逻辑等价性可以通过确定性验证建立；但在金融研究中，即使程序实现完全正确，有限历史样本也无法直接证明未来预测能力。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}@{}}
+\toprule
+& Logic Circuit Optimization & Financial RSI \\
+\midrule
+\endhead
+Correctness & 可以严格验证 & 程序正确性可以验证 \\
+Performance & 固定电路的面积、延迟可评价 & 真实性能通常不可直接观测 \\
+Evaluation Noise & 确定性指标较低 & 可能很高 \\
+Distribution Shift & 不同测试案例可能存在差异 & 金融市场规律可能随时间变化 \\
+Optimization Risk & 对测试案例过度优化 & 对历史金融数据过度优化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+所以 Financial RSI 的困难不仅是如何优化，更是如何判断优化是否真实有效。
+
+\hypertarget{part-3-40-0001-selection-pressureux9009ux62e9ux538bux529b}{%
+\subsection{4. Selection Pressure（选择压力）}\label{part-3-40-0001-selection-pressureux9009ux62e9ux538bux529b}}
+
+这是本阶段与 Statistical Learning Theory 联系最紧密的概念之一。
+
+\hypertarget{part-3-40-0001-definition}{%
+\subsubsection{4.1 Definition}\label{part-3-40-0001-definition}}
+
+Selection Pressure 描述一个搜索机制对高 Fitness 候选对象的偏好程度。
+
+例如，如果每次都严格选择最高得分的 Agent，那么选择压力较强。
+
+如果所有候选 Agent 都有一定概率被选中，那么选择压力可能较弱。
+
+我们可以采用 Softmax Selection 建立一个简单的数学模型：
+\[\boxed{
+p_j=
+\frac{
+\exp(\widehat J_{\mathrm{IS}}(A_j)/\tau)
+}{
+\sum_{i=1}^{m}
+\exp(\widehat J_{\mathrm{IS}}(A_i)/\tau)
+}
+}\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(p_j\)：第 \(j\) 个 Agent 被选中的概率；
+\item
+  \(m\)：候选 Agent 数量；
+\item
+  \(\tau>0\)：Selection Temperature。
+\end{itemize}
+
+当 \(\tau\to0^+\) 时，概率集中到得分最高的候选对象；如果存在多个并列最优对象，则在它们之间均匀分配。
+
+当 \(\tau\to\infty\) 时：
+\[p_j\to\frac1m.\]
+
+\textbf{Selection Pressure Explorer}
+
+假想候选集合。Agent 只能看到 IS Score，OOS Score 仅用于教学分析。
+
+Selection temperature \(\tau\)\\
+\textbf{0.08}
+
+0.08（范围 0.01--0.5）
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.47}}@{}}
+\toprule
+Agent & IS & OOS & Selection probability \\
+\midrule
+\endhead
+\textbf{A} & 0.85 & 0.60 & 55.0\% \\
+\textbf{B} & 0.79 & 0.76 & 26.0\% \\
+\textbf{C} & 0.72 & 0.73 & 10.8\% \\
+\textbf{D} & 0.67 & 0.65 & 5.8\% \\
+\textbf{E} & 0.60 & 0.61 & 2.4\% \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+Expected selected IS
+
+\textbf{0.804}
+
+Expected selected OOS
+
+\textbf{0.659}
+
+这里的期望仅针对给定候选集合上的随机选择，并非跨数据集的 Population Generalization Guarantee。
+
+这个例子说明，在最高 IS Score 不对应最高 OOS Score 的情况下，适当降低选择压力可能改善最终选中版本的样本外表现。
+
+但降低选择压力也可能导致 Agent 错过真正优秀的模型。
+
+\hypertarget{part-3-40-0001-selection-pressure-ux4e0e-generalization-ux7684ux5173ux7cfb}{%
+\subsubsection{4.2 Selection Pressure 与 Generalization 的关系}\label{part-3-40-0001-selection-pressure-ux4e0e-generalization-ux7684ux5173ux7cfb}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.30}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.37}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.29}}@{}}
+\toprule
+Condition & Strong Selection & Weak Selection \\
+\midrule
+\endhead
+Evaluator 可靠 & 更容易保留优秀版本 & 可能浪费真实改进 \\
+Evaluator 噪声较大 & 更容易选择受噪声影响的版本 & 可能减弱极端值选择 \\
+Search Landscape 复杂 & 容易过早收敛 & 有利于保留多样性 \\
+Low-SNR Environment & 可能放大虚假优势 & 可能提高搜索稳健性 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+这给出了一个新的 Mitigation Hypothesis：
+
+\begin{quote}
+降低对微小 IS Improvement 的过度选择，可能延缓 RSI 的 OOS Performance Decay。
+\end{quote}
+
+它可以通过改变 Selection Temperature、Acceptance Threshold 或 Parent Sampling Distribution 进行实验检验。
+
+\hypertarget{part-3-40-0001-statistical-selection-ux4e0dux8981ux63a5ux53d7ux6240ux6709ux6b63ux5411ux6539ux8fdb}{%
+\subsection{5. Statistical Selection --- 不要接受所有正向改进}\label{part-3-40-0001-statistical-selection-ux4e0dux8981ux63a5ux53d7ux6240ux6709ux6b63ux5411ux6539ux8fdb}}
+
+\hypertarget{part-3-40-0001-naive-acceptance-rule}{%
+\subsubsection{5.1 Naive Acceptance Rule}\label{part-3-40-0001-naive-acceptance-rule}}
+
+最直接的 Revision Acceptance Rule 是：
+\[\boxed{
+\Delta_k^{\mathrm{IS}}>0
+}\]
+
+即只要观察得分提高，就接受新版本。
+
+但假设某次修改实际上没有任何真实改进：
+\[J(A_{k+1})-J(A_k)=0.\]
+
+而观察到的改进来自连续、对称、以零为中心的评估噪声：
+\[\Delta_k^{\mathrm{IS}}=\varepsilon_k.\]
+
+那么：
+\[\mathbb P(\text{Accept})
+=
+\mathbb P(\varepsilon_k>0)
+=
+\frac12.\]
+
+也就是说，在这种理想化的零改进情形下，Agent 有 50\% 的概率接受无效修改。
+
+如果每轮同时比较多个候选版本，错误接受的风险还可能进一步增加。
+
+\hypertarget{part-3-40-0001-uncertainty-aware-acceptance}{%
+\subsubsection{5.2 Uncertainty-aware Acceptance}\label{part-3-40-0001-uncertainty-aware-acceptance}}
+
+一种改进思路是将 Acceptance Rule 修改为：
+\[\boxed{
+\Delta_k^{\mathrm{IS}}
+>
+c\cdot
+\widehat{\operatorname{SE}}
+(\Delta_k^{\mathrm{IS}})
+}\]
+
+即观察到的改进需要足以超过相应的评估不确定性。
+
+假设：
+\[\Delta_k^{\mathrm{IS}}
+\sim\mathcal N(d_k,\sigma_k^2),\]
+
+其中 \(d_k\) 是真实得分改善量，\(\sigma_k\) 是已知评估标准误差。
+
+则在使用阈值 \(c\sigma_k\) 的情况下：
+\[\boxed{
+\mathbb P(\text{Accept})
+=
+1-\Phi\left(c-\frac{d_k}{\sigma_k}\right)
+}\]
+
+\textbf{Statistical Acceptance Rule}
+
+Gaussian Evaluation Error，已知标准误差。
+
+Acceptance threshold \(c\)\\
+\textbf{1.65}
+
+1.645（范围 0--4）
+
+True improvement / Standard error\\
+\textbf{2.0}
+
+2（范围 0--4）
+
+\bookgraphic{0.573}{part-3-40-0001-013-01}{}
+
+No true improvement
+
+True improvement
+
+False Acceptance Rate
+
+\textbf{5.00\%}
+
+Acceptance under True Gain
+
+\textbf{63.87\%}
+
+提高阈值可以减少错误接受，但同时降低识别真实改进的 Statistical Power。
+
+threshold = 4
+
+\bookgraphic{0.573}{part-3-40-0001-013-state-01}{}
+
+这种 Acceptance Rule 与 II-C 中的 Hypothesis Testing 完全对应。
+
+不过，这些概率是在单次、满足假设的评估中得到的。RSI 会进行多次、自适应的检验，因此不能将单次 False Acceptance Rate 直接解释为整个演化过程的错误率。
+
+这正是 II-D 中 Sequential Testing 和 Reusable Holdout 可能发挥作用的地方。
+
+\hypertarget{part-3-40-0001-multi-objective-optimizationux591aux76eeux6807ux4f18ux5316}{%
+\subsection{6. Multi-objective Optimization（多目标优化）}\label{part-3-40-0001-multi-objective-optimizationux591aux76eeux6807ux4f18ux5316}}
+
+此前我们一直假设 Agent 只优化一个指标：
+\[\max_A\widehat J_{\mathrm{IS}}(A).\]
+
+但是，真实的研究目标可能包括多个维度：
+\[\begin{cases}
+\text{Maximize predictive performance},\\
+\text{Maximize robustness},\\
+\text{Minimize complexity},\\
+\text{Minimize evaluation cost}.
+\end{cases}\]
+
+这就进入了 Multi-objective Optimization。
+
+\hypertarget{part-3-40-0001-scalarizationux6807ux91cfux5316}{%
+\subsubsection{6.1 Scalarization（标量化）}\label{part-3-40-0001-scalarizationux6807ux91cfux5316}}
+
+最简单的方法是将多个指标合并为一个 Objective Function。
+
+例如：
+\[\boxed{
+U(A)
+=
+\widehat J_{\mathrm{IS}}(A)
+-\lambda_1\Omega(A)
+-\lambda_2C_{\mathrm{res}}(A)
+}\]
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  \(\Omega(A)\)：Agent 或金融模型的复杂度惩罚；
+\item
+  \(C_{\mathrm{res}}(A)\)：计算资源消耗；
+\item
+  \(\lambda_1,\lambda_2\geq0\)：权重。
+\end{itemize}
+
+这实际上与你熟悉的 Regularized Regression 有相似结构。
+
+Ridge Regression：
+\[\min_{\boldsymbol\beta}
+\widehat R_n(\boldsymbol\beta)
++\lambda\|\boldsymbol\beta\|_2^2.\]
+
+Regularized Agent Optimization：
+\[\max_A
+\widehat J_{\mathrm{IS}}(A)
+-\lambda_1\Omega(A).\]
+
+两者的共同思想是：我们不希望系统为了获得微小的经验性能收益，而付出不必要的复杂度代价。
+
+但 Agent Complexity 的定义远比回归参数范数复杂。它可能涉及候选空间、反馈查询次数、代码结构和计算资源等多个维度。
+
+\hypertarget{part-3-40-0001-pareto-optimalityux5e15ux7d2fux6258ux6700ux4f18}{%
+\subsubsection{6.2 Pareto Optimality（帕累托最优）}\label{part-3-40-0001-pareto-optimalityux5e15ux7d2fux6258ux6700ux4f18}}
+
+另一种方式是不提前将多个目标合并为一个分数，而是保留不同 Trade-off 下的优质方案。
+
+假设我们同时希望：
+\[\max_A\widehat J_{\mathrm{IS}}(A),
+\qquad
+\min_A\Omega(A).\]
+
+如果：
+\[\widehat J_{\mathrm{IS}}(A)
+\geq
+\widehat J_{\mathrm{IS}}(B),\]
+
+且：
+\[\Omega(A)\leq\Omega(B),\]
+
+同时至少一个不等式严格成立，那么称 \(A\) \textbf{Pareto-dominates} \(B\)。
+
+所有不被其他候选对象支配的解构成 Pareto Set，其在目标空间中的映射称为 Pareto Front。
+
+\textbf{Pareto Front --- Performance vs. Complexity}
+
+假想 Agent 候选集合。
+
+Complexity penalty \(\lambda_1\)\\
+\textbf{0.040}
+
+0.04（范围 0--0.15）
+
+\bookgraphic{0.457}{part-3-40-0001-014-01}{}
+
+Pareto-optimal
+
+Dominated
+
+Selected Agent
+
+\textbf{C}
+
+IS Performance
+
+\textbf{0.76}
+
+Complexity
+
+\textbf{3}
+
+调整惩罚系数会改变 Scalarized Objective 选择的版本。Pareto Front 本身不随该权重改变。
+
+penalty = 0.15
+
+\bookgraphic{0.457}{part-3-40-0001-014-state-01}{}
+
+Pareto Optimization 对 RSI 有一个潜在好处：它能够保留不同复杂度、不同资源需求下的 Agent，而不是让所有版本都朝着单一经验分数演化。
+
+但需要强调，\textbf{在 IS Performance 与 Complexity 上达到 Pareto Optimality，并不保证 OOS Robustness。}
+
+如果所有目标都是不可靠的代理指标，那么即使进行多目标优化，仍然可能发生过拟合。
+
+\hypertarget{part-3-40-0001-goodharts-law}{%
+\subsection{7. Goodhart's Law}\label{part-3-40-0001-goodharts-law}}
+
+这是整个 III-D 中最值得关注的思想。
+
+\hypertarget{part-3-40-0001-measurement-vs.-objective}{%
+\subsubsection{7.1 Measurement vs. Objective}\label{part-3-40-0001-measurement-vs.-objective}}
+
+Goodhart's Law 的常见表述是：
+
+\begin{quote}
+When a measure becomes a target, it ceases to be a good measure.
+\end{quote}
+
+大意是：当一个衡量指标被当作需要强力优化的目标时，它可能逐渐失去原有的衡量价值。
+
+对于 RSI：
+
+真正的目标是：
+\[\max_A J(A),\]
+
+但实际能够优化的是：
+\[\max_A\widehat J_{\mathrm{IS}}(A).\]
+
+因此，\(\widehat J_{\mathrm{IS}}(A)\) 是真实目标的 \textbf{Proxy（代理指标）}。
+
+当 Agent 的优化能力不断增强时，它可能越来越擅长提高 Proxy，却不一定越来越擅长实现真正的研究目标。
+
+\hypertarget{part-3-40-0001-four-types-of-goodhart-effects}{%
+\subsubsection{7.2 Four Types of Goodhart Effects}\label{part-3-40-0001-four-types-of-goodhart-effects}}
+
+Manheim 和 Garrabrant 在 2018 年的预印本 \emph{Categorizing Variants of Goodhart's Law} 中，将 Goodhart Effects 区分为四种机制。
+
+\href{https://arxiv.org/abs/1803.04585}{来源 1}
+
+我们可以将这一分类应用于 RSI 金融研究。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.21}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}@{}}
+\toprule
+Type & Core Mechanism & Financial RSI Example \\
+\midrule
+\endhead
+Regressional Goodhart & 选择极端观察值时同时选择了噪声 & 选择历史 Sharpe 最高的策略 \\
+Extremal Goodhart & 在极端区域中，原有指标与目标的关系失效 & 将搜索推向缺乏历史支持的复杂策略 \\
+Causal Goodhart & 对代理指标的干预没有产生预期的真实目标变化 & 通过减少交易次数改善某些风险指标，却损害经济价值 \\
+Adversarial Goodhart & 有能力的系统利用代理指标的缺陷 & Agent 找到 Evaluator 的漏洞并提高得分 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+以上金融例子是根据分类构造的教学示例，并非原论文中的实证结论。
+
+其中 \textbf{Regressional Goodhart} 与我们在 Part II 中学习的 Winner's Curse、Selection Bias 直接相关。
+
+\hypertarget{part-3-40-0001-mathematical-example-regression-to-the-mean}{%
+\subsubsection{7.3 Mathematical Example --- Regression to the Mean}\label{part-3-40-0001-mathematical-example-regression-to-the-mean}}
+
+现在我们用一个概率模型解释为什么极端观察得分通常不值得完全相信。
+
+沿用 Performance Score Notation：
+\[\widehat J(A)=J(A)+\varepsilon.\]
+
+为了研究候选模型总体上的统计规律，假设随机抽取的候选 Agent 满足：
+\[J(A)\sim\mathcal N(\mu,\sigma_J^2),\]
+
+\[\varepsilon\sim\mathcal N(0,\sigma_\varepsilon^2),\]
+
+且两者独立。
+
+根据 Bivariate Normal Distribution 的条件期望性质：
+\[\boxed{
+\mathbb E[J(A)\mid\widehat J(A)=s]
+=
+\mu+
+\frac{\sigma_J^2}
+{\sigma_J^2+\sigma_\varepsilon^2}
+(s-\mu)
+}\]
+
+定义可靠性系数：
+\[\kappa=
+\frac{\sigma_J^2}
+{\sigma_J^2+\sigma_\varepsilon^2}.\]
+
+那么：
+\[\boxed{
+\mathbb E[J(A)\mid\widehat J(A)=s]
+=
+\mu+\kappa(s-\mu)
+}\]
+
+当评估噪声方差非零时：
+\[0\leq\kappa<1.\]
+
+所以极端观察得分所对应的期望真实性能，会向总体均值收缩。
+
+\textbf{Regressional Goodhart --- Score Reliability}
+
+Gaussian 教学模型：真实候选得分均值为 0.5，标准差为 0.1。
+
+Evaluation noise \(\sigma_\varepsilon\)\\
+\textbf{0.15}
+
+0.15（范围 0--0.3）
+
+Observed score\\
+\textbf{0.85}
+
+0.85（范围 0.5--1）
+
+\bookgraphic{0.463}{part-3-40-0001-016-01}{}
+
+Perfect evaluation
+
+Noisy evaluation
+
+Observed
+
+\textbf{0.850}
+
+Expected true
+
+\textbf{0.608}
+
+Reliability κ
+
+\textbf{0.308}
+
+该结果建立在随机候选真实性能与独立 Gaussian 噪声的假设上，不能直接用来校准真实 RSI 得分。
+
+noise = 0.3
+
+\bookgraphic{0.463}{part-3-40-0001-016-state-01}{}
+
+\hypertarget{part-3-40-0001-research-implication}{%
+\paragraph{Research Implication}\label{part-3-40-0001-research-implication}}
+
+这个公式值得记住，因为它揭示了一个非常重要的现象：
+
+当 Evaluation Noise 相对于不同 Agent 之间的真实性能差异很大时，
+
+\[\sigma_\varepsilon^2\gg\sigma_J^2,\]
+
+便有：
+\[\kappa\approx0.\]
+
+即使某个 Agent 取得极高的观察得分，其期望真实性能也可能只是接近候选总体的平均水平。
+
+不过，这个模型只能直接解释 Score Inflation 及真实性能改善幅度被高估。它并没有证明持续优化会导致真实性能下降，因为在固定的 Gaussian 模型下，观察分数与条件期望真实性能仍然是单调关系。
+
+要解释真正的 Better, Then Worse，我们还需要研究候选生成分布是否随 RSI 改变、Agent 是否越来越倾向于 Noise-sensitive Methods，以及这种选择是否被后续修改持续强化。
+
+Proof Index：利用联合正态分布的条件期望公式，其中 Cov(J, Ĵ) = σ²ⱼ，Var(Ĵ) = σ²ⱼ + σ²ε。
+
+\hypertarget{part-3-40-0001-reward-hacking-vs.-overfitting}{%
+\subsection{8. Reward Hacking vs. Overfitting}\label{part-3-40-0001-reward-hacking-vs.-overfitting}}
+
+这两个概念同样需要明确区分。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.27}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.35}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.34}}@{}}
+\toprule
+Dimension & Overfitting & Reward Hacking \\
+\midrule
+\endhead
+核心问题 & 对有限数据中的偶然规律过度适应 & 利用评价指标或评价机制的缺陷 \\
+是否需要统计噪声 & 通常与有限样本有关 & 不一定 \\
+是否需要修改 Evaluator & 不需要 & 不需要 \\
+典型案例 & 选择大量无效金融特征 & 利用错误的评分或结果解析规则 \\
+Diagnosis & 独立数据评价 & Evaluator Audit \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+例如：
+
+\textbf{Statistical Overfitting}
+
+\begin{verbatim}
+  Agent 在完全合法的特征空间中，通过大量历史实验找到了偶然有效的金融特征。
+
+  代码正确，评估过程正确，但未来预测能力较差。
+\end{verbatim}
+
+\textbf{Reward Hacking}
+
+\begin{verbatim}
+  Agent 的程序输出利用了评价流程中的错误，使报告分数不能反映真实任务表现。
+
+  即使评估数据没有统计噪声，问题也可能发生。
+\end{verbatim}
+
+两者都可能产生：
+\[S_k^{\mathrm{IS}}\uparrow,
+\qquad
+S_k^{\mathrm{OOS}}\downarrow.\]
+
+但是处理方法完全不同。
+
+因此，X Program \#161 的 Revision Classification 还需要识别：
+
+\begin{itemize}
+\tightlist
+\item
+  修改是否提高了真正的任务解决能力；
+\item
+  修改是否改变了对开发数据的适应程度；
+\item
+  修改是否只是利用了 Evaluation Protocol 的局限。
+\end{itemize}
+
+Reward Hacking 也不必然意味着 Agent 具有主观欺骗意图。我们研究的是系统行为与优化结果，而不是未经证实的内部动机。
+
+\hypertarget{part-3-40-0001-research-practice-search-and-selection-ablation}{%
+\subsection{9. Research Practice --- Search and Selection Ablation}\label{part-3-40-0001-research-practice-search-and-selection-ablation}}
+
+现在我们可以将本阶段的理论转化为一个比较完整的实验设计。
+
+\hypertarget{part-3-40-0001-experimental-groups}{%
+\subsubsection{9.1 Experimental Groups}\label{part-3-40-0001-experimental-groups}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.39}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.45}}@{}}
+\toprule
+Group & Search Strategy & Selection Mechanism \\
+\midrule
+\endhead
+A & Non-adaptive Random Search & Highest IS Score \\
+B & Greedy Adaptive Search & Highest IS Score \\
+C & Beam Search & Top-\(B\) Selection \\
+D & Archive-based Search & Softmax Parent Selection \\
+E & Archive-based Search & Uncertainty-aware Selection \\
+F & Archive-based Search & Complexity-penalized Selection \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中：
+
+\begin{itemize}
+\tightlist
+\item
+  A vs. B：分析 Adaptive Search 的影响。
+\item
+  B vs. C：分析保留多条搜索路径的影响。
+\item
+  C vs. D：比较 Frontier-based 和 Archive-based Evolution，但需要注意选择机制也发生了变化。
+\item
+  D vs. E：研究评估不确定性控制。
+\item
+  D vs. F：研究复杂度惩罚的影响。
+\end{itemize}
+
+如果要严格识别单个因素的因果贡献，就需要进一步控制其他变量，或者采用 Factorial Experiment。
+
+\hypertarget{part-3-40-0001-ux6700ux91cdux8981ux7684-control-variablebudget}{%
+\subsubsection{9.2 最重要的 Control Variable：Budget}\label{part-3-40-0001-ux6700ux91cdux8981ux7684-control-variablebudget}}
+
+假设我们有三种搜索方法：
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.43}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.18}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.15}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}@{}}
+\toprule
+& Greedy & Beam & Archive \\
+\midrule
+\endhead
+Improvement Rounds & 20 & 20 & 20 \\
+Candidate Evaluations & 100 & 500 & 1,200 \\
+Final IS Score & 0.81 & 0.86 & 0.91 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+仅凭这张表，无法判断 Archive-based Search 是否具有更好的 Optimization Efficiency，因为它使用了更多评估资源。
+
+所以我们至少需要同时记录以下指标。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.56}}@{}}
+\toprule
+Budget Type & Measurement \\
+\midrule
+\endhead
+Evaluation Budget & Evaluator Calls \\
+Data Exposure Budget & 各数据集被查询的次数与反馈粒度 \\
+Language Model Budget & Input / Output Tokens \\
+Compute Budget & Runtime、CPU/GPU Hours \\
+Financial Cost & API Cost \\
+Search Budget & Unique Candidate Count \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+其中 Evaluation Budget 和 Data Exposure Budget 对 Generalization Research 尤其重要。
+
+即使两个 Agent 消耗了相同数量的 Token，它们查询金融验证集的次数也可能完全不同。
+
+\hypertarget{part-3-40-0001-ux4e00ux4e2aux66f4ux5408ux7406ux7684-performance-trajectory}{%
+\subsubsection{9.3 一个更合理的 Performance Trajectory}\label{part-3-40-0001-ux4e00ux4e2aux66f4ux5408ux7406ux7684-performance-trajectory}}
+
+与其只研究：
+\[S_k^{\mathrm{OOS}}
+\quad\text{vs. Iteration }k,\]
+
+我们还可以定义累计 Evaluator Calls：
+\[Q_k=\sum_{i=1}^{k}q_i,\]
+
+其中 \(q_i\) 表示第 \(i\) 轮新增的评估次数。
+
+然后研究：
+\[\boxed{
+S_k^{\mathrm{OOS}}
+\quad\text{vs.}\quad Q_k
+}\]
+
+\textbf{Performance vs. Iterations}
+
+\bookgraphic{0.364}{part-3-40-0001-019-01}{两种方法的每轮搜索开销可能不同。}
+
+\textbf{Performance vs. Evaluations}
+
+\bookgraphic{0.364}{part-3-40-0001-019-02}{按实际评估资源重新组织轨迹。}
+
+Greedy
+
+Broader search
+
+假想曲线，仅用于说明横轴选择对实验解释的影响。
+
+这里有一个可能值得研究的问题：
+
+\textbf{不同 RSI 系统的 Decay Onset，究竟更依赖递归迭代深度，还是更依赖累计评估次数？}
+
+如果主要依赖后者，那么 Performance Decay 可能更多来自普通的 Model Selection 或 Adaptive Data Exposure。
+
+如果在匹配评估预算之后，递归修改深度仍然能够显著解释退化，那么我们就有理由进一步研究 Self-Modification 本身的作用。
+
+当然，这仍然需要受控实验才能支持因果结论。
+
+\hypertarget{part-3-40-0001-literature-index}{%
+\subsection{10. Literature Index}\label{part-3-40-0001-literature-index}}
+
+本阶段不需要阅读大量通用搜索算法教材，以下三篇具有较直接的研究价值。
+
+\textbf{P0 --- Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents}
+
+ICLR 2026 · 初版预印本发表于 2025 年
+
+重点关注 Archive-based Exploration、Parent Selection，以及与 Greedy Search 的对照实验。
+
+\href{https://arxiv.org/abs/2505.22954}{arXiv:2505.22954} · \href{https://openreview.net/pdf?id=pUpzQZTvGY}{ICLR 正式论文} \href{https://openreview.net/pdf?id=pUpzQZTvGY}{来源 1}
+
+\textbf{P0 --- Categorizing Variants of Goodhart's Law}
+
+David Manheim, Scott Garrabrant · 2018 · arXiv 预印本
+
+重点理解四种 Goodhart Effects，以及强力优化代理指标为什么可能损害真实目标。
+
+\href{https://arxiv.org/abs/1803.04585}{arXiv:1803.04585} \href{https://arxiv.org/abs/1803.04585}{来源 1}
+
+\textbf{P2 --- Bandit Based Monte-Carlo Planning}
+
+Levente Kocsis, Csaba Szepesvári · ECML 2006 · 同行评审会议论文
+
+UCT 的经典论文。暂时理解 Exploration--Exploitation 的数学结构即可。
+
+\href{https://aima.cs.berkeley.edu/~russell/classes/cs294/s11/readings/Kocsis\%2BSzepesvari\%3A2006.pdf}{论文 PDF} \href{https://cris.technion.ac.il/en/publications/bandit-based-monte-carlo-planning/}{来源 1}
+
+\hypertarget{part-3-40-0001-iii-d-conclusion-index}{%
+\subsection{11. III-D --- Conclusion Index}\label{part-3-40-0001-iii-d-conclusion-index}}
+
+\hypertarget{part-3-40-0001-ux6838ux5fc3ux7ed3ux8bba}{%
+\subsubsection{11.1 核心结论}\label{part-3-40-0001-ux6838ux5fc3ux7ed3ux8bba}}
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.70}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.13}}@{}}
+\toprule
+ID & Key Conclusion & Index \\
+\midrule
+\endhead
+D1 & RSI 可以抽象为 Generation--Evaluation--Selection Loop & §1 \\
+D2 & Greedy Selection 可以机械地保证确定性 IS Score 单调增长 & §2.1 \\
+D3 & Beam Search 可以减轻短视搜索，但可能增加评估预算 & §2.2 \\
+D4 & LLM-guided Mutation 可以改变整个算法结构 & §2.3 \\
+D5 & MCTS 通过后续模拟估计长期搜索潜力 & §2.4 \\
+D6 & 程序正确性不等于统计有效性 & §3 \\
+D7 & Selection Pressure 决定系统对高观察得分的偏好 & §4 \\
+D8 & Uncertainty-aware Selection 可以控制部分错误接受风险 & §5 \\
+D9 & Multi-objective Optimization 可以引入复杂度与资源约束 & §6 \\
+D10 & 强力优化 Proxy 可能产生 Goodhart Effects & §7 \\
+D11 & Reward Hacking 不等于 Statistical Overfitting & §8 \\
+D12 & Iteration Count 不能替代 Evaluation Budget & §9 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+\hypertarget{part-3-40-0001-core-formula-sheet}{%
+\subsubsection{11.2 Core Formula Sheet}\label{part-3-40-0001-core-formula-sheet}}
+
+\textbf{Result 1 --- Greedy Selection}
+
+\[A_{k+1}
+=
+\arg\max_{A\in\mathcal C_k\cup\{A_k\}}
+\widehat J_{\mathrm{IS}}(A).\]
+
+\textbf{Result 2 --- UCT}
+
+\[\operatorname{UCT}(v)
+=
+\bar Q(v)+c_{\mathrm{UCT}}
+\sqrt{\frac{\log N(p(v))}{N(v)}}.\]
+
+\textbf{Result 3 --- Softmax Selection}
+
+\[p_j=
+\frac{\exp(\widehat J_{\mathrm{IS}}(A_j)/\tau)}
+{\sum_i\exp(\widehat J_{\mathrm{IS}}(A_i)/\tau)}.\]
+
+\textbf{Result 4 --- Statistical Acceptance Rule}
+
+\[\Delta_k^{\mathrm{IS}}
+>
+c\cdot
+\widehat{\operatorname{SE}}(\Delta_k^{\mathrm{IS}}).\]
+
+\textbf{Result 5 --- Regularized Agent Optimization}
+
+\[U(A)=\widehat J_{\mathrm{IS}}(A)
+-\lambda_1\Omega(A)
+-\lambda_2C_{\mathrm{res}}(A).\]
+
+\textbf{Result 6 --- Regressional Goodhart}
+
+\[\boxed{
+\mathbb E[J(A)\mid\widehat J(A)=s]
+=
+\mu+
+\frac{\sigma_J^2}
+{\sigma_J^2+\sigma_\varepsilon^2}
+(s-\mu)
+}\]
+
+其中 Result 6 是特定 Gaussian Model 下的严格数学结论；其余主要属于算法定义或候选优化规则，并不具有无条件的泛化保证。
+
+\hypertarget{part-3-40-0001-the-most-important-research-insight}{%
+\subsection{12. The Most Important Research Insight}\label{part-3-40-0001-the-most-important-research-insight}}
+
+我们现在可以进一步理解，为什么一个 Optimization Algorithm 的能力增强，不一定是一件纯粹正面的事情。
+
+\textbf{Increasing Optimization Capability}
+
+更强的 LLM、更好的搜索算法、更大的计算预算
+
+↓
+
+\textbf{Genuine Signal}
+
+发现真实有效的方法
+
+↓
+
+Capability Gain
+
+\textbf{Evaluator Imperfection}
+
+利用统计噪声或代理指标缺陷
+
+↓
+
+Proxy Overoptimization
+
+↓ \textbf{Observed RSI Performance}
+
+取决于两个过程如何共同演化
+
+Part II 告诉我们为什么有限数据中的得分存在统计不确定性。
+
+III-C 告诉我们为什么这种偏差可能通过 Self-Modification 被递归强化。
+
+III-D 则进一步说明，\textbf{Search Algorithm 与 Selection Rule 决定了系统如何利用这些不确定性。}
+
+所以，X Program \#161 不仅是在研究如何防止一个金融模型过拟合，还可能涉及如何防止一个不断变强的研究系统，越来越高效地利用 Evaluator 的不完美之处。
+
+本阶段的搜索对照实验、复杂度惩罚及选择阈值都是候选设计，尚未在课题组框架中实际验证。具体适用性取决于其真实 Financial Task、Evaluator 和允许修改的 Agent 组件。
+
+\hypertarget{part-3-40-0001-next-iii-e-automated-research-agents}{%
+\subsection{Next --- III-E: Automated Research Agents}\label{part-3-40-0001-next-iii-e-automated-research-agents}}
+
+III-A --- Agent Architecture \& Harness
+
+III-B --- Tools, Memory, Planning \& Reflection
+
+III-C --- Self-Modification \& Recursive Optimization
+
+III-D --- Evaluation, Search \& Selection
+
+III-E --- Automated Research Agents
+
+III-F --- Failure Modes \& Instrumentation
+
+下一阶段会是 Part III 中研究文献密度最高的一节。我们将正式进入真实的 Automated Research Agent Systems。
+
+\begin{readertable}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.41}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.55}}@{}}
+\toprule
+System & 重点研究内容 \\
+\midrule
+\endhead
+\textbf{STOP} & Recursive Meta-optimization \\
+\textbf{AIDE} & Tree-based Automated Data Science \\
+\textbf{ADAS} & Automated Agent Design \\
+\textbf{Darwin Gödel Machine} & Open-ended Self-modifying Agent Evolution \\
+\textbf{R\&D-Agent-Quant} & Automated Financial Research \\
+\textbf{Recursive AI Research Agents} & 跨任务泛化与后期性能退化 \\
+\bottomrule
+\end{longtable}
+\end{readertable}
+
+届时将统一从六个维度比较这些系统：Optimization Object、Mutable Components、Search Strategy、Evaluation Protocol、Generalization Evidence 和 Research Limitations。
+
+这一次我们不再仅仅依靠自己构造的 Toy Models，而是开始直接阅读真实论文中的 Algorithm、Architecture、Ablation Studies 和实验结果，并判断哪些已有研究能够真正支持 X Program \#161 的研究动机。
