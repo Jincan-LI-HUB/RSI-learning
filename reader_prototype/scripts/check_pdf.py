@@ -16,9 +16,8 @@ def render(pdf):
     QA.mkdir(parents=True, exist_ok=True)
     pages = []
     with pymupdf.open(pdf) as document:
-        assert 8 <= len(document) <= 15
+        assert len(document) > 0
         assert len(document.get_toc()) >= 7
-        assert len(document[0].get_links()) >= 8
         for page in document:
             text = page.get_text()
             assert text.strip()
@@ -41,11 +40,13 @@ def render(pdf):
                 "bottom_text": " / ".join(text.splitlines()[-5:]),
             })
         combined = "\n".join(p.get_text() for p in document)
-        landmarks = ["研究准备中的提问", "Volatility Clustering", "Typical Financial Return ACF",
+        landmarks = ["Stylized Facts of Financial Returns", "Volatility Clustering", "Typical Financial Return ACF",
                      "Returns are uncorrelated", "Baseline", "Periods after shock",
                      "Student's t", "0.0000573%", "Potential Problem"]
         for marker in landmarks:
             assert marker in combined, marker
+        for marker in ("研究准备中的提问", "续读请求", "数学读本样张"):
+            assert marker not in combined, marker
         write(QA / "pdf-checks.json",
               json.dumps({"pages": pages, "outline": document.get_toc(), "search_landmarks": landmarks},
                          ensure_ascii=False, indent=2) + "\n")

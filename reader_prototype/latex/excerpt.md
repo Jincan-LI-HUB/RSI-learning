@@ -6,8 +6,8 @@
 
 
 ```{=latex}
-\begin{readerfigure}
-\includegraphics[width=0.72\linewidth]{figures/volatility.pdf}
+\begin{readerfigure}{0.87}
+\includegraphics[width=\linewidth]{figures/volatility.pdf}
 \captionof{figure}{合成示意：下方序列的收益率方向难以预测，但波动幅度具有明显的持续性。}
 \end{readerfigure}
 ```
@@ -37,9 +37,9 @@
 
 
 ```{=latex}
-\begin{readerfigure}
+\begin{readerfigure}{0.87}
 \figuretitle{Typical Financial Return ACF}
-\includegraphics[width=0.72\linewidth]{figures/acf.pdf}
+\includegraphics[width=\linewidth]{figures/acf.pdf}
 \captionof{figure}{典型形态的教学示意，非实际市场数据。原始收益率的自相关接近零，平方收益率的自相关则可能缓慢衰减。}
 \end{readerfigure}
 ```
@@ -234,8 +234,8 @@ r_t=\mu+\varepsilon_t,
 
 
 ```{=latex}
-\begin{readerfigure}
-\includegraphics[width=0.8\linewidth]{figures/garch-mechanism.pdf}
+\begin{readerfigure}{0.53}
+\includegraphics[width=\linewidth]{figures/garch-mechanism.pdf}
 \captionof{figure}{GARCH(1,1) 条件方差的组成}
 \end{readerfigure}
 ```
@@ -314,9 +314,9 @@ a+b<1.
 
 
 ```{=latex}
-\begin{readerfigure}
+\begin{readerfigure}{0.72}
 \figuretitle{GARCH --- Volatility Shock Persistence}
-\begin{minipage}[t]{.318\linewidth}\centering \textbf{\(a+b=0.50\)}\par\smallskip\includegraphics[width=\linewidth]{figures/garch-persistence-0.50.pdf}\end{minipage}\hfill\begin{minipage}[t]{.318\linewidth}\centering \textbf{\(a+b=0.90\)}（默认）\par\smallskip\includegraphics[width=\linewidth]{figures/garch-persistence-0.90.pdf}\end{minipage}\hfill\begin{minipage}[t]{.318\linewidth}\centering \textbf{\(a+b=0.99\)}\par\smallskip\includegraphics[width=\linewidth]{figures/garch-persistence-0.99.pdf}\end{minipage}
+\includegraphics[width=\linewidth]{figures/garch-persistence.pdf}
 
 \smallskip
 \begin{tabular}{@{}lrrr@{}}
@@ -364,9 +364,9 @@ GARCH 可以同时具有：
 
 
 ```{=latex}
-\begin{readerfigure}
-\includegraphics[width=0.7\linewidth]{figures/densities.pdf}
-\par\smallskip \legendmark{figureblue}\enspace Standard Normal\qquad \legendmark{tailgold}\enspace Standardized Student's t (ν=3)
+\begin{readerfigure}{0.46}
+\includegraphics[width=\linewidth]{figures/densities.pdf}
+\par \legendmark{ResearchBlue}\,Standard Normal\enspace \legenddash{ResearchSlate}\,Standardized Student's t (ν=3)
 \captionof{figure}{两种分布均具有零均值和单位方差，但尾部概率存在显著差异。}
 \end{readerfigure}
 ```
@@ -383,10 +383,10 @@ GARCH 可以同时具有：
 
 
 ```{=latex}
-\begin{readerfigure}
+\begin{readerfigure}{0.72}
 \figuretitle{Probability of a 5-standard-deviation event}
-\includegraphics[width=0.73\linewidth]{figures/tail-probability.pdf}
-\par\medskip\textcolor{tailgold}{\textbf{约 5,650 倍}}
+\includegraphics[width=\linewidth]{figures/tail-probability.pdf}
+\par\textbf{约 5,650 倍}
 \captionof{figure}{即使均值和方差完全相同，极端事件概率也可能存在数量级差异。}
 \end{readerfigure}
 ```

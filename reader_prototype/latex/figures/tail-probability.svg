@@ -1,10 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 95" width="340" height="95">
-<text font-family="serif" x="10" y="19" font-size="13">Normal</text>
-<text font-family="serif" x="330" y="19" font-size="12" text-anchor="end">0.0000573%</text>
-<rect x="10" y="26" width="320" height="14" rx="2" fill="#e6ebee"/>
-<rect x="10" y="26" width="0.0566" height="14" rx="2" fill="#2563eb"/>
-<text font-family="serif" x="10" y="61" font-size="13">Student's t</text>
-<text font-family="serif" x="330" y="61" font-size="12" text-anchor="end">0.324%</text>
-<rect x="10" y="68" width="320" height="14" rx="2" fill="#e6ebee"/>
-<rect x="10" y="68" width="320.0000" height="14" rx="2" fill="#d97706"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 100" width="440" height="100">
+<line x1="104.0" y1="8" x2="104.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="104.0" y="79" text-anchor="middle" font-size="12">1e-05</text>
+<line x1="167.0" y1="8" x2="167.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="167.0" y="79" text-anchor="middle" font-size="12">0.0001</text>
+<line x1="230.0" y1="8" x2="230.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="230.0" y="79" text-anchor="middle" font-size="12">0.001</text>
+<line x1="293.0" y1="8" x2="293.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="293.0" y="79" text-anchor="middle" font-size="12">0.01</text>
+<line x1="356.0" y1="8" x2="356.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="356.0" y="79" text-anchor="middle" font-size="12">0.1</text>
+<line x1="419.0" y1="8" x2="419.0" y2="65" stroke="#657782" opacity=".31"/>
+<text font-family="serif" x="419.0" y="79" text-anchor="middle" font-size="12">1</text>
+<text font-family="serif" x="2" y="22" font-size="13">Normal</text>
+<circle cx="151.76374118394557" cy="18" r="3.5" fill="#657782"/>
+<text font-family="serif" x="160.76374118394557" y="22" text-anchor="start" font-size="12">0.0000573%</text>
+<text font-family="serif" x="2" y="47" font-size="13">Student's t</text>
+<circle cx="388.16433564301656" cy="43" r="3.5" fill="#527C94"/>
+<text font-family="serif" x="379.16433564301656" y="47" text-anchor="end" font-size="12">0.324%</text>
+<path d="M104 65H419" stroke="#657782"/>
+<text font-family="serif" x="262" y="96" text-anchor="middle" font-size="12">Tail probability (%) · log scale</text>
 </svg>
