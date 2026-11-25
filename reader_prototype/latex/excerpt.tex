@@ -9,10 +9,10 @@
 
 \begin{readerfigure}{0.87}
 \includegraphics[width=\linewidth]{figures/volatility.pdf}
-\captionof{figure}{合成示意：下方序列的收益率方向难以预测，但波动幅度具有明显的持续性。}
+\captionof{figure}{合成示意：右侧序列的收益率方向难以预测，但波动幅度具有明显的持续性。}
 \end{readerfigure}
 
-因此，在金融数据中，我们可能同时观察到： \(\operatorname{Corr}(r_t,r_{t+h})\approx0,\) 但： \(\operatorname{Corr}(|r_t|,|r_{t+h}|)>0,\) 或者： \(\operatorname{Corr}(r_t^2,r_{t+h}^2)>0.\) 这意味着： \textbf{收益率本身可能不具有明显的线性可预测性，但其波动程度具有可预测性。}
+因此，在金融数据中，我们可能同时观察到  \(\operatorname{Corr}(r_t,r_{t+h})\approx0,\) 但  \(\operatorname{Corr}(|r_t|,|r_{t+h}|)>0,\) 或者  \(\operatorname{Corr}(r_t^2,r_{t+h}^2)>0.\) 这意味着： \textbf{收益率本身可能不具有明显的线性可预测性，但其波动程度具有可预测性。}
 
 \begin{readerfigure}{0.87}
 \figuretitle{Typical Financial Return ACF}
@@ -23,7 +23,7 @@
 \hypertarget{ux4e00ux4e2aux4e25ux683cux7684ux6982ux7387ux53cdux4f8b}{%
 \subsection{6.3 一个严格的概率反例}\label{ux4e00ux4e2aux4e25ux683cux7684ux6982ux7387ux53cdux4f8b}}
 
-为了进一步理解为什么 Uncorrelated 不等于 Independent，我们构造一个非常简单的随机过程。 设： \(Z_t\overset{\mathrm{i.i.d.}}{\sim}\mathcal N(0,1),\) 并定义： \(r_t=Z_tZ_{t-1}.\) 首先，由独立性： \(\mathbb E[r_t]
+为了进一步理解为什么 Uncorrelated 不等于 Independent，我们构造一个非常简单的随机过程。 设： \(Z_t\overset{\mathrm{i.i.d.}}{\sim}\mathcal N(0,1),\) 并定义  \(r_t=Z_tZ_{t-1}.\) 首先，由独立性可得  \(\mathbb E[r_t]
 =
 \mathbb E[Z_t]\mathbb E[Z_{t-1}]
 =0.\)
@@ -48,7 +48,7 @@
 \hypertarget{proposition-2-squared-returns-are-correlated}{%
 \subsubsection{Proposition 2 --- Squared returns are correlated}\label{proposition-2-squared-returns-are-correlated}}
 
-现在考察平方收益率： \(r_t^2=Z_t^2Z_{t-1}^2.\) 由于标准正态分布满足： \(\mathbb E[Z_t^2]=1,
+现在考察平方收益率  \(r_t^2=Z_t^2Z_{t-1}^2.\) 由于标准正态分布满足： \(\mathbb E[Z_t^2]=1,
 \qquad
 \mathbb E[Z_t^4]=3,\) 所以： \(\mathbb E[r_t^2]=1.\) 进一步： \[\begin{aligned}
 &\operatorname{Cov}(r_t^2,r_{t+1}^2)\\
@@ -95,7 +95,7 @@
 
 为了描述 Volatility Clustering，金融计量经济学发展出了两种经典模型：
 
-\begin{readertable}
+\begin{readertable}\setlength{\LTcapwidth}{.72\linewidth}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.12}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.48}}
@@ -134,7 +134,7 @@ GARCH & Generalized ARCH & 1986 \\
 
 其中： \(\omega>0,\qquad a,b\geq0.\)
 
-\begin{readertable}
+\begin{readertable}\setlength{\LTcapwidth}{.55\linewidth}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.15}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.40}}@{}}
@@ -262,7 +262,7 @@ GARCH 可以同时具有：
 
 例如，我们比较 Standard Normal Distribution 与标准化为单位方差的 Student's t Distribution（自由度为 3）。
 
-\begin{readertable}
+\begin{readertable}\setlength{\LTcapwidth}{.69\linewidth}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.19}}
@@ -296,7 +296,7 @@ Extreme Event & Normal & Standardized \(t_3\) \\
 \hypertarget{moment-existenceux77e9ux7684ux5b58ux5728ux6027}{%
 \subsection{7.2 Moment Existence（矩的存在性）}\label{moment-existenceux77e9ux7684ux5b58ux5728ux6027}}
 
-Student's t Distribution 具有一个值得关注的数学性质。 对于： \(X\sim t_\nu,\)
+Student's t Distribution 具有一个值得关注的数学性质。 对于  \(X\sim t_\nu,\)
 
 其 \(p\) 阶绝对矩存在的条件为： \[\boxed{
 \mathbb E[|X|^p]<\infty
@@ -304,7 +304,7 @@ Student's t Distribution 具有一个值得关注的数学性质。 对于： \(
 \qquad p>0.
 }\]
 
-\begin{readertable}
+\begin{readertable}\setlength{\LTcapwidth}{.72\linewidth}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.24}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.14}}
@@ -357,7 +357,7 @@ Student's t Distribution 的概率密度为： \[f_\nu(x)
 
 现在回顾 Part II 中使用过的几个数学工具。
 
-\begin{readertable}
+\begin{readertable}\setlength{\LTcapwidth}{.85\linewidth}
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.25}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.26}}
@@ -384,7 +384,7 @@ Standard Bootstrap & 依赖统计量及分布条件 & 厚尾可能影响重采�
 
 假设预测误差具有有限二阶矩，却没有有限四阶矩。
 
-那么对于 Squared Loss： \(L=\varepsilon^2,\) 我们可能有： \(\mathbb E[L]=\mathbb E[\varepsilon^2]<\infty,\) 但： \[\operatorname{Var}(L)
+那么对于 Squared Loss： \(L=\varepsilon^2,\) 我们可能有： \(\mathbb E[L]=\mathbb E[\varepsilon^2]<\infty,\) 但  \[\operatorname{Var}(L)
 =
 \mathbb E[\varepsilon^4]
 -\mathbb E[\varepsilon^2]^2

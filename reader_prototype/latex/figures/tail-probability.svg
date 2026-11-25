@@ -12,10 +12,10 @@
 <line x1="419.0" y1="8" x2="419.0" y2="65" stroke="#657782" opacity=".31"/>
 <text font-family="serif" x="419.0" y="79" text-anchor="middle" font-size="12">1</text>
 <text font-family="serif" x="2" y="22" font-size="13">Normal</text>
-<circle cx="151.76374118394557" cy="18" r="3.5" fill="#657782"/>
+<circle cx="151.76374118394557" cy="18" r="3.5" fill="#527C94"/>
 <text font-family="serif" x="160.76374118394557" y="22" text-anchor="start" font-size="12">0.0000573%</text>
 <text font-family="serif" x="2" y="47" font-size="13">Student's t</text>
-<circle cx="388.16433564301656" cy="43" r="3.5" fill="#527C94"/>
+<circle cx="388.16433564301656" cy="43" r="3.5" fill="#657782"/>
 <text font-family="serif" x="379.16433564301656" y="47" text-anchor="end" font-size="12">0.324%</text>
 <path d="M104 65H419" stroke="#657782"/>
 <text font-family="serif" x="262" y="96" text-anchor="middle" font-size="12">Tail probability (%) · log scale</text>

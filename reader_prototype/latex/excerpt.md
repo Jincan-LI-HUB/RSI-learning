@@ -8,7 +8,7 @@
 ```{=latex}
 \begin{readerfigure}{0.87}
 \includegraphics[width=\linewidth]{figures/volatility.pdf}
-\captionof{figure}{合成示意：下方序列的收益率方向难以预测，但波动幅度具有明显的持续性。}
+\captionof{figure}{合成示意：右侧序列的收益率方向难以预测，但波动幅度具有明显的持续性。}
 \end{readerfigure}
 ```
 

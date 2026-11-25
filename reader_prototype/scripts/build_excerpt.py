@@ -246,7 +246,7 @@ def tail_plot(raw):
             f'<line x1="{x}" y1="8" x2="{x}" y2="65" stroke="currentColor" opacity=".31"/>',
             f'<text x="{x}" y="79" textAnchor="middle" fontSize="12">{10**power:g}</text>',
         ]
-    for y, label, number, color in zip((18, 43), names, values, ("ResearchSlate", "ResearchBlue"), strict=True):
+    for y, label, number, color in zip((18, 43), names, values, ("ResearchBlue", "ResearchSlate"), strict=True):
         x = x_at(float(number[:-1]))
         result += [
             f'<text x="2" y="{y+4}" fontSize="13">{escape(label)}</text>',
@@ -365,7 +365,11 @@ def graphic_code(stem, raw, width, fallback_title):
     if stem == "densities":
         footer = (r"\par \legendmark{ResearchBlue}\," + tex_inline(captions[0])
                   + r"\enspace \legenddash{ResearchSlate}\," + tex_inline(captions[1]) + "\n")
-    caption = tex_inline(captions[-1] if captions else fallback_title)
+    caption_source = captions[-1] if captions else fallback_title
+    if stem == "volatility":
+        assert "下方序列" in caption_source
+        caption_source = caption_source.replace("下方序列", "右侧序列")
+    caption = tex_inline(caption_source)
     return (rf"\begin{{readerfigure}}{{{width}}}" + "\n"
             + (r"\figuretitle{" + tex_inline(title) + "}\n" if title else "")
             + graphic + "\n" + footer
@@ -432,11 +436,28 @@ def main():
     tex, promoted = compact_prose(tex)
     canonical = lambda value: re.sub(r"\s+", "", MATH_RE.sub(lambda m: r"\(" + m[2] + r"\)", value))
     assert canonical(original_tex) == canonical(tex), "Prose, equation or table content changed"
+    # Punctuation in prose only. Payloads and every mathematical step are
+    # unchanged. Short connective phrases stay with the relevant formula.
+    for old, new in (
+        ("我们可能同时观察到：", "我们可能同时观察到 "),
+        (" 但：", " 但 "),
+        (" 或者：", " 或者 "),
+        ("过程。设：", "过程。设 "),
+        ("并定义：", "并定义 "),
+        ("首先，由独立性：", "首先，由独立性可得 "),
+        ("现在考察平方收益率：", "现在考察平方收益率 "),
+        ("，其中：", "，其中 "),
+        ("对于：", "对于 "),
+    ):
+        tex = tex.replace(old, new)
     actual_inline = [m[2].strip() for m in MATH_RE.finditer(tex) if m[1] == "("]
     for expr in set(expected_inline):
         assert actual_inline.count(expr) >= expected_inline.count(expr), expr
     tex = tex.replace(r"\begin{longtable}", "\\begin{readertable}\n\\begin{longtable}")
     tex = tex.replace(r"\end{longtable}", "\\end{longtable}\n\\end{readertable}")
+    table_widths = iter((".72", ".55", ".69", ".72", ".85"))
+    tex = re.sub(r"\\begin\{readertable\}",
+                 lambda _: r"\begin{readertable}\setlength{\LTcapwidth}{" + next(table_widths) + r"\linewidth}", tex)
     # This short argument occupies less than a quarter page and concludes in
     # a boxed criterion. Keep the heading, calculation and criterion together.
     tex = re.sub(r"(\\hypertarget\{proof-sketch\}.*?)(?=\\hypertarget\{)",
@@ -447,6 +468,7 @@ def main():
         "moved_inline": promoted, "remaining_displays": len(equations) - promoted,
         "prose_and_math_tokens_equal_after_whitespace_and_delimiter_normalization": True,
         "table_cell_ast_unchanged": True,
+        "post_comparison_edits": "Connective wording and punctuation only, plus caption direction for horizontal panels",
         "inline_expressions_meeting_source_multiplicity": len(expected_inline),
         "table_count": 5, "graphics_count": 6, "svg_and_pdf_files_each": 6,
         "prose_source_lines": "58:7–587",
