@@ -1,4 +1,8 @@
-# RSI Learning · Prototype V2
+# RSI Learning · Mathematical Exploration
+
+[Complete personal reader PDF](book/Mathematical_Exploration_Personal_Edition.pdf) · [Book source and builds](book/README.md) · [Production audit](book/audit/README.md)
+
+## Approved prototype
 
 The compact mathematical reader presents the original IV-A §§6.2–7.3 excerpt across five A4 pages.
 
