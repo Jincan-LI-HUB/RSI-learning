@@ -1,5 +1,6 @@
 """Verify content and navigation, then render pages for the editorial review."""
 import argparse
+import csv
 import hashlib
 import json
 from pathlib import Path
@@ -35,11 +36,24 @@ def audit(pdf):
         "unresolved_citation_or_context_markers":sum(a.get("unresolved_citations",0) for a in assets),
         "diagnostics":diagnostics,
     }
+    release_citations=BOOK/"audit/citation-reconciliation.csv"
+    if release_citations.exists():
+        with release_citations.open(encoding="utf-8-sig",newline="") as stream:
+            citations=list(csv.DictReader(stream))
+        with (BOOK/"audit/figure-manifest.csv").open(encoding="utf-8-sig",newline="") as stream:
+            figure_rows=list(csv.DictReader(stream))
+        result["vectors"]=sum(int(row["print_vector_placements"]) for row in figure_rows)
+        result["original_academic_markers_reconciled"]=sum(bool(row["verified_target"]) for row in citations)
+        result["context_pointers_without_archived_targets"]=sum(row["classification"]=="context pointer" for row in citations)
+        result.pop("unresolved_citation_or_context_markers")
+        fidelity=json.loads((BOOK/"audit/release-fidelity-checks.json").read_text(encoding="utf-8"))
+        result["additional_source_and_editorial_math_payloads"]=sum(
+            chapter["additional_release_formulae"] for chapter in fidelity["chapters"])
     directory=BOOK/"build/qa"
     directory.mkdir(parents=True,exist_ok=True)
     with pymupdf.open(pdf) as document:
         toc=document.get_toc()
-        assert len([entry for entry in toc if entry[0]==1])==4
+        assert len([entry for entry in toc if entry[0]==1 and re.match(r"^(?:I|II|III|IV) ",entry[1])])==4
         opening={page for level,_,page in toc if level<=2}
         raster=[]
         sparse=[]

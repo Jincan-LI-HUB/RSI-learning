@@ -1,0 +1,10 @@
+﻿stored_ordinal,inventory_line,physical_line,classification,disposition,verified_target
+31,860,860,context pointer,No archived payload. Surrounding substantive prose is present.,
+37,429,429,academic,Algorithm 1 and §4 support the improver recursion. Primary author-hosted paper linked.,https://xychen5.github.io/papers/originals/2310.02304-self-taught-optimizer.pdf#page=5
+37,577,577,academic,"Figure 4 and §§5.1, 5.3 support the reported results and run variability. Primary paper linked.",https://xychen5.github.io/papers/originals/2310.02304-self-taught-optimizer.pdf#page=5
+40,1470,1470,context pointer,No archived payload. The preceding transition remains in the text.,
+52,384,384,academic group,The DOI links recorded in the archive and the verified primary works support the stylized-facts description.,https://doi.org/10.1080/713665670 | https://doi.org/10.1080/14697688.2025.2530637
+52,650,650,academic group,Cont's survey and its modern replication support the historical account and qualification.,https://doi.org/10.1080/713665670 | https://doi.org/10.1080/14697688.2025.2530637
+52,917,917,academic group,Cont supports heavier empirical tails. No archived match for the second transient alias was found; no speculative second link was inserted.,https://doi.org/10.1080/713665670
+52,1248,1255,academic in component,Original explicit DOI already links the identified Cont paper. Redundant transient marker closed.,https://doi.org/10.1080/713665670
+52,1248,1263,academic in component,Original explicit DOI already links the identified replication. Redundant transient marker closed.,https://doi.org/10.1080/14697688.2025.2530637

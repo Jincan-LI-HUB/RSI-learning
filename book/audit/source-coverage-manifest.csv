@@ -1,0 +1,79 @@
+﻿stored_ordinal,message_role,branch_classification,reading_path_status,source_range,editorial_disposition,destination_chapter_or_archival_location,exclusion_justification,outstanding_verification_status
+1,user,active,included in ancestry,1–139,intellectual brief mapped,Part I initial roadmap; Parts II–IV teaching sequence; Part V/VI roadmaps,Research questions and constraints are followed in the reading sequence. Personal biography/contact context and requests to the chat remain private.,checked
+2,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 3,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+3,assistant,active,included in ancestry,1–1546,teaching text mapped,1–1546 → chapters/part-1-03-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+4,assistant,hidden,outside ancestry,1–1343,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+5,user,active,included in ancestry,1–142,project description included; intellectual brief mapped,Part I revised roadmap and project description; Part V/VI roadmaps,Only the project's substantive description is reproduced verbatim. Repeated learning brief is integrated into the existing route. Contact and personal profile are private.,checked
+6,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 7,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+7,assistant,active,included in ancestry,1–1930,teaching text mapped,1–1930 → chapters/part-1-07-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+8,assistant,hidden,outside ancestry,1–1806,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+9,user,active,included in ancestry,1–1,pedagogical request incorporated,Part I Conclusion & Concept Index,The original conversational wording is held locally. The need to handle cognitive load by reading conclusions before following proof pointers is explicit in the manuscript.,checked
+10,assistant,active,included in ancestry,1–689,teaching text mapped,1–689 → chapters/part-1-10-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+11,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+12,assistant,active,included in ancestry,1–917,teaching text mapped,1–917 → chapters/part-2-12-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+13,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+14,assistant,active,included in ancestry,1–1023,teaching text mapped,1–1023 → chapters/part-2-14-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+15,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+16,assistant,active,included in ancestry,1–1167,teaching text mapped,1–1167 → chapters/part-2-16-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+17,assistant,hidden,outside ancestry,1–1100,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+18,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+19,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 20,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+20,assistant,active,included in ancestry,1–1152,teaching text mapped,1–1152 → chapters/part-2-20-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+21,assistant,hidden,outside ancestry,1–848,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+22,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+23,assistant,active,included in ancestry,1–989,teaching text mapped,1–989 → chapters/part-2-23-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+24,assistant,hidden,outside ancestry,1–839,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+25,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+26,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 27,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+27,assistant,active,included in ancestry,1–1285,teaching text mapped,1–1285 → chapters/part-2-27-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+28,assistant,hidden,outside ancestry,1–993,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+29,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+30,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 31,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+31,assistant,active,included in ancestry,1–860,teaching text mapped,1–860 → chapters/part-3-31-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+32,assistant,hidden,outside ancestry,1–671,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+33,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+34,assistant,active,included in ancestry,1–1090,teaching text mapped,1–1090 → chapters/part-3-34-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+35,assistant,hidden,outside ancestry,1–1027,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+36,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+37,assistant,active,included in ancestry,1–1279,teaching text mapped,1–1279 → chapters/part-3-37-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+38,assistant,hidden,outside ancestry,1–1137,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+39,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+40,assistant,active,included in ancestry,1–1470,teaching text mapped,1–1470 → chapters/part-3-40-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+41,assistant,hidden,outside ancestry,1–1350,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+42,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+43,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 44,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+44,assistant,active,included in ancestry,1–1078,teaching text mapped,1–1078 → chapters/part-3-44-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+45,assistant,hidden,outside ancestry,1–973,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+46,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+47,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 48,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+48,assistant,active,included in ancestry,1–1542,teaching text mapped,1–1542 → chapters/part-3-48-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+49,assistant,hidden,outside ancestry,1–1436,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+50,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+51,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 52,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+52,assistant,active,included in ancestry,1–1405,teaching text mapped,1–679 → chapters/part-4-52-0001.tex | 680–1405 → chapters/part-4-52-0680.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+53,user,alternate,outside ancestry,1–1,editorial exclusion,Private normalized transcript,Display troubleshooting only.,checked
+54,assistant,alternate,outside ancestry,1–33,alternate compared,IV-A preview and IV-B derivation; private alternate,The completion confirmation and progress panel are chat navigation. The SNR result and route are already represented.,checked
+55,user,alternate,outside ancestry,1–1,editorial exclusion,Private normalized transcript,Display troubleshooting only.,checked
+56,assistant,alternate,outside ancestry,1–386,alternate compared; distinct material integrated,"IV-A selected continuation §§6.3, 8.3; private alternate",Only the variance inference and ESS-to-generalization qualification were recovered. See alternative-differences.csv for block dispositions.,checked
+57,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Display troubleshooting only.,checked
+58,assistant,active,included in ancestry,1–1318,teaching text mapped,7–1318 → chapters/part-4-58-0007.tex,Lines 1–6 are client-display troubleshooting and separator.,checked
+59,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+60,assistant,active,included in ancestry,1–1889,teaching text mapped,1–1889 → chapters/part-4-60-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+61,assistant,hidden,outside ancestry,1–1626,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+62,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+63,assistant,active,included in ancestry,1–2145,teaching text mapped,1–2145 → chapters/part-4-63-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+64,assistant,hidden,outside ancestry,1–2080,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+65,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+66,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 67,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+67,assistant,active,included in ancestry,1–2146,teaching text mapped,1–2146 → chapters/part-4-67-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+68,assistant,hidden,outside ancestry,1–1526,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+69,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+70,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 71,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+71,assistant,active,included in ancestry,1–1964,teaching text mapped,1–1964 → chapters/part-4-71-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+72,assistant,active,included in ancestry,1–8,supporting computation retained locally,Private tool trace; IV-E numerical examples,"Executable support trace, whose associated mathematical findings are presented in the teaching reply.",checked
+73,tool,active,included in ancestry,1–2,supporting output retained locally,Private tool trace; IV-E numerical examples,Machine output supporting the IV-E example is retained with its source computation.,checked
+74,assistant,hidden,outside ancestry,1–1095,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked
+75,user,active,included in ancestry,1–1,editorial exclusion,Private normalized transcript,Routine request to continue the established sequence.,checked
+76,assistant,active,included in ancestry,1–1,preamble held locally,Private transcript; full teaching reply in record 77,Assistant progress announcement or roadmap already followed by the full teaching reply.,checked
+77,assistant,active,included in ancestry,1–2405,teaching text mapped,1–2405 → chapters/part-4-77-0001.tex,Source headings and component presentation normalized. See chapter-level audit.,checked
+78,assistant,hidden,outside ancestry,1–1230,hidden layer held locally,Private normalized transcript,Archive marks this as visually hidden internal content outside the selected reading path.,checked

@@ -1,0 +1,21 @@
+﻿stored_ordinal,first_line,last_line,block,active_destination,disposition
+54,1,13,Completion acknowledgment and topic recap,"52,58 | IV-A and IV-B preview",Excluded chat status and redundant topic list.
+54,14,24,Progress/navigation component,52 | IV-A roadmap; 77 | Part IV knowledge map,Excluded progress state. All stage names are represented.
+54,25,33,Law of Total Variance preview and optimal R² formula,52:1369–1405; 58:1263–1318; 60 | Proof of optimal prediction limit,Covered. Derivation is explicit in IV-B.
+56,1,22,"Client-display diagnosis, importance table, resumed opening","52,58 | IV-A; 58 | Conclusion Index and Proof Index","Excluded status, new chat heading and ad hoc star rankings. Topics and proof references are preserved."
+56,23,37,IID normal product construction,52:723–798; 58:70–94,Covered with the same independence and marginal distribution assumptions.
+56,38,44,Zero mean and unit variance of the return,"58:86–94,135–139 | IV-A §6.3",Zero mean and unit second moment already shown. Recovered explicit unit-variance inference.
+56,45,58,Adjacent linear covariance; factors written in a different order,52:723–798; 58:95–118,"Covered, including expectations factorized by independence."
+56,59,98,"Gaussian moments, squared-return covariance, paired conclusion, explanatory prose",58:119–201,Covered. The active proof retains the fuller factorization and correlation calculation.
+56,99,138,"ARCH/GARCH definitions, innovation and parameter table",52:799–847; 58:205–269,Covered. Expanded GARCH name also appears in the active literature index.
+56,139,160,Finite stationary GARCH mean-variance equation and its solution,52:799–910; 58:273–330,Covered. Active derivation explicitly uses finite second moments and iterated expectation.
+56,161,170,Three-series GARCH shock-persistence chart,58:332–376 | Shared-axes GARCH figure,"Covered. All 27 archived values were checked against the retained three curves at h=0,5,…,40."
+56,171,182,Time-dependent conditional variance compatible with constant unconditional variance,52:899–910; 58:378–398,Covered with weak-stationarity context and unchanged distinction.
+56,183,204,Normal versus standardized t₃ densities and interpretation,52:911–955; 58:404–461,Covered. Both use the same density expressions and interpretation; the active plots also provide tail probabilities.
+56,205,237,Absolute moments and degrees-of-freedom table,52:956–981; 58:465–539,Covered. Active edition includes the integral convergence argument.
+56,238,250,Finite variance of returns versus the fourth moment needed for squared returns; research implication,52:982–990; 58:543–587,Covered. Active example gives the same moment identity for squared loss and connects noise to evaluation.
+56,251,294,"Finite-sample variance, definition of ESS, and scope limited to the mean",52:992–1038; 58:595–699,"Covered, including finite-lag weighting. The scope is reiterated with the recovered qualification below."
+56,295,321,"Stationary AR(1), infinite-sum calculation, large-n approximation",52:1039–1066; 58:701–740,Covered with the |φ|<1 and large-n conditions.
+56,322,360,"ESS widget, standard-error multiplier, and interpretation near 112 independent observations",52:1067–1120; 58:741–804,Covered. Uses the same finite-sample formula and input defaults. The manuscript prints the finite-n result and multiplier.
+56,361,374,ESS and selection-risk connection; no automatic Hoeffding extension,58 | IV-A §8.3 after ESS example; II-B,Recovered the connection and the explicit warning against substituting ESS into an IID bound without assumptions and proof.
+56,375,386,Overfitting risk table and interrupted final row,52:1124–1180; 58:921–979,Complete active comparison covers the visible rows and identifies the single-historical-path issue.

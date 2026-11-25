@@ -79,6 +79,8 @@
 所以：
 \[\mathbb E[r_t^2]=1.\]
 
+结合 \(\mathbb E[r_t]=0\)，可得 \(\operatorname{Var}(r_t)=1\)。
+
 进一步：
 \[\begin{aligned}
 &\operatorname{Cov}(r_t^2,r_{t+1}^2)\\
@@ -611,6 +613,8 @@ Standard error multiplier
 \end{readertable}
 
 因此，较强的正向时间依赖可能显著降低有效样本信息量。负自相关则可能使针对样本均值定义的有效样本量超过原始样本量。
+
+这里的有效样本量是按样本均值的方差定义的。结合 II-B 中的泛化误差规模 \(O\left(\sqrt{\frac{\log M}{n}}\right)\)，时间依赖性可能降低有效统计信息量，而大量候选搜索进一步增加选择风险。不过，不能直接将 Hoeffding Bound 中的 \(n\) 替换为 \(n_{\mathrm{eff}}\)，并声称获得了严格的时间序列泛化界。后者需要额外的依赖结构假设及理论证明。
 
 \hypertarget{part-4-58-0007-ux4e00ux4e2aux4e0e-rsi-ux76f4ux63a5ux76f8ux5173ux7684-nontrivial-example}{%
 \subsubsection{8.4 一个与 RSI 直接相关的 Nontrivial Example}\label{part-4-58-0007-ux4e00ux4e2aux4e0e-rsi-ux76f4ux63a5ux76f8ux5173ux7684-nontrivial-example}}

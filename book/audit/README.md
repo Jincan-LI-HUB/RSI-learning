@@ -2,6 +2,8 @@
 
 [Machine verification](verification.json) · [Chapter source and figure records](./) · [Build instructions](../README.md)
 
+The [final release reconciliation](release-reconciliation.md) records the targeted changes after the production baseline, including the [coverage manifest](source-coverage-manifest.csv), [alternate response comparison](alternative-differences.csv), [citation dispositions](citation-reconciliation.csv), and [figure manifest](figure-manifest.csv).
+
 ## Editorial reconciliation
 
 - **Part I.** The first explanation, the research-project-based second pass and the concept index retain their order. The project description from source record 5 is reproduced from its description field. Personal background and contact fields are held locally. Where the first and second pass use distinct definitions, examples, proofs or visualizations, both remain in the book. The conclusion index remains in its pedagogical position.
@@ -14,7 +16,7 @@ The per-chapter JSON records show the public archive ordinal, source line range,
 
 The SVG renderer normalizes drawing attributes and uses the supplied palette. The original chart data is rendered to PDF vectors. Color-coded rows such as cross-validation folds and bootstrap blocks retain their ordered cells and color distinctions as print diagrams. The archived Mermaid evaluation chain was converted from its original labels and ordered edges. Where a graphic has a numerical slider, the print pipeline uses the default and a representative state where useful. The approved GARCH panel retains its three settings. The original labels and readouts from the component layer are rendered in source order. Self-assessment checklists retain their individual items. The final progress indicator was omitted, and its roadmap remains.
 
-Three IV-D skewness/symmetry image requests lack original pixels or vector source. The panel labels and the mathematical discussion remain. The two IV-A financial-data audit examples refer to external dataframes. The plotting code remains, and no empirical plot was manufactured. Client-dependent citation or memory pointers without an archived target are recorded in the chapter checks. Where the source supplies a title but no usable target, the title remains readable.
+Three IV-D skewness/symmetry image requests lack original pixels or vector source. A labeled analytical reconstruction now accompanies the mathematical discussion. The two IV-A financial-data audit examples refer to external dataframes. Their plotting code remains. The citation reconciliation records verified academic references and client-dependent pointers whose targets are absent from the archive.
 
 ## Mathematical source notes
 
